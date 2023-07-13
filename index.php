@@ -10,14 +10,14 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-$bcon = bd_connect();
+
 cleardata();//erases all old data
 //database off
 if(!$bcon)
 {
 echo "<p align=\"center\">";
 echo "<img src=\"images/notok.gif\" alt=\"*\"/><br />";
-echo "ERRO! banco de dados sem conexão!<br /><br />";
+echo "ERRO! banco de dados sem conexï¿½o!<br /><br />";
 echo "Aguarde alguns instantes e tente novamente!<br />";
 echo "</p>";
 exit();
@@ -31,7 +31,7 @@ $uid = getuid_sid($sid);
 if(ip_ban(ver_ip(), navegador()))
 {
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais você teve o BAN máximo(<b>IP</b>)!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais vocï¿½ teve o BAN mï¿½ximo(<b>IP</b>)!";
 echo "<br />";
 echo "<br />";
 $infos_ban = mysql_fetch_array(mysql_query("SELECT tempo, motivo FROM fun_ban WHERE ip='".ver_ip()."' AND browser='".navegador()."' AND tipoban='2'"));
@@ -44,7 +44,7 @@ exit();
 if(is_banido($uid))
 {
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais você foi banido do site!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais vocï¿½ foi banido do site!";
 echo "<br />";
 echo "<br />";
 $infos_ban = mysql_fetch_array(mysql_query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')"));
@@ -57,7 +57,7 @@ exit();
 if((is_logado($sid)==false)||($uid==0) AND $action!="")
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br /><br />";
+echo "Vocï¿½ nï¿½o estï¿½ logado!<br /><br />";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -68,7 +68,7 @@ mysql_query("UPDATE fun_users SET browserm='".navegador()."', ipadd='".ver_ip().
 if($action=="main")
 {
 addvisitor();//add visit in site
-adicionar_online(getuid_sid($sid),"Página principal","");
+adicionar_online(getuid_sid($sid),"Pï¿½gina principal","");
 $uid = getuid_sid($sid);
 echo "<p align=\"center\">";
 echo "".date("D d M y - H:i:s")."<br />";
@@ -79,7 +79,7 @@ $Hour = date("G",time());
 $nick = getnick_uid($uid);
 if ($Hour <= 4) { $saldacao = "Boa Madrugada <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 11) { $saldacao = "Bom Dia <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
-else if ($Hour <= 12) { $saldacao = "Bom Almoço <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
+else if ($Hour <= 12) { $saldacao = "Bom Almoï¿½o <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 17) { $saldacao = "Boa Tarde <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 22) { $saldacao = "Boa Noite <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 24) { $saldacao = "Boa Madrugada <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
@@ -92,7 +92,7 @@ echo "<a href=\"inbox.php?action=main&sid=$sid\"><img src=\"images/torpedos.gif\
 echo "Torpedos($umsg/$tmsg)</a><br />";
 $recados = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_gbook WHERE gbowner='".$uid."'"));
 echo "<a href=\"lists.php?action=gbook&sid=$sid&who=$uid\"><img src=\"images/recados.gif\" alt=\"*\"/>Recados($recados[0])</a><br />";
-echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"images/folder.gif\" alt=\"*\"/>Fórum</a><br />";
+echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"images/folder.gif\" alt=\"*\"/>Fï¿½rum</a><br />";
 $chs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs"));
 echo "<a href=\"index.php?action=clmenu&sid=$sid\"><img src=\"images/comunidades.gif\" alt=\"*\"/>Comunidades($chs[0])</a><br />";
 $chs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chonline"));
@@ -106,12 +106,12 @@ if($reqs>0)
 echo ": <a href=\"lists.php?action=reqs&sid=$sid\">$reqs</a>";
 }
 echo "<br />";
-echo "<a href=\"index.php?action=cpanel&sid=$sid\"><img src=\"images/config.gif\" alt=\"*\"/>Configurações</a><br />";
+echo "<a href=\"index.php?action=cpanel&sid=$sid\"><img src=\"images/config.gif\" alt=\"*\"/>Configuraï¿½ï¿½es</a><br />";
 $alb = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_albums"));
-echo "<a href=\"album.php?&a=albums&sid=$sid\"><img src=\"images/galeria.gif\" alt=\"*\"/>Álbuns($alb[0])</a><br />";
+echo "<a href=\"album.php?&a=albums&sid=$sid\"><img src=\"images/galeria.gif\" alt=\"*\"/>ï¿½lbuns($alb[0])</a><br />";
 $down = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads"));
 echo "<a href=\"downloads.php?sid=$sid\"><img src=\"images/downloads.gif\" alt=\"*\"/>Downloads($down[0])</a><br />";
-echo "<a href=\"index.php?action=funm&sid=$sid\"><img src=\"images/diversao.gif\" alt=\"*\"/>Diversão</a><br />";
+echo "<a href=\"index.php?action=funm&sid=$sid\"><img src=\"images/diversao.gif\" alt=\"*\"/>Diversï¿½o</a><br />";
 echo "<a href=\"index.php?action=sub&sid=$sid\"><img src=\"images/mextra.gif\" alt=\"*\"/>Menu extra</a><br />";
 /////////////////menu admin
 if (isadmin(getuid_sid($sid)))
@@ -135,7 +135,7 @@ echo "<p align=\"center\">";
 echo "<b>Mural de recados</b><br />";
 echo getshoutbox($sid);
 echo "<br /><br />";
-echo "Usuários online: <a href=\"index.php?action=online&sid=$sid\">".getnumonline()."</a><br />";
+echo "Usuï¿½rios online: <a href=\"index.php?action=online&sid=$sid\">".getnumonline()."</a><br />";
 $timeout = 600;
 $timeon = time()-$timeout;
 $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE perm>'0' AND lastact>'".$timeon."'"));
@@ -145,7 +145,7 @@ $timeon2 = time()-$timeout2;
 $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE vip='1' AND lastact>'".$timeon2."'"));
 echo "VIPs online: <a href=\"index.php?action=vipol&sid=$sid\">".$noi[0]."</a><br />";
 $memid = mysql_fetch_array(mysql_query("SELECT id, name  FROM fun_users ORDER BY regdate DESC LIMIT 0,1"));
-echo "Novo usuário: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br /><br />";
+echo "Novo usuï¿½rio: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br /><br />";
 echo "<a href=\"index.php?action=sair&sid=$sid\"><img src=\"teks/hit.gif\" alt=\"*\"/>";
 echo "Sair</a>";
 echo "</p>";
@@ -160,12 +160,12 @@ echo "</p>";
 echo "<p align=\"left\">";
 $trofeus = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_trofeus"));
 echo "<a href=\"relacionamento.php?sid=$sid\"><img src=\"images/coracao.gif\" alt=\"\">Relacionamento</a><br />";
-echo "<a href=\"trofeus.php?sid=$sid\"><img src=\"images/trofeus.gif\" alt=\"*\">Troféus(".$trofeus[0].")</a><br />";
+echo "<a href=\"trofeus.php?sid=$sid\"><img src=\"images/trofeus.gif\" alt=\"*\">Trofï¿½us(".$trofeus[0].")</a><br />";
 echo "<a href=\"banco.php?sid=$sid\"><img src=\"images/banco.png\" alt=\"*\"/>Banco $snome</a><br />";
 echo "<a href=\"loja.php?a=main&sid=$sid\"><img src=\"images/loja.png\" alt=\"*\"/>Loja de presentes</a><br />";
-echo "<a href=\"horoscopo.php?sid=$sid\"><img src=\"images/star.gif\" alt=\"*\"/>Horóscopo</a><br />";
+echo "<a href=\"horoscopo.php?sid=$sid\"><img src=\"images/star.gif\" alt=\"*\"/>Horï¿½scopo</a><br />";
 echo "<a href=\"novelas.php?sid=$sid\"><img src=\"images/novelas.gif\" alt=\"*\">Novelas</a><br />";
-echo "<a href=\"index.php?action=stats&sid=$sid\"><img src=\"images/top.gif\" alt=\"*\"/>Estatísticas</a><br />";
+echo "<a href=\"index.php?action=stats&sid=$sid\"><img src=\"images/top.gif\" alt=\"*\"/>Estatï¿½sticas</a><br />";
 $sml = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies"));
 echo "<a href=\"paginas.php?p=sml&sid=$sid\"><img src=\"images/bug.gif\" alt=\"*\"/>Smilies($sml[0])</a><br />";
 echo "<a href=\"index.php?action=search&sid=$sid\"><img src=\"images/buscar.gif\" alt=\"*\"/>Buscar</a><br />";
@@ -175,14 +175,14 @@ echo "<a href=\"regras.php?sid=$sid\"><img src=\"images/mextra.gif\" alt=\"*\"/>
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br />";
+echo "Pï¿½gina principal</a><br />";
 echo "</p>";
 }
 ////////////////////////////////////////forum menu
 else if($action=="forum")
 {
 echo "<p align=\"center\">";
-echo "<b>Fórum $snome</b>";
+echo "<b>Fï¿½rum $snome</b>";
 echo "</p>";
 $fcats = mysql_query("SELECT id, name FROM fun_fcats ORDER BY position, id");
 $iml = "<img src=\"images/1.gif\" alt=\"*\"/>";
@@ -206,7 +206,7 @@ echo "";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br />";
+echo "Pï¿½gina principal</a><br />";
 echo "</p>";
 }
 //////////////////////////////////sair do site
@@ -215,7 +215,7 @@ else if($action=="sair")
 adicionar_online(getuid_sid($sid),"Saiu do site","");
 echo "<p align=\"center\">";
 mysql_query("DELETE FROM fun_ses WHERE id = '".$sid."' ");
-echo "<img src=\"images/ok.gif\" alt=\"*\"/>Que pena, ja saiu? Volta outra vez tá?!";
+echo "<img src=\"images/ok.gif\" alt=\"*\"/>Que pena, ja saiu? Volta outra vez tï¿½?!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php\"><img src=\"images/home.gif\" alt=\"*\"/>";
@@ -247,7 +247,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Informacao errada!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="gcp")
@@ -264,7 +264,7 @@ echo "<p align=\"center\">";
 echo "<b>Moderar Pontos</b>";
 echo "</p>";
 echo "<form action=\"genproc.php?action=gcp&sid=$sid&who=$who&clid=$clid\" method=\"post\">";
-echo "Ação: <select name=\"giv\">";
+echo "Aï¿½ï¿½o: <select name=\"giv\">";
 echo "<option value=\"1\">Adicionar</option>";
 echo "<option value=\"0\">Remover</option>";
 echo "</select><br />";
@@ -272,14 +272,14 @@ echo "Valor de Pontos: <input name=\"pnt\" format=\"*N\" size=\"2\" maxlength=\"
 echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "Atenção, os pontos que você vai dar para $whnick serão removidos da comunidade!";
+echo "Atenï¿½ï¿½o, os pontos que vocï¿½ vai dar para $whnick serï¿½o removidos da comunidade!";
 echo "</p>";
 }else
 {
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="gpl")
@@ -305,20 +305,20 @@ echo "Pontos: <input name=\"pnt\" format=\"*N\" size=\"2\" maxlength=\"2\"/><br 
 echo "<input type=\"submit\" value=\"IR\"/>";
 echo "</form>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Faltando informações!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Faltando informaï¿½ï¿½es!";
 }
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Control Panel
 else if($action=="cpanel")
 {
-adicionar_online(getuid_sid($sid),"Configurações","");
+adicionar_online(getuid_sid($sid),"Configuraï¿½ï¿½es","");
 echo "<p align=\"center\">";
-echo "<b>Configurações</b>";
+echo "<b>Configuraï¿½ï¿½es</b>";
 echo "</p>";
 echo "<p>";
 $tmsg = getpmcount(getuid_sid($sid));
@@ -338,7 +338,7 @@ echo "<a href=\"lists.php?action=bbcode&sid=$sid\">&#187;BBCode</a><br />";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Control Panel
@@ -355,13 +355,13 @@ echo "<a href=\"index.php?action=myclub&sid=$sid\">&#187;Minhas comunidades</a><
 echo "<a href=\"lists.php?action=clm&who=$myid&sid=$sid&who=$uid\">&#187;Que sou membro</a><br />";
 echo "<a href=\"lists.php?action=pclb&sid=$sid&who=$uid\">&#187;Mais populares</a><br />";
 echo "<a href=\"lists.php?action=aclb&sid=$sid&who=$uid\">&#187;Com mais postagens</a><br />";
-echo "<a href=\"lists.php?action=rclb&sid=$sid&who=$uid\">&#187;5 aleatórias</a><br /><br />";
+echo "<a href=\"lists.php?action=rclb&sid=$sid&who=$uid\">&#187;5 aleatï¿½rias</a><br /><br />";
 $ncl = mysql_fetch_array(mysql_query("SELECT id, name FROM fun_clubs ORDER BY created DESC LIMIT 1"));
 echo "Nova comunidade: <a href=\"index.php?action=gocl&clid=$ncl[0]&sid=$sid\">".htmlspecialchars($ncl[1])."</a><br />";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////My Clubs
@@ -376,7 +376,7 @@ $uid = getuid_sid($sid);
 if(getplusses($uid)<349)
 {
 echo "<p align=\"left\">";
-echo "Comunidades são grupos criados por usuários que tem o propósito de debater algum assunto interessante, e para criar a sua, você deve ter um total de 350 Pontos!";
+echo "Comunidades sï¿½o grupos criados por usuï¿½rios que tem o propï¿½sito de debater algum assunto interessante, e para criar a sua, vocï¿½ deve ter um total de 350 Pontos!";
 echo "</p>";
 }else
 {
@@ -395,7 +395,7 @@ echo "<a href=\"index.php?action=addcl&sid=$sid\">Nova comunidade!</a>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clmenu&sid=$sid\">Comunidades</a><br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////My Clubs
@@ -433,7 +433,7 @@ $item[1]=htmlspecialchars($item[1]);
 $mems = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$item[0]."' AND accepted='1'"));
 $lnk = "$tipo<a href=\"index.php?action=gocl&clid=$item[0]&sid=$sid\">$item[1](".$mems[0].")</a> Dono: <a href=\"index.php?action=perfil&who=$item[2]&sid=$sid\">".getnick_uid($item[2])."</a>";
 echo "$lnk<br />";
-echo htmlspecialchars($item[3])."<br />Data de criação: (".date("d/m/y", $item[4]).")<br /><br />";
+echo htmlspecialchars($item[3])."<br />Data de criaï¿½ï¿½o: (".date("d/m/y", $item[4]).")<br /><br />";
 }
 }
 echo "</p>";
@@ -452,7 +452,7 @@ echo "<br />$page/$num_pages<br />";
 if($num_pages>2)
 {
 $rets = "<form action=\"index.php\" method=\"get\">";
-$rets .= "Pular para página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular para pï¿½gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= "<input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"sid\" value=\"$sid\"/>";
@@ -462,7 +462,7 @@ echo $rets;
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clmenu&sid=$sid\">Comunidades</a><br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="editcl")
@@ -473,14 +473,14 @@ $clinfo = mysql_fetch_array(mysql_query("SELECT name, owner, description, rules,
 echo "<p align=\"center\">";
 if(empty($clid)||!is_numeric($clid)||$clinfo[9]==0)//Verifica se a comunidade existe
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade não existe!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade nï¿½o existe!";
 echo "<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Pï¿½gina principal</a>";
 echo "</p>";exit();
 }
 if(!ismod($uid))
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você não tem permição para está aqui!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Vocï¿½ nï¿½o tem permiï¿½ï¿½o para estï¿½ aqui!";
 }
 else
 {
@@ -489,13 +489,13 @@ echo "</p>";
 echo "<form action=\"genproc.php?action=editcl&sid=$sid&clid=$clid\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Nome: <input name=\"nome\" type=\"text\" value=\"$clinfo[0]\"><br />";
 echo "Regras e Termos: <input name=\"regras\" type=\"text\" value=\"$clinfo[3]\"><br />";
-echo "Descrição: <br /><textarea name=\"descricao\">$clinfo[2]</textarea><br />";
+echo "Descriï¿½ï¿½o: <br /><textarea name=\"descricao\">$clinfo[2]</textarea><br />";
 echo "Tipo da Comunidade: <select name=\"tipo\">";
-echo "<option value=\"0\">Pública</option>";
+echo "<option value=\"0\">Pï¿½blica</option>";
 echo "<option value=\"1\">Privada</option>";
 echo "</select><br />";
 echo "Subdono: <select name=\"subdono\">";
-echo "<option value=\"0\">Padrão</option>";
+echo "<option value=\"0\">Padrï¿½o</option>";
 $usuarios = mysql_query("SELECT uid FROM fun_clubmembers WHERE clid = '".$clid."' AND accepted='1', owner!='".$uid."'");
 while($users = mysql_fetch_array($usuarios))
 {
@@ -512,14 +512,14 @@ echo "<a href=\"genproc.php?action=dlcl&sid=$sid&clid=$clid\">APAGAR COMUNIDADE<
 echo "</p>";
 }
 echo "<p align=\"center\">";
-echo "Só é permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
+echo "Sï¿½ ï¿½ permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
 echo "</p>";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clubs&sid=$sid\">";
 echo "Comunidades</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="gocl")
@@ -531,13 +531,13 @@ $clnm = htmlspecialchars($clinfo[0]);
 echo "<p align=\"center\">";
 if(empty($clid)||!is_numeric($clid)||$clinfo[9]==0)//Verifica se a comunidade existe
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade não existe!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade nï¿½o existe!";
 echo "<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Pï¿½gina principal</a>";
 echo "</p>";exit();
 }
 echo "<b>$clnm</b><br />";
-if(trim($clinfo[4])==""||!file_exists($clinfo[4]))//Verificar se existe o logo na table ou se está dir do site
+if(trim($clinfo[4])==""||!file_exists($clinfo[4]))//Verificar se existe o logo na table ou se estï¿½ dir do site
 {
 echo "<img src=\"images/logo.png\" alt=\"logo\"/>";
 }else
@@ -561,10 +561,10 @@ $pss = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts a INNER JOI
 if(($cango[0]>0)||ismod($uid))
 {
 $noa = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_announcements WHERE clid='".$clid."'"));
-echo "<br /><a href=\"lists.php?action=annc&sid=$sid&clid=$clid\"><img src=\"teks/cmt.gif\" alt=\"!\"/>Anúncios($noa[0])</a><br />";
+echo "<br /><a href=\"lists.php?action=annc&sid=$sid&clid=$clid\"><img src=\"teks/cmt.gif\" alt=\"!\"/>Anï¿½ncios($noa[0])</a><br />";
 $noa = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chat WHERE rid='".$rid[0]."'"));
 echo "<a href=\"chat.php?sid=$sid&rid=$rid[0]\"><img src=\"images/batepapo.gif\" alt=\"*\"/>Chat($noa[0])</a><br />";
-echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid[0]\"><img src=\"images/folder.gif\" alt=\"*\"/>Fórum($tps[0]/$pss[0])</a><br />";
+echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid[0]\"><img src=\"images/folder.gif\" alt=\"*\"/>Fï¿½rum($tps[0]/$pss[0])</a><br />";
 if($clinfo[1]==$uid)
 {
 $mems = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND accepted='0'"));
@@ -588,8 +588,8 @@ echo "<br />";
 echo "<a href=\"index.php?action=editcl&sid=$sid&clid=$clid\"><img src=\"images/cp.png\" alt=\"\">Editar comunidade</a>";
 }
 }else{
-echo "Tópicos: <b>$tps[0]</b>, Postagens: <b>$pss[0]</b><br />";
-echo "<b>Descrição: </b>";
+echo "Tï¿½picos: <b>$tps[0]</b>, Postagens: <b>$pss[0]</b><br />";
+echo "<b>Descriï¿½ï¿½o: </b>";
 echo htmlspecialchars($clinfo[2]);
 echo "<br /><br />";
 echo "<b>Regras e Termos: </b>";
@@ -602,7 +602,7 @@ echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clubs&sid=$sid\">";
 echo "Comunidades</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="vipol")
@@ -650,7 +650,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<img src=\"images/home.gif\" alt=\"*\"/><a href=\"index.php?action=main&sid=$sid\">";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="addcl")
@@ -665,35 +665,35 @@ if(getplusses($uid)>=350)
 $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."'"));
 if($noi[0]<5)
 {
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Todas as informações são necessárias!<br />";
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Além de você, os moderadores e administradores são liberados para moderar sua comunidade!<br />";
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Não é permitido comunidades iguais!<br />";
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Em caso de abuso sua comunidade será apagada!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Todas as informaï¿½ï¿½es sï¿½o necessï¿½rias!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Alï¿½m de vocï¿½, os moderadores e administradores sï¿½o liberados para moderar sua comunidade!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Nï¿½o ï¿½ permitido comunidades iguais!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Em caso de abuso sua comunidade serï¿½ apagada!<br />";
 echo "<form action=\"genproc.php?action=adicionarcl&sid=$sid\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Nome: <input name=\"nome\" maxlength=\"30\"/><br />";
-echo "Descrição: <input name=\"descricao\" maxlength=\"200\"/><br />";
+echo "Descriï¿½ï¿½o: <input name=\"descricao\" maxlength=\"200\"/><br />";
 echo "Regras: <input name=\"regras\" maxlength=\"500\"/><br />";
 echo "Tipo da comunidade: <select name=\"tipo\">";
-echo "<option value=\"0\">Pública</option>";
+echo "<option value=\"0\">Pï¿½blica</option>";
 echo "<option value=\"1\">Privada</option>";
 echo "</select><br />";
 echo "Logo: <input type=\"file\" name=\"logo\" /><br />";
 echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "Só é permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
+echo "Sï¿½ ï¿½ permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
 echo "</p>";
 }else
 {
-echo "Você atingiu o máximo de comunidades permitidas(5 comunidades)!";
+echo "Vocï¿½ atingiu o mï¿½ximo de comunidades permitidas(5 comunidades)!";
 }
 }else{
-echo "Para criar uma comunidade você deve ter mais de 350 pontos!";
+echo "Para criar uma comunidade vocï¿½ deve ter mais de 350 pontos!";
 }
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Search
@@ -705,15 +705,15 @@ echo "<img src=\"images/search.gif\" alt=\"*\"/><br />";
 echo "<b>Menu de busca</b>";
 echo "</p>";
 echo "<p>";
-echo "<a href=\"search.php?action=tpc&sid=$sid\">&#0187;Em Tópicos</a><br />";
+echo "<a href=\"search.php?action=tpc&sid=$sid\">&#0187;Em Tï¿½picos</a><br />";
 echo "<a href=\"search.php?action=blg&sid=$sid\">&#0187;Em blogs</a><br />";
 echo "<a href=\"search.php?action=nbx&sid=$sid\">&#0187;Em meus torpedos</a><br />";
 echo "<a href=\"search.php?action=clb&sid=$sid\">&#0187;Em Comunidades</a><br /><br />";
-echo "Buscar usuários<br />";
+echo "Buscar usuï¿½rios<br />";
 echo "<a href=\"search.php?action=mbrn&sid=$sid\">&#0187;Em nicks</a><br />";
 //echo "<a href=\"search.php?action=mbrl&sid=$sid\">&#0187;In Location</a><br />";
 //echo "<a href=\"search.php?action=mbrs&sid=$sid\">&#0187;By sex orientation</a><br />";
-echo "Digite o nick do usuário abaixo para ver o perfil<br />";
+echo "Digite o nick do usuï¿½rio abaixo para ver o perfil<br />";
 echo "<form action=\"index.php?action=perfil&sid=$sid\" method=\"post\">";
 echo "<br />Nick <input name=\"mnick\" maxlength=\"15\"/><br />";
 echo "<input type=\"submit\" value=\"Ver perfil\"/>";
@@ -721,7 +721,7 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Settings
@@ -754,7 +754,7 @@ echo "<br />";
 $sml = mysql_fetch_array(mysql_query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'"));
 if($sml[0]=="1")
 {
-echo "<a href=\"genproc.php?action=sml&a=nao&sid=$sid\">Não quero ver smilies!</a>";
+echo "<a href=\"genproc.php?action=sml&a=nao&sid=$sid\">Nï¿½o quero ver smilies!</a>";
 }else{
 echo "<a href=\"genproc.php?action=sml&a=sim&sid=$sid\">Quero ver smilies!</a>";
 }
@@ -767,7 +767,7 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="stats")
@@ -775,16 +775,16 @@ else if($action=="stats")
 adicionar_online(getuid_sid($sid),"Estatisticas","");
 echo "<p align=\"center\">";
 $norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users"));
-echo "Usuários registrados: <b>$norm[0]</b><br />";
+echo "Usuï¿½rios registrados: <b>$norm[0]</b><br />";
 $memid = mysql_fetch_array(mysql_query("SELECT id, name  FROM fun_users ORDER BY regdate DESC LIMIT 0,1"));
-echo "Novo usuário: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br />";
+echo "Novo usuï¿½rio: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br />";
 $mols = mysql_fetch_array(mysql_query("SELECT name, value FROM fun_settings WHERE id='2'"));
-echo "Maior número online: <b>$mols[1]</b> em $mols[0]<br />";
-echo "Maior número online(<a href=\"lists.php?action=moto&sid=$sid\">De hoje</a>): <b>$mols[0]</b><br />";
+echo "Maior nï¿½mero online: <b>$mols[1]</b> em $mols[0]<br />";
+echo "Maior nï¿½mero online(<a href=\"lists.php?action=moto&sid=$sid\">De hoje</a>): <b>$mols[0]</b><br />";
 $tm24 = time() - (24*60*60);
 $aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE lastact>'".$tm24."'"));
 echo mysql_error();
-echo "Usuários online hoje <b>$aut[0]</b><br />";
+echo "Usuï¿½rios online hoje <b>$aut[0]</b><br />";
 $notc = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics"));
 $nops = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts"));
 echo "Topicos: <b>$notc[0]</b> - Postagens: <b>$nops[0]</b><br />";
@@ -797,8 +797,8 @@ echo "</p>";
 echo "<p>";
 echo "";
 /////menu das estatisticas
-echo "<a href=\"index.php?action=l24&sid=$sid\">&#187;O que aconteceu nas últimas 24 horas?</a><br />";
-echo "<a href=\"lists.php?action=members&sid=$sid\">&#187;Todos os usuários($norm[0])</a><br />";
+echo "<a href=\"index.php?action=l24&sid=$sid\">&#187;O que aconteceu nas ï¿½ltimas 24 horas?</a><br />";
+echo "<a href=\"lists.php?action=members&sid=$sid\">&#187;Todos os usuï¿½rios($norm[0])</a><br />";
 $norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE sex='M'"));
 echo "<a href=\"lists.php?action=males&sid=$sid\">&#187;Homens($norm[0])</a><br />";
 $norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE sex='F'"));
@@ -818,7 +818,7 @@ echo "<a href=\"lists.php?action=banned&sid=$sid\">&#187;Banidos($noi[0])</a><br
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="l24")
@@ -844,7 +844,7 @@ echo "Recados enviados: <b>$aut[0]</b><br />";
 if(ismod(getuid_sid($sid)))
 {
 $aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_log WHERE data>'".$tm24."'"));
-echo "Ações da equipe: <b>$aut[0]</b><br />";
+echo "Aï¿½ï¿½es da equipe: <b>$aut[0]</b><br />";
 }
 $aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts WHERE dtpost>'".$tm24."'"));
 echo "Postagens: <b>$aut[0]</b><br />";
@@ -861,7 +861,7 @@ echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=stats&sid=$sid\"><img src=\"images/stat.gif\" alt=\"*\"/>";
 echo "Estatisticas</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="shout")
@@ -870,23 +870,23 @@ adicionar_online(getuid_sid($sid),"Escrevendo recado no mural","");
 echo "<p align=\"left\">";
 if(getplusses(getuid_sid($sid))<20)
 {
-echo "<center>Você deve ter no mínimo 21 $smoeda para deixar um recado no mural!</center>";
+echo "<center>Vocï¿½ deve ter no mï¿½nimo 21 $smoeda para deixar um recado no mural!</center>";
 }
 else
 {
 $nick = getnick_uid(getuid_sid($sid));
-echo "Olá $nick, antes de postar no mural leia as informações abaixo: <br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Se postar propagandas de outros sites(spam) você vai ser banido!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Não é permitido postar apenas smilies no mural de recados!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Dependendo do conteúdo interpretado pela equipe, seu post estará sujeita a edição!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Não é permitido brigas no mural!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Você pode enviar até 3 smilies!<br />";
+echo "Olï¿½ $nick, antes de postar no mural leia as informaï¿½ï¿½es abaixo: <br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Se postar propagandas de outros sites(spam) vocï¿½ vai ser banido!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Nï¿½o ï¿½ permitido postar apenas smilies no mural de recados!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Dependendo do conteï¿½do interpretado pela equipe, seu post estarï¿½ sujeita a ediï¿½ï¿½o!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Nï¿½o ï¿½ permitido brigas no mural!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Vocï¿½ pode enviar atï¿½ 3 smilies!<br />";
 echo "<form action=\"genproc.php?action=shout&sid=$sid\" method=\"post\">";
 echo "Texto: <input name=\"shtxt\" maxlength=\"200\"/><br />";
 echo "Cor: <select name=\"cor\">";
-echo "<option value=\"#000000\">Padrão</option>";
+echo "<option value=\"#000000\">Padrï¿½o</option>";
 echo "<option value=\"#ff0000\">Vermelho</option>";
-echo "<option value=\"#00ff00\">Limão</option>";
+echo "<option value=\"#00ff00\">Limï¿½o</option>";
 echo "<option value=\"#ff00ff\">Pink</option>";
 echo "<option value=\"#006600\">Verde</option>";
 echo "<option value=\"#33ffff\">Aqua</option>";
@@ -903,7 +903,7 @@ echo "</form>";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="shout2")
@@ -928,7 +928,7 @@ echo "</select><br />";
 echo "<input type=\"submit\" value=\"Gravar recado\"/>";
 echo "</form>";
 echo "<br /><br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////shout
@@ -941,7 +941,7 @@ $cow = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$c
 $uid = getuid_sid($sid);
 if($cow[0]!=$uid)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade não é sua!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade nï¿½o ï¿½ sua!";
 echo "<br /><br />";
 }else
 {
@@ -951,11 +951,11 @@ echo "Texto: <input name=\"antx\" maxlength=\"200\"/><br />";
 echo "<input type=\"submit\" value=\"Adicionar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "Está liberado apenas o uso de <b>BBCodes</b>, todos os smilies desse anúncio não serão adicionados!";
+echo "Estï¿½ liberado apenas o uso de <b>BBCodes</b>, todos os smilies desse anï¿½ncio nï¿½o serï¿½o adicionados!";
 echo "</p>";
 }
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////escrevendo recado para usuario
@@ -966,22 +966,22 @@ adicionar_online(getuid_sid($sid),"Escrevendo recado","");
 if(!cansigngb(getuid_sid($sid), $who))
 {
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">Você não tem permição para enviar recados para esse usuário!<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\">Página principal</a>";
+echo "<img src=\"images/notok.gif\" alt=\"\">Vocï¿½ nï¿½o tem permiï¿½ï¿½o para enviar recados para esse usuï¿½rio!<br /><br />";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\">Pï¿½gina principal</a>";
 echo "</p>";
 exit();
 }
 echo "<p align=\"center\">";
 echo "<b>Novo Recado</b><br />";
 echo "<br />";
-echo "Está liberado o uso apenas de <b>bbcode</b>, todo e qualquer smilie não será visualizado nos recados!";
+echo "Estï¿½ liberado o uso apenas de <b>bbcode</b>, todo e qualquer smilie nï¿½o serï¿½ visualizado nos recados!";
 echo "</p>";
 echo "<form action=\"genproc.php?action=signgb&sid=$sid\" method=\"post\">";
 echo "Texto: <input name=\"msgtxt\" maxlength=\"500\"/><br />";
 echo "Cor: <select name=\"cor\">";
-echo "<option value=\"#000000\">Padrão</option>";
+echo "<option value=\"#000000\">Padrï¿½o</option>";
 echo "<option value=\"#ff0000\">Vermelho</option>";
-echo "<option value=\"#00ff00\">Limão</option>";
+echo "<option value=\"#00ff00\">Limï¿½o</option>";
 echo "<option value=\"#ff00ff\">Pink</option>";
 echo "<option value=\"#006600\">Verde</option>";
 echo "<option value=\"#33ffff\">Aqua</option>";
@@ -998,12 +998,12 @@ echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="online")
 {
-adicionar_online(getuid_sid($sid),"Usuários online","");
+adicionar_online(getuid_sid($sid),"Usuï¿½rios online","");
 //////ALL LISTS SCRIPT <<
 if($page=="" || $page<=0)$page=1;
 $timeout = 600;
@@ -1050,7 +1050,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="stfol")
@@ -1108,7 +1108,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="chbmsg")
@@ -1125,7 +1125,7 @@ echo "</form><br />";
 echo "<a href=\"lists.php?action=buds&sid=$sid\">";
 echo "<img src=\"images/pen.png\" alt=\"*\">Meus Amigos</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////perfil profile
@@ -1206,7 +1206,7 @@ $usex = "Feminino";
 $usex = "GLS";
 }else
 {
-$usex = "Não indentificado!";
+$usex = "Nï¿½o indentificado!";
 }
 $nopl[2] = htmlspecialchars($nopl[2]);
 echo "<left>Idade: <b>$uage</b></left><br />";
@@ -1247,22 +1247,22 @@ else
 echo "Relacionamento: Namorando com ".getnick_uid($rperm[1])."!<br />";
 }
 $pontos = mysql_fetch_array(mysql_query("SELECT lastplreas FROM fun_users WHERE id='".$who."'"));
-echo "Última razão de pontos: <b>$pontos[0]</b><br />";
+echo "ï¿½ltima razï¿½o de pontos: <b>$pontos[0]</b><br />";
 ///liks profile
-echo "<br /><a href=\"index.php?action=viewusrmore&sid=$sid&who=$who\">&#187;Mais informações</a><br />";
+echo "<br /><a href=\"index.php?action=viewusrmore&sid=$sid&who=$who\">&#187;Mais informaï¿½ï¿½es</a><br />";
 $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_albums WHERE uid='".$who."'"));
 if($noi[0]!=0)
 {
 $id = mysql_fetch_array(mysql_query("SELECT max(id) FROM fun_albums WHERE uid='".$who."'"));
-echo "<a href=\"album.php?a=ver&id=$id[0]&sid=$sid\">&#187;Meu Álbum</a><br />";
+echo "<a href=\"album.php?a=ver&id=$id[0]&sid=$sid\">&#187;Meu ï¿½lbum</a><br />";
 }
 $acoes = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_acoes WHERE who='".$who."'"));
-echo "<a href=\"acoes.php?a=a&who=$who&sid=$sid\">&#187;Ações(".$acoes[0].")</a><br />";
+echo "<a href=\"acoes.php?a=a&who=$who&sid=$sid\">&#187;Aï¿½ï¿½es(".$acoes[0].")</a><br />";
 echo "<a href=\"inbox.php?action=sendpm&who=$who&sid=$sid\">&#187;Enviar Torpedo</a><br />";
 $pre = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM presentes WHERE uid='".$who."'"));
 echo "<a href=\"loja.php?a=presentes&who=$who&sid=$sid\">&#187;Meus presentes($pre[0])</a><br />";
 $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$who."'"));
-echo "<a href=\"fas.php?a=ver&id=$who&sid=$sid\">&#187;Meus fãs($noi[0])</a><br />";
+echo "<a href=\"fas.php?a=ver&id=$who&sid=$sid\">&#187;Meus fï¿½s($noi[0])</a><br />";
 $uid = getuid_sid($sid);
 if(budres($uid, $who)==0)
 {
@@ -1285,7 +1285,7 @@ echo "<a href=\"genproc.php?action=ign&who=$who&sid=$sid&todo=add\">&#187;Adicio
 }
 if(ismod(getuid_sid($sid)))
 {
-echo "<a href=\"modcp.php?action=user&who=$who&sid=$sid&who=$who\">&#187;Moderar usuário</a><br />";
+echo "<a href=\"modcp.php?action=user&who=$who&sid=$sid&who=$who\">&#187;Moderar usuï¿½rio</a><br />";
 }
 if(isadmin(getuid_sid($sid)))
 {
@@ -1300,16 +1300,16 @@ echo "<a href=\"modcp.php?action=addvip&a=a&who=$who&sid=$sid&ddd=add&who=$who\"
 }
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Usuário não existe!<br />";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Usuï¿½rio nï¿½o existe!<br />";
 }
-echo "<br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Pï¿½gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////mais info perfil
 else if($action=="viewusrmore")
 {
 $perfil = getnick_uid2($who);
-adicionar_online(getuid_sid($sid),"Informações de $perfil","");
+adicionar_online(getuid_sid($sid),"Informaï¿½ï¿½es de $perfil","");
 echo "<p align=\"center\">";
 if($who==""||$who==0)
 {
@@ -1351,11 +1351,11 @@ echo "Cadastrou-se em: <b>$jdt</b><br />";
 //ultima vez online
 $nopl = mysql_fetch_array(mysql_query("SELECT lastact FROM fun_users WHERE id='".$who."'"));
 $jdt = date("d m y-H:i:s",$nopl[0]);
-echo "Última vez ativo: <b>$jdt</b><br />";
+echo "ï¿½ltima vez ativo: <b>$jdt</b><br />";
 //ultima visita ao site
 $nopl = mysql_fetch_array(mysql_query("SELECT lastvst FROM fun_users WHERE id='".$who."'"));
 $jdt = date("d m y-H:i:s",$nopl[0]);
-echo "Última visita: <b>$jdt</b><br />";
+echo "ï¿½ltima visita: <b>$jdt</b><br />";
 //navegador
 $nopl = mysql_fetch_array(mysql_query("SELECT browserm FROM fun_users WHERE id='".$who."'"));
 echo "Navegador: <b>$nopl[0]</b><br />";
@@ -1390,11 +1390,11 @@ $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_gbook WHERE gbown
 echo "<a href=\"lists.php?action=gbook&who=$who&sid=$sid\">Recados($noi[0])</a><br />";
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Usuário não existe!<br />";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Usuï¿½rio nï¿½o existe!<br />";
 }
 echo "<br /><a href=\"index.php?action=perfil&sid=$sid&who=$who\">Voltar</a>";
 echo "<br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if ($action=="chat")
@@ -1416,13 +1416,13 @@ $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chonline WHERE ri
 echo "<a href=\"chat.php?sid=$sid&rid=$room[0]\">$room[1]($noi[0])</a><br />";
 }
 }
-echo "<br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a><br />";
+echo "<br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Pï¿½gina principal</a><br />";
 echo "</p>";
 }
 else if ($action=="funm")
 {
-adicionar_online(getuid_sid($sid),"Diversão","");
-echo "<p align=\"center\"><b>Diversão</b><br />";
+adicionar_online(getuid_sid($sid),"Diversï¿½o","");
+echo "<p align=\"center\"><b>Diversï¿½o</b><br />";
 echo "</p>";
 echo "<p>";
 echo "<a href=\"cassino.php?sid=$sid\">&#187;Cassino</a><br />";
@@ -1431,13 +1431,13 @@ echo "<a href=\"virtual_pet.php?action=main&sid=$sid\">&#187;Virtual pet</a><br 
 echo "<a href=\"jockey.php?sid=$sid\">&#187;Jockey club</a><br />";
 echo "</p>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="viewcat")
 {
 $cid = $_GET["cid"];
-adicionar_online(getuid_sid($sid),"Vendo categoria do fórum","");
+adicionar_online(getuid_sid($sid),"Vendo categoria do fï¿½rum","");
 $cinfo = mysql_fetch_array(mysql_query("SELECT name from fun_fcats WHERE id='".$cid."'"));
 echo "<p align=\"center\">";
 echo getshoutbox($sid);
@@ -1467,7 +1467,7 @@ $tlnm = htmlspecialchars($lpt[1]);
 $tlnick = getnick_uid($tluid);
 $tpclnk = "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$lpt[0]&go=last\">$tlnm</a>";
 $vulnk = "<a href=\"index.php?action=perfil&sid=$sid&who=$tluid\">$tlnick</a>";
-echo "Última postagem: $tpclnk, Por: $vulnk<br /><br />";
+echo "ï¿½ltima postagem: $tpclnk, Por: $vulnk<br /><br />";
 }
 }
 echo "";
@@ -1479,23 +1479,23 @@ if($umsg>0)
 {
 echo "<a href=\"inbox.php?action=main&sid=$sid\">Torpedos($umsg/$tmsg)</a><br />";
 }
-echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"teks/folder.gif\" alt=\"*\"/>Fórum</a><br />";
+echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"teks/folder.gif\" alt=\"*\"/>Fï¿½rum</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////View Topicc
 else if($action=="viewtpc")
 {
-adicionar_online(getuid_sid($sid),"Vendo tópico do fórum","");
+adicionar_online(getuid_sid($sid),"Vendo tï¿½pico do fï¿½rum","");
 $tid = $_GET["tid"];
 $go = $_GET["go"];
 $tfid = mysql_fetch_array(mysql_query("SELECT fid FROM fun_topics WHERE id='".$tid."'"));
 if(!canaccess(getuid_sid($sid), $tfid[0]))
 {
 echo "<p align=\"center\">";
-echo "Você não tem permição para ver esse tópico!<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\">Página principal</a>";
+echo "Vocï¿½ nï¿½o tem permiï¿½ï¿½o para ver esse tï¿½pico!<br /><br />";
+echo "<a href=\"index.php?action=main&sid=$sid\">Pï¿½gina principal</a>";
 echo "</p>";
 exit();
 }
@@ -1608,7 +1608,7 @@ echo "<br />$page/$num_pages<br />";
 if($num_pages>2)
 {
 $rets = "<form action=\"index.php\" method=\"get\">";
-$rets .= "Pular para página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular para pï¿½gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= "<input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"tid\" value=\"$tid\"/>";
@@ -1631,7 +1631,7 @@ $cid = mysql_fetch_array(mysql_query("SELECT cid FROM fun_forums WHERE id='".$fi
 $cinfo = mysql_fetch_array(mysql_query("SELECT name FROM fun_fcats WHERE id='".$cid[0]."'"));
 $cname = $cinfo[0];
 echo "<a href=\"index.php?action=main&sid=$sid\">";
-echo "Página principal</a>&gt;";
+echo "Pï¿½gina principal</a>&gt;";
 $cid = mysql_fetch_array(mysql_query("SELECT cid FROM fun_forums WHERE id='".$fid."'"));
 if($cid[0]>0)
 {
@@ -1659,16 +1659,16 @@ if(!canaccess(getuid_sid($sid), $fid))
 {
 adicionar_online(getuid_sid($sid),"Vendo topico da equipe","");
 echo "<p align=\"center\">";
-echo "Você não possue permição para ver este conteúdo!<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\">Página principal</a>";
+echo "Vocï¿½ nï¿½o possue permiï¿½ï¿½o para ver este conteï¿½do!<br /><br />";
+echo "<a href=\"index.php?action=main&sid=$sid\">Pï¿½gina principal</a>";
 echo "</p>";
 exit();
 }
-adicionar_online(getuid_sid($sid),"Vendo tópicos","");
+adicionar_online(getuid_sid($sid),"Vendo tï¿½picos","");
 $finfo = mysql_fetch_array(mysql_query("SELECT name from fun_forums WHERE id='".$fid."'"));
 $fnm = htmlspecialchars($finfo[0]);
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=newtopic&sid=$sid&fid=$fid\">Novo Tópico</a><br />";
+echo "<a href=\"index.php?action=newtopic&sid=$sid&fid=$fid\">Novo Tï¿½pico</a><br />";
 echo "<form action=\"index.php\" method=\"get\">";
 echo "Ver: <select name=\"view\">";
 echo "<option value=\"all\">Todos</option>";
@@ -1683,12 +1683,12 @@ echo "</form>";
 echo "<br />";
 if($view=="new")
 {
-echo "Vendo tópicos mais recentes..";
+echo "Vendo tï¿½picos mais recentes..";
 }else if($view=="myps")
 {
-echo "Vendo tópicos que participei...";
+echo "Vendo tï¿½picos que participei...";
 }else {
-echo "Vendo todos tópicos...";
+echo "Vendo todos tï¿½picos...";
 }
 echo "</p>";
 echo "<p>";
@@ -1811,7 +1811,7 @@ $rets .= "<input type=\"hidden\" name=\"view\" value=\"$view\"/>";
 $rets .= "</form>";
 echo $rets;
 }
-echo "<br /><br /><a href=\"index.php?action=newtopic&sid=$sid&fid=$fid\">Novo Tópico</a><br />";
+echo "<br /><br /><a href=\"index.php?action=newtopic&sid=$sid&fid=$fid\">Novo Tï¿½pico</a><br />";
 $cid = mysql_fetch_array(mysql_query("SELECT cid FROM fun_forums WHERE id='".$fid."'"));
 if($cid[0]>0)
 {
@@ -1826,9 +1826,9 @@ $cname = htmlspecialchars($cinfo[0]);
 echo "<a href=\"index.php?action=gocl&sid=$sid&clid=$cid[0]\">";
 echo "$cname</a><br />";
 }
-//echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"teks/folder.gif\" alt=\"*\"/>Fórum</a><br />";
+//echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"teks/folder.gif\" alt=\"*\"/>Fï¿½rum</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="newtopic")
@@ -1837,29 +1837,29 @@ $fid = $_GET["fid"];
 if(!canaccess(getuid_sid($sid), $fid))
 {
 echo "<p align=\"center\">";
-echo "Você não possue permição para ver este conteúdo!<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\">Página principal</a>";
+echo "Vocï¿½ nï¿½o possue permiï¿½ï¿½o para ver este conteï¿½do!<br /><br />";
+echo "<a href=\"index.php?action=main&sid=$sid\">Pï¿½gina principal</a>";
 echo "</p>";
 exit();
 }
-adicionar_online(getuid_sid($sid),"Criando novo tópico","");
+adicionar_online(getuid_sid($sid),"Criando novo tï¿½pico","");
 echo "<p align=\"center\">";
-echo "<b>Novo Tópico</b>";
+echo "<b>Novo Tï¿½pico</b>";
 echo "</p>";
 echo "<form action=\"genproc.php?action=newtopic&sid=$sid\" method=\"post\">";
-echo "Titúlo do tópico: <input name=\"ntitle\" maxlength=\"30\"/><br />";
+echo "Titï¿½lo do tï¿½pico: <input name=\"ntitle\" maxlength=\"30\"/><br />";
 echo "Texto: <input name=\"tpctxt\" maxlength=\"2000\"/><br />";
 echo "<input type=\"hidden\" name=\"fid\" value=\"$fid\"/>";
-echo "<input type=\"submit\" value=\"Criar Tópico\"/>";
+echo "<input type=\"submit\" value=\"Criar Tï¿½pico\"/>";
 echo "<form>";
 echo "<p align=\"center\">";
-echo "Está liberado o uso de <b>BBcodes</b> e <b>Smilies</b>!";
+echo "Estï¿½ liberado o uso de <b>BBcodes</b> e <b>Smilies</b>!";
 echo "</p>";
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 $fname = getfname($fid);
 echo "Voltar para $fname</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Post reply
@@ -1872,7 +1872,7 @@ if(!canaccess(getuid_sid($sid), $fid))
 {
 echo "<p align=\"center\">";
 echo "Vc nao tem permissao<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\">Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\">Pï¿½gina principal</a>";
 echo "</p>";
 exit();
 }
@@ -1892,7 +1892,7 @@ echo "Voltar ao topico</a>";
 echo "<br /><a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Post Options
@@ -1901,13 +1901,13 @@ else if($action=="pstopt")
 $pid = $_GET["pid"];
 $page = $_GET["page"];
 $fid = $_GET["fid"];
-adicionar_online(getuid_sid($sid),"Opções da postagem","");
+adicionar_online(getuid_sid($sid),"Opï¿½ï¿½es da postagem","");
 $pinfo= mysql_fetch_array(mysql_query("SELECT uid,tid, text  FROM fun_posts WHERE id='".$pid."'"));
 $trid = $pinfo[0];
 $tid = $pinfo[1];
 $ptext = htmlspecialchars($pinfo[2]);
 echo "<p align=\"center\">";
-echo "<b>Opções da Postagem</b>";
+echo "<b>Opï¿½ï¿½es da Postagem</b>";
 echo "</p>";
 echo "<p>";
 $trnick = getnick_uid($trid);
@@ -1926,22 +1926,22 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="tpcopt")
 {
 $tid = $_GET["tid"];
-adicionar_online(getuid_sid($sid),"Opções do tópico","");
+adicionar_online(getuid_sid($sid),"Opï¿½ï¿½es do tï¿½pico","");
 $tinfo= mysql_fetch_array(mysql_query("SELECT name,fid, authorid, text, pinned, closed  FROM fun_topics WHERE id='".$tid."'"));
 //log
-$msg = "%$uid% está moderando o tópico ".$tinfo[0]."!";
+$msg = "%$uid% estï¿½ moderando o tï¿½pico ".$tinfo[0]."!";
 addlog($msg);
 $trid = $tinfo[2];
 $ttext = htmlspecialchars($tinfo[3]);
 $tname = htmlspecialchars($tinfo[0]);
 echo "<p align=\"center\">";
-echo "<b>Opções do tópico</b>";
+echo "<b>Opï¿½ï¿½es do tï¿½pico</b>";
 echo "</p>";
 echo "<p>";
 echo "ID: <b>$tid</b><br />";
@@ -1949,29 +1949,29 @@ $trnick = getnick_uid($trid);
 echo "<a href=\"inbox.php?action=sendpm&sid=$sid&who=$trid\">&#187;Enviar torpedo para $trnick</a><br />";
 echo "<a href=\"index.php?action=perfil&sid=$sid&who=$trid\">&#187;Ver perfil de $trnick</a><br />";
 echo "<a href=\"genproc.php?action=rtpc&sid=$sid&tid=$tid\">&#187;Reportar para a equipe</a><br />";
-echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid&page=1\">&#171;Voltar ao tópico</a><br />";
+echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid&page=1\">&#171;Voltar ao tï¿½pico</a><br />";
 if(ismod(getuid_sid($sid)))
 {
 echo "<br />";
 if($tinfo[5]=='1')
 {
-$ctxt = "Abrir tópico";
+$ctxt = "Abrir tï¿½pico";
 $cact = "0";
 }else{
-$ctxt = "Fechar tópico";
+$ctxt = "Fechar tï¿½pico";
 $cact = "1";
 }
 echo "<a href=\"modproc.php?action=clot&sid=$sid&tid=$tid&tdo=$cact\">&#187;$ctxt</a><br />";
 if($tinfo[4]=='1')
 {
-$ptxt = "Não destacar";
+$ptxt = "Nï¿½o destacar";
 $pact = "0";
 }else{
-$ptxt = "Destacar tópico";
+$ptxt = "Destacar tï¿½pico";
 $pact = "1";
 }
 echo "<a href=\"modproc.php?action=pint&sid=$sid&tid=$tid&tdo=$pact\">&#187;$ptxt</a><br />";
-echo "<a href=\"modproc.php?action=delt&sid=$sid&tid=$tid\">&#187;Apagar tópico</a><br />";
+echo "<a href=\"modproc.php?action=delt&sid=$sid&tid=$tid\">&#187;Apagar tï¿½pico</a><br />";
 echo "<form action=\"modproc.php?action=rentpc&sid=$sid&tid=$tid\" method=\"post\">";
 echo "Titulo: <input name=\"tname\" value=\"$tname\" maxlength=\"25\" value=\"$tname\"/> ";
 echo "<br /><input type=\"submit\" value=\"Renomear\"/>";
@@ -1981,7 +1981,7 @@ echo "<form action=\"modproc.php?action=edttpc&sid=$sid&tid=$tid\" method=\"post
 echo "Texto: <input name=\"ttext\" value=\"$ttext\" maxlength=\"2000\" value=\"$pmtext\"/> ";
 echo "<br /><input type=\"submit\" value=\"Editar\"/>";
 echo "</form>";
-echo "<br />Mover tópico para: ";
+echo "<br />Mover tï¿½pico para: ";
 $forums = mysql_query("SELECT id, name FROM fun_forums WHERE clubid='0'");
 echo "<form action=\"modproc.php?action=mvt&sid=$sid&tid=$tid\" method=\"post\">";
 echo "<select name=\"mtf\">";
@@ -1996,42 +1996,42 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else
 {
 //pagina de entrada
 echo "<p align=\"center\">";
-echo "<img src=\"images/logo.png\" alt=\"*\"/><br />Não importa a <b>estação</b>, amizades são para sempre!";
+echo "<img src=\"images/logo.png\" alt=\"*\"/><br />Nï¿½o importa a <b>estaï¿½ï¿½o</b>, amizades sï¿½o para sempre!";
 echo "</p>";
 echo "<br />";
 echo "<form action=\"logar.php\" method=\"get\">";
-echo "Usuário/ID: <br /> <input name=\"usuario\" format=\"*x\" size=\"8\" maxlength=\"30\"/>";
+echo "Usuï¿½rio/ID: <br /> <input name=\"usuario\" format=\"*x\" size=\"8\" maxlength=\"30\"/>";
 echo "<br />";
 echo "Senha: <br /> <input type=\"password\" name=\"senha\" size=\"8\" maxlength=\"30\"/>";
 echo "<br />";
 echo "<input type=\"submit\" value=\"Login&#187;\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "<a href=\"forum.php?\"><b>Visitar Fórum</b></a>";
+echo "<a href=\"forum.php?\"><b>Visitar Fï¿½rum</b></a>";
 echo "<br />";
 echo "<br />";
-echo "Não é membro?<br />";
+echo "Nï¿½o ï¿½ membro?<br />";
 echo "<a href=\"register.php?formulario\">Cadastre-se agora!</a></b>";
 echo "</p>";
 echo "<p align=\"center\">";
-echo "Usuários online: <b>".getnumonline()."</b><br />";
+echo "Usuï¿½rios online: <b>".getnumonline()."</b><br />";
 $norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users"));
 echo "Cadastrados: <b>$norm[0]</b><br />";
 $memid = mysql_fetch_array(mysql_query("SELECT id FROM fun_users ORDER BY regdate DESC LIMIT 0,1"));
 $novo_usuario = getnick_uid($memid[0]);
-echo "Novo usuário: ".$novo_usuario."<br />";
+echo "Novo usuï¿½rio: ".$novo_usuario."<br />";
 $nopm = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='Counter'"));
 echo "Visitas: <b>$nopm[0]</b>";
 echo "<br />";
 echo "<br />";
-echo "<b>EstaçãoWAP.COM</b>";
+echo "<b>Estaï¿½ï¿½oWAP.COM</b>";
 echo "</p>";
 }
 ?>

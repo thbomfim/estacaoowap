@@ -9,26 +9,9 @@ $_GET = array_map('strip_tags', $_GET);
 $_POST = array_map('strip_tags', $_POST);
 $_GET = array_map('htmlspecialchars', $_GET);
 $_POST = array_map('htmlspecialchars', $_POST);
-//function, anti_injection protector
-function  anti_injection($sql)
-{
-//removes  words that contain sql  syntax
-$sql = preg_replace(sql_regcase("/(from|select|insert|delete|where|drop table|show tables|\*|--|\\\\)/"),"",$sql);
-$sql = trim($sql);//clear gaps
-return $sql;
-}
 $_GET = array_map('anti_injection', $_GET);
 $_POST = array_map('anti_injection', $_POST);
-////connect db
-function bd_connect()
-{
-global $dbname, $dbuser, $dbhost, $dbpass;
-$conms = @mysql_connect($dbhost,$dbuser,$dbpass); //connect mysql
-if(!$conms) return false;
-$condb = @mysql_select_db($dbname);
-if(!$condb) return false;
-return true;
-}
+
 function arquivo_extfoto($ext)
 {
 $ext = strtolower($ext);
@@ -78,7 +61,8 @@ return $br[0];
 }
 function candelfoto($uid, $item)
 {
-$candoit = mysql_fetch_array(mysql_query("SELECT  uid FROM fun_fotos WHERE id='".$item."'"));
+    global $pdo;
+$candoit = $pdo->query("SELECT  uid FROM fun_fotos WHERE id='".$item."'")->fetch();
 if($uid==$candoit[0]||ismod($uid))
 {
 return true;
@@ -87,7 +71,8 @@ return false;
 }
 function candelcmta($uid, $item)
 {
-$candoit = mysql_fetch_array(mysql_query("SELECT  uid FROM fun_cmt_a WHERE id='".$item."'"));
+    global $pdo;
+$candoit = $pdo->query("SELECT  uid FROM fun_cmt_a WHERE id='".$item."'")->fetch();
 if($uid==$candoit[0]||ismod($uid))
 {
 return true;
@@ -96,7 +81,8 @@ return false;
 }
 function candelalbum($uid, $item)
 {
-$candoit = mysql_fetch_array(mysql_query("SELECT  uid FROM fun_albums WHERE id='".$item."'"));
+    global $pdo;
+$candoit = $pdo->query("SELECT  uid FROM fun_albums WHERE id='".$item."'")->fetch();
 if($uid==$candoit[0]||ismod($uid))
 {
 return true;
@@ -116,7 +102,7 @@ $ue = $errl = $pe = $ce = "";
 switch($ef)
 {
 case 1:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Digite o usu·rio!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Digite o usu√°rio!";
 $ue = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 2:
@@ -128,19 +114,19 @@ $errl = "<img src=\"images/point.gif\" alt=\"!\"/> Confirme sua senha!";
 $ce = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 4:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Usu·rio inv·lido!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Usu√°rio inv√°lido!";
 $ue = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 5:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Senha inv·lida!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Senha inv√°lida!";
 $pe = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 6:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Senhas n„o combinam!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Senhas n√£o combinam!";
 $ce = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 7:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Usu·rio tem que ter mais de 5 caracteres!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Usu√°rio tem que ter mais de 5 caracteres!";
 $ue = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 8:
@@ -148,23 +134,23 @@ $errl = "<img src=\"images/point.gif\" alt=\"!\"/> Senha tem que ter mais de 8 c
 $pe = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 9:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Usu·rio em uso escolha outro!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Usu√°rio em uso escolha outro!";
 $ue = "<img src=\"images/point.gif\" alt=\"!\"/>";
 break;
 case 10:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Campos dia, mes, ano n„o podem ficar em branco!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Campos dia, mes, ano nÔøΩo podem ficar em branco!";
 break;
 case 11:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Apenas n˙meros podem ser colocados no anivers·rio!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Apenas nÔøΩmeros podem ser colocados no anivers√°rio!";
 break;
 case 12:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Digite o cÛdigo de seguranÁa!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Digite o c√≥digo de seguran√ßa!";
 break;
 case 13:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> CÛdigo de seguranÁa errado!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> C√≥digo de seguran√ßa errado!";
 break;
 case 14:
-$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Caracteres n„o permitidos no usu·rio!";
+$errl = "<img src=\"images/point.gif\" alt=\"!\"/> Caracteres n√£o permitidos no usu√°rio!";
 break;
 }
 $rform = "<small>$errl</small>";
@@ -173,40 +159,45 @@ return $rform;
 ////////////////////////////////pontos da comunidade
 function getplusses_cl($clid)
 {
-$total = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_clubs WHERE (id='".$clid."')"));
+    global $pdo;
+$total = $pdo->query("SELECT plusses FROM fun_clubs WHERE (id='".$clid."')")->fetch();
 return ceil($total[0]);//retorna todos os pontos da comunidade $clid inteiros
 }
 ////////////////////////////////////wapgrana
 function wapgrana_uid($uid)
 {
-$wapfra = mysql_fetch_array(mysql_query("SELECT wapgrana FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$wapfra = $pdo->query("SELECT wapgrana FROM fun_users WHERE id='".$uid."'")->fetch();
 return ceil($a[0]);
 }
 
 //////////////////////////////////////////// Search Id
 function generate_srid($svar1,$svar2="", $svar3="", $svar4="", $svar5="")
 {
-$res = mysql_fetch_array(mysql_query("SELECT id FROM fun_search WHERE svar1 like '".$svar1."' AND svar2 like '".$svar2."' AND svar3 like '".$svar3."' AND svar4 like '".$svar4."' AND svar5 like '".$svar5."'"));
+    global $pdo;
+$res = $pdo->query("SELECT id FROM fun_search WHERE svar1 like '".$svar1."' AND svar2 like '".$svar2."' AND svar3 like '".$svar3."' AND svar4 like '".$svar4."' AND svar5 like '".$svar5."'")->fetch();
 if($res[0]>0)
 {
 return $res[0];
 }
 $ttime = time();
-mysql_query("INSERT INTO fun_search SET svar1='".$svar1."', svar2='".$svar2."', svar3='".$svar3."', svar4='".$svar4."', svar5='".$svar5."', stime='".$ttime."'");
-$res = mysql_fetch_array(mysql_query("SELECT id FROM fun_search WHERE svar1 like '".$svar1."' AND svar2 like '".$svar2."' AND svar3 like '".$svar3."' AND svar4 like '".$svar4."' AND svar5 like '".$svar5."'"));
+$pdo->query("INSERT INTO fun_search SET svar1='".$svar1."', svar2='".$svar2."', svar3='".$svar3."', svar4='".$svar4."', svar5='".$svar5."', stime='".$ttime."'");
+$res = $pdo->query("SELECT id FROM fun_search WHERE svar1 like '".$svar1."' AND svar2 like '".$svar2."' AND svar3 like '".$svar3."' AND svar4 like '".$svar4."' AND svar5 like '".$svar5."'")->fetch();
 return $res[0];
 }
 
 //////////////////////////////////function addlog
 function addlog($msg)
 {
+    global $pdo;
 $msg = strip_tags(htmlspecialchars($msg));
-mysql_query("INSERT INTO fun_log SET msg='".$msg."', data='".time()."'");
+$pdo->query("INSERT INTO fun_log SET msg='".$msg."', data='".time()."'");
 }
 ///////////////////////////////////function isuser
 function isuser($uid)
 {
-$cus = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$cus = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE id='".$uid."'")->fetch();
 if($cus[0]>0)
 {
 return true;
@@ -218,15 +209,16 @@ return false;
 ////////////////////////////////////////////Can access forum
 function canaccess($uid, $fid)
 {
-$fex = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_forums WHERE id='".$fid."'"));
+    global $pdo;
+$fex = $pdo->query("SELECT COUNT(*) FROM fun_forums WHERE id='".$fid."'")->fetch();
 if($fex[0]==0)
 {
 return false;
 }
-$persc = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_acc WHERE fid='".$fid."'"));
+$persc = $pdo->query("SELECT COUNT(*) FROM fun_acc WHERE fid='".$fid."'")->fetch();
 if($persc[0]==0)
 {
-$clid = mysql_fetch_array(mysql_query("SELECT clubid FROM fun_forums WHERE id='".$fid."'"));
+$clid = $pdo->query("SELECT clubid FROM fun_forums WHERE id='".$fid."'")->fetch();
 if($clid[0]==0)
 {
 return true;
@@ -235,7 +227,7 @@ if(ismod($uid))
 {
 return true;
 }else{
-$ismm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid[0]."'"));
+$ismm = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid[0]."'")->fetch();
 if($ismm[0]>0)
 {
 return true;
@@ -245,12 +237,12 @@ return false;
 }
 }
 }else{
-$gid = mysql_fetch_array(mysql_query("SELECT gid FROM fun_acc WHERE fid='".$fid."'"));
+$gid = $pdo->query("SELECT gid FROM fun_acc WHERE fid='".$fid."'")->fetch();
 $gid = $gid[0];
-$ginfo = mysql_fetch_array(mysql_query("SELECT autoass, mage, userst, posts, plusses FROM fun_groups WHERE id='".$gid."'"));
+$ginfo = $pdo->query("SELECT autoass, mage, userst, posts, plusses FROM fun_groups WHERE id='".$gid."'")->fetch();
 if($ginfo[0]=="1")
 {
-$uperms = mysql_fetch_array(mysql_query("SELECT birthday, perm, posts, plusses FROM fun_users WHERE id='".$uid."'"));
+$uperms = $pdo->query("SELECT birthday, perm, posts, plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 if($ginfo[2]==2)
 {
 if(isadmin($uid))
@@ -292,19 +284,22 @@ return $acc;
 }
 function getnick_uid2($uid)
 {
-$unick = mysql_fetch_array(mysql_query("SELECT name FROM fun_users WHERE id='".$uid."'"));
+   global $pdo;
+$unick = $pdo->query("SELECT name FROM fun_users WHERE id='".$uid."'")->fetch();
 return $unick[0];
 }
 function getuage_sid($sid)
 {
+    global $pdo;
 $uid = getuid_sid($sid);
-$uage = mysql_fetch_array(mysql_query("SELECT birthday FROM fun_users WHERE id='".$uid."'"));
+$uage = $pdo->query("SELECT birthday FROM fun_users WHERE id='".$uid."'")->fetch();
 return getage($uage[0]);
 }
 function canenter($rid, $sid)
 {
-$rperm = mysql_fetch_array(mysql_query("SELECT mage, perms, chposts, clubid FROM fun_rooms WHERE id='".$rid."'"));
-$uperm = mysql_fetch_array(mysql_query("SELECT birthday, chmsgs FROM fun_users WHERE id='".getuid_sid($sid)."'"));
+    global $pdo;
+$rperm = $pdo->query("SELECT mage, perms, chposts, clubid FROM fun_rooms WHERE id='".$rid."'")->fetch();
+$uperm = $pdo->query("SELECT birthday, chmsgs FROM fun_users WHERE id='".getuid_sid($sid)."'")->fetch();
 if($rperm[3]!=0)
 {
 if(ismod(getuid_sid($sid)))
@@ -312,7 +307,7 @@ if(ismod(getuid_sid($sid)))
 return true;
 }else
 {
-$ismm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".getuid_sid($sid)."' AND clid='".$rperm[3]."'"));
+$ismm = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".getuid_sid($sid)."' AND clid='".$rperm[3]."'")->fetch();
 if($ismm[0]>0)
 {
 return true;
@@ -335,33 +330,34 @@ return true;
 ////cleandata apaga todos os dados antigos
 function cleardata()
 {
+    global $pdo;
 /////deleta as punicoes vencidas
 $tempo_fim = time();
-mysql_query("DELETE FROM fun_ban WHERE tempo < '".$tempo_fim."'");
+$pdo->query("DELETE FROM fun_ban WHERE tempo < '".$tempo_fim."'");
 $timeto = 120;
 $timenw = time();
 $timeout = $timenw - $timeto;
-mysql_query("DELETE FROM fun_chonline WHERE lton<'".$timeout."'");
+$pdo->query("DELETE FROM fun_chonline WHERE lton<'".$timeout."'");
 $timeto = 300;
 $timenw = time();
 $timeout = $timenw - $timeto;
-mysql_query("DELETE FROM fun_chat WHERE timesent<'".$timeout."'");
+$pdo->query("DELETE FROM fun_chat WHERE timesent<'".$timeout."'");
 $timeto = 60*60;
 $timenw = time() ;
 $timeout = $timenw - $timeto;
-mysql_query("DELETE FROM fun_search WHERE stime<'".$timeout."'");
-$lbpm = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='lastbpm'"));
+$pdo->query("DELETE FROM fun_search WHERE stime<'".$timeout."'");
+$lbpm = $pdo->query("SELECT value FROM fun_settings WHERE name='lastbpm'")->fetch();
 $td = date("Y-m-d");
 if ($td!=$lbpm[0])
 {
 $sql = "SELECT id, name, birthday  FROM fun_users where month(`birthday`) = month(curdate()) and dayofmonth(`birthday`) = dayofmonth(curdate())";
-$ppl = mysql_query($sql);
-while($mem = mysql_fetch_array($ppl))
+$ppl = $pdo->query($sql);
+while($mem = $ppl->fetch())
 {
-$msg = "O ".$snome." deseja a vocÍ um feliz anivers·rio![br/]AbraÁos da Equipe, atÈ breve!";
+$msg = "O ".$snome." deseja a voc√™ um feliz anivers√°rio![br/]Abra√ßos da Equipe, at√© breve!";
 autopm($msg, $mem[0], "Feliz aniversario");
 }
-mysql_query("UPDATE fun_settings SET value='".$td."' WHERE name='lastbpm'");
+$pdo->query("UPDATE fun_settings SET value='".$td."' WHERE name='lastbpm'");
 }
 }
 ///////////////////////////////////////get file ext.
@@ -384,25 +380,27 @@ return $ext;
 ///////////////////////////////////////Add to chat
 function addtochat($uid, $rid)
 {
-$bago = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chonline WHERE uid='".$uid."' AND rid='".$rid."'"));
+    global $pdo;
+$bago = $pdo->query("SELECT COUNT(*) FROM fun_chonline WHERE uid='".$uid."' AND rid='".$rid."'")->fetch();
 if($bago[0]==0){
 $msg = "*mat Entrou na sala";
-mysql_query("INSERT INTO fun_chat SET timesent='".time()."', chatter='".$uid."', msgtext='".$msg."', rid='".$rid."'");
+$pdo->query("INSERT INTO fun_chat SET timesent='".time()."', chatter='".$uid."', msgtext='".$msg."', rid='".$rid."'");
 }
 $timeto = 120;
 $timenw = time();
 $timeout = $timenw - $timeto;
-$exec = mysql_query("DELETE FROM fun_chonline WHERE lton<'".$timeout."'");
-$res = mysql_query("INSERT INTO fun_chonline SET lton='".time()."', uid='".$uid."', rid='".$rid."'");
+$exec = $pdo->query("DELETE FROM fun_chonline WHERE lton<'".$timeout."'");
+$res = $pdo->query("INSERT INTO fun_chonline SET lton='".time()."', uid='".$uid."', rid='".$rid."'");
 if(!$res)
 {
-mysql_query("UPDATE fun_chonline SET lton='".time()."', rid='".$rid."' WHERE uid='".$uid."'");
+$pdo->query("UPDATE fun_chonline SET lton='".time()."', rid='".$rid."' WHERE uid='".$uid."'");
 }
 }
 ////////////////////////////////////////////is mod
 function candelgb($uid,$mid)
 {
-$minfo = mysql_fetch_array(mysql_query("SELECT gbowner, gbsigner FROM fun_gbook WHERE id='".$mid."'"));
+    global $pdo;
+$minfo = $pdo->query("SELECT gbowner, gbsigner FROM fun_gbook WHERE id='".$mid."'")->fetch();
 if($minfo[0]==$uid)
 {
 return true;
@@ -416,9 +414,10 @@ return false;
 //////////////////////////function spam
 function isspam($text)
 {
+    global $pdo;
 $sfil = array();
-$comando = mysql_query("SELECT txt FROM fun_spam WHERE id");
-while($spam = mysql_fetch_array($comando))
+$comando = $pdo->query("SELECT txt FROM fun_spam WHERE id");
+while($spam = $comando->fetch())
 {
 $sfil[] = $spam[0];
 }
@@ -437,7 +436,8 @@ return false;
 /////////////////////////Get user plusses
 function getplusses($uid)
 {
-$plus = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$plus = $pdo->query("SELECT plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 return $plus[0];
 }
 /////////////////////////Can uid sign who's guestbook?
@@ -469,7 +469,8 @@ return true;
 /////////////////////////////////////////////Are buds?
 function arebuds($uid, $tid)
 {
-$res = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE ((uid='".$uid."' AND tid='".$tid."') OR (uid='".$tid."' AND tid='".$uid."')) AND agreed='1'"));
+    global $pdo;
+$res = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE ((uid='".$uid."' AND tid='".$tid."') OR (uid='".$tid."' AND tid='".$uid."')) AND agreed='1'")->fetch();
 if($res[0]>0)
 {
 return true;
@@ -479,21 +480,24 @@ return false;
 //////////////////////////////////function get n. of buds
 function getnbuds($uid)
 {
-$notb = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE (uid='".$uid."' OR tid='".$uid."') AND agreed='1'"));
+    global $pdo;
+$notb = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE (uid='".$uid."' OR tid='".$uid."') AND agreed='1'")->fetch();
 return $notb[0];
 }
 /////////////////////////////get no. of requists
 function getnreqs($uid)
 {
-$notb = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE  tid='".$uid."' AND agreed='0'"));
+    global $pdo;
+$notb = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE  tid='".$uid."' AND agreed='0'")->fetch();
 return $notb[0];
 }
 /////////////////////////////get no. of online buds
 function getonbuds($uid)
 {
+    global $pdo;
 $counter =0;
-$buds = mysql_query("SELECT uid, tid FROM fun_buddies WHERE (uid='".$uid."' OR tid='".$uid."') AND agreed='1'");
-while($bud=mysql_fetch_array($buds))
+$buds = $pdo->query("SELECT uid, tid FROM fun_buddies WHERE (uid='".$uid."' OR tid='".$uid."') AND agreed='1'");
+while($bud = $buds->fetch())
 {
 if($bud[0]==$uid)
 {
@@ -510,11 +514,12 @@ return $counter;
 }
 function getpage_go($go,$tid)
 {
+    global $pdo;
 if(trim($go)=="")return 1;
 if($go=="last")return getnumpages($tid);
 $counter=1;
-$posts = mysql_query("SELECT id FROM fun_posts WHERE tid='".$tid."'");
-while($post=mysql_fetch_array($posts))
+$posts = $pdo->query("SELECT id FROM fun_posts WHERE tid='".$tid."'");
+while($post =$posts->fetch())
 {
 $counter++;
 $postid = $post[0];
@@ -529,7 +534,8 @@ return 1;
 ////////////////////////////mural de recados
 function getshoutbox($sid)
 {
-$lshout = mysql_fetch_array(mysql_query("SELECT shout, shouter, id, cor  FROM fun_shouts ORDER BY shtime DESC LIMIT 1"));
+    global $pdo;
+$lshout = $pdo->query("SELECT shout, shouter, id, cor  FROM fun_shouts ORDER BY shtime DESC LIMIT 1")->fetch();
 $shnick = getnick_uid($lshout[1]);
 $shbox .= "<a href=\"index.php?action=perfil&sid=$sid&who=$lshout[1]\">".$shnick."</a>: ";
 $text = scan_msg($lshout[0], $sid);
@@ -546,42 +552,49 @@ return $shbox;
 /////////////////////////////////////////////get tid frm post id
 function gettid_pid($pid)
 {
-$tid = mysql_fetch_array(mysql_query("SELECT tid FROM fun_posts WHERE id='".$pid."'"));
+    global $pdo;
+$tid = $pdo->query("SELECT tid FROM fun_posts WHERE id='".$pid."'")->fetch();
 return $tid[0];
 }
 ///////////////////////////////////////////Get IP
 function ver_ip_uid($uid)
 {
-$not = mysql_fetch_array(mysql_query("SELECT ipadd FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$not = $pdo->query("SELECT ipadd FROM fun_users WHERE id='".$uid."'")->fetch();
 return $not[0];
 }
 ///////////////////////////////////////////Get Browser
 function getbr_uid($uid)
 {
-$not = mysql_fetch_array(mysql_query("SELECT browserm FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$not = $pdo->query("SELECT browserm FROM fun_users WHERE id='".$uid."'")->fetch();
 return $not[0];
 }
 /////////////////////////////////////////////get tid frm post id
 function gettname($tid)
 {
-$tid = mysql_fetch_array(mysql_query("SELECT name FROM fun_topics WHERE id='".$tid."'"));
+    global $pdo;
+$tid = $pdo->query("SELECT name FROM fun_topics WHERE id='".$tid."'")->fetch();
 return $tid[0];
 }
 /////////////////////////////////////////////get tid frm post id
 function getfid_tid($tid)
 {
-$fid = mysql_fetch_array(mysql_query("SELECT fid FROM fun_topics WHERE id='".$tid."'"));
+    global $pdo;
+$fid = $pdo->query("SELECT fid FROM fun_topics WHERE id='".$tid."'")->fetch();
 return $fid[0];
 }
 ////////////////get number of pinned topics in forum
 function getpinned($fid)
 {
-$nop = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE fid='".$fid."' AND pinned ='1'"));
+    global $pdo;
+$nop = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE fid='".$fid."' AND pinned ='1'")->fetch();
 return $nop[0];
 }
 /////////////////////////////////////////////can bud?
 function budres($uid, $tid)
 {
+    global $pdo;
 //3 = can't bud
 //2 = already buds
 //1 = request pended
@@ -594,18 +607,18 @@ if (arebuds($uid, $tid))
 {
 return 2;
 }
-$req = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE ((uid='".$uid."' AND tid='".$tid."') OR (uid='".$tid."' AND tid='".$uid."')) AND agreed='0'"));
+$req = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE ((uid='".$uid."' AND tid='".$tid."') OR (uid='".$tid."' AND tid='".$uid."')) AND agreed='0'")->fetch();
 if($req[0]>0)
 {
 return 1;
 }
-$notb = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE (uid='".$tid."' OR tid='".$tid."') AND agreed='1'"));
+$notb = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE (uid='".$tid."' OR tid='".$tid."') AND agreed='1'")->fetch();
 global $max_buds;
 if($notb[0]>=$max_buds)
 {
 return 3;
 }
-$notb = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE (uid='".$uid."' OR tid='".$uid."') AND agreed='1'"));
+$notb = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE (uid='".$uid."' OR tid='".$uid."') AND agreed='1'")->fetch();
 global $max_buds;
 if($notb[0]>=$max_buds)
 {
@@ -616,43 +629,50 @@ return 0;
 ////////////////////////////////////////////sid expiration
 function getsxtm()
 {
-$getdata = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='sesexp'"));
+    global $pdo;
+$getdata = $pdo->query("SELECT value FROM fun_settings WHERE name='sesexp'")->fetch();
 return $getdata[0];
 }
 ////////////////////////////////////////////Get bud msg
 function getbudmsg($uid)
 {
-$getdata = mysql_fetch_array(mysql_query("SELECT budmsg FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$getdata = $pdo->query("SELECT budmsg FROM fun_users WHERE id='".$uid."'")->fetch();
 return $getdata[0];
 }
 ////////////////////////////////////////////Get forum name
 function getfname($fid)
 {
-$fname = mysql_fetch_array(mysql_query("SELECT name FROM fun_forums WHERE id='".$fid."'"));
+    global $pdo;
+$fname = $pdo->query("SELECT name FROM fun_forums WHERE id='".$fid."'")->fetch();
 return $fname[0];
 }
 ////////////////////////////////////////////torpedo anti repeticao
 function flood_torpedos()
 {
-$getdata = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='pmaf'"));
+    global $pdo;
+$getdata = $pdo->query("SELECT value FROM fun_settings WHERE name='pmaf'")->fetch();
 return $getdata[0];
 }
 ////////////////////////////////////////////torpedo anti repeticao no forum
 function flood_forum()
 {
-$getdata = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='fview'"));
+    global $pdo;
+$getdata = $pdo->query("SELECT value FROM fun_settings WHERE name='fview'")->fetch();
 return $getdata[0];
 }
 ////////////////////////////////////////////mural admin
 function mural_admin()
 {
-$getdata = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='4ummsg'"));
+    global $pdo;
+$getdata = $pdo->query("SELECT value FROM fun_settings WHERE name='4ummsg'")->fetch();
 return $getdata[0];
 }
 //////////////////////////////////////////////esta online
 function isonline($uid)
 {
-$uon = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_online WHERE userid='".$uid."'"));
+    global $pdo;
+$uon = $pdo->query("SELECT COUNT(*) FROM fun_online WHERE userid='".$uid."'")->fetch();
 if($uon[0]>0)
 {
 return true;
@@ -661,10 +681,11 @@ return true;
 return false;
 }
 }
-///////////////////////////se o registro È permitido
+///////////////////////////se o registro ÔøΩ permitido
 function canreg()
 {
-$getreg = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='reg'"));
+    global $pdo;
+$getreg = $pdo->query("SELECT value FROM fun_settings WHERE name='reg'")->fetch();
 if($getreg[0]=='1')
 {
 return true;
@@ -676,14 +697,16 @@ return false;
 ///////////////////////////////////////////topico id
 function getfid($topicid)
 {
-$fid = mysql_fetch_array(mysql_query("SELECT fid FROM fun_topics WHERE id='".$topicid."'"));
+    global $pdo;
+$fid = $pdo->query("SELECT fid FROM fun_topics WHERE id='".$topicid."'")->fetch();
 return $fid[0];
 }
 ////////////////////////////////////////////scan normal de mensagens
 function scan_msg($text, $sid="")
 {
+    global $pdo;
 $text = htmlspecialchars($text);
-$sml = mysql_fetch_array(mysql_query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'"));
+$sml = $pdo->query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'")->fetch();
 if ($sml[0]=="1")
 {
 $text = getsmilies($text);
@@ -694,8 +717,9 @@ return $text;
 ////////////////////////////////////////////scan de outros tipos de mensagens
 function scan_msg_other($text,$sid="")
 {
+    global $pdo;
 $text = htmlspecialchars($text);
-$sml = mysql_fetch_array(mysql_query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'"));
+$sml = $pdo->query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'")->fetch();
 if ($sml[0]=="1")
 {
 $text = getsmilies($text);
@@ -706,7 +730,8 @@ return $text;
 ///////////////////////////////////////////torpedo marcado
 function isstarred($pmid)
 {
-$strd = mysql_fetch_array(mysql_query("SELECT starred FROM fun_private WHERE id='".$pmid."'"));
+    global $pdo;
+$strd = $pdo->query("SELECT starred FROM fun_private WHERE id='".$pmid."'")->fetch();
 if($strd[0]=="1")
 {
 return true;
@@ -717,10 +742,11 @@ return false;
 ////////////////////////////////////////////IS LOGGED?
 function is_logado($sid)
 {
+    global $pdo;
 //delete old sessions first
-$deloldses = mysql_query("DELETE FROM fun_ses WHERE expiretm<'".time()."'");
+$deloldses = $pdo->query("DELETE FROM fun_ses WHERE expiretm<'".time()."'");
 //does sessions exist?
-$sesx = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_ses WHERE id='".$sid."'"));
+$sesx = $pdo->query("SELECT COUNT(*) FROM fun_ses WHERE id='".$sid."'")->fetch();
 if($sesx[0]>0)
 {
 if(!isuser(getuid_sid($sid)))
@@ -730,7 +756,7 @@ return false;
 //yip it's logged in
 //first extend its session expirement time
 $xtm = (time() + (60*getsxtm())) ;
-$extxtm = mysql_query("UPDATE fun_ses SET expiretm='".$xtm."' WHERE id='".$sid."'");
+$extxtm = $pdo->query("UPDATE fun_ses SET expiretm='".$xtm."' WHERE id='".$sid."'");
 return true;
 }else{
 //nope its session must be expired or something
@@ -740,65 +766,72 @@ return false;
 ////////////////////////Get user nick from session id
 function getnick_sid($sid)
 {
-$uid = mysql_fetch_array(mysql_query("SELECT uid FROM fun_ses WHERE id='".$sid."'"));
+    global $pdo;
+$uid = $pdo->query("SELECT uid FROM fun_ses WHERE id='".$sid."'")->fetch();
 $uid = $uid[0];
 return getnick_uid($uid);
 }
 ////////////////////////Get user id from session id
 function getuid_sid($sid)
 {
-$uid = mysql_fetch_array(mysql_query("SELECT uid FROM fun_ses WHERE id='".$sid."'"));
+    global $pdo;
+$uid = $pdo->query("SELECT uid FROM fun_ses WHERE id='".$sid."'")->fetch();
 $uid = $uid[0];
 return $uid;
 }
 function getnotcount($uid)
 {
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_notificacoes WHERE touid='".$uid."'"));
+    global $pdo;
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_notificacoes WHERE touid='".$uid."'")->fetch();
 return $nopm[0];
 }
 function getunreadnot($uid)
 {
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_notificacoes WHERE touid='".$uid."' AND unread='1'"));
+    global $pdo;
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_notificacoes WHERE touid='".$uid."' AND unread='1'")->fetch();
 return $nopm[0];
 }
 /////////////////////Get total number of pms
 function getpmcount($uid,$view="all")
 {
+    global $pdo;
 if($view=="all"){
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."'"));
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."'")->fetch();
 }else if($view =="snt")
 {
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE byuid='".$uid."'"));
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE byuid='".$uid."'")->fetch();
 }else if($view =="str")
 {
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."' AND starred='1'"));
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."' AND starred='1'")->fetch();
 }else if($view =="urd")
 {
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."' AND unread='1'"));
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."' AND unread='1'")->fetch();
 }
 return $nopm[0];
 }
 function deleteClub($clid)
 {
-$fid = mysql_fetch_array(mysql_query("SELECT id FROM fun_forums WHERE clubid='".$clid."'"));
+    global $pdo;
+$fid = $pdo->query("SELECT id FROM fun_forums WHERE clubid='".$clid."'")->fetch();
 $fid = $fid[0];
-$topics = mysql_query("SELECT id FROM fun_topics WHERE fid=".$fid."");
-while($topic = mysql_fetch_array($topics))
+$topics = $pdo->query("SELECT id FROM fun_topics WHERE fid=".$fid."");
+while($topic = $topics->fetch())
 {
-mysql_query("DELETE FROM fun_posts WHERE tid='".$topic[0]."'");
+$pdo->query("DELETE FROM fun_posts WHERE tid='".$topic[0]."'");
 }
-mysql_query("DELETE FROM fun_topics WHERE fid='".$fid."'");
-mysql_query("DELETE FROM fun_forums WHERE id='".$fid."'");
-mysql_query("DELETE FROM fun_rooms WHERE clubid='".$clid."'");
-mysql_query("DELETE FROM fun_clubmembers WHERE clid='".$clid."'");
-mysql_query("DELETE FROM fun_announcements WHERE clid='".$clid."'");
-mysql_query("DELETE FROM fun_clubs WHERE id=".$clid."");
+$pdo->query("DELETE FROM fun_topics WHERE fid='".$fid."'");
+$pdo->query("DELETE FROM fun_forums WHERE id='".$fid."'");
+$pdo->query("DELETE FROM fun_rooms WHERE clubid='".$clid."'");
+$pdo->query("DELETE FROM fun_clubmembers WHERE clid='".$clid."'");
+$pdo->query("DELETE FROM fun_announcements WHERE clid='".$clid."'");
+$pdo->query("DELETE FROM fun_clubs WHERE id=".$clid."");
 return true;
 }
 function deleteMClubs($uid)
 {
-$uclubs = mysql_query("SELECT id FROM fun_clubs WHERE owner='".$uid."'");
-while($uclub=mysql_fetch_array($uclubs))
+    global $pdo;
+$uclubs = $pdo->query("SELECT id FROM fun_clubs WHERE owner='".$uid."'");
+while($uclub = $uclubs->fetch())
 {
 deleteClub($uclub[0]);
 }
@@ -806,73 +839,76 @@ deleteClub($uclub[0]);
 ///////funcao para atualizar o usuario
 function adicionar_online($uid, $place)
 {
+    global $pdo;
 /////delete inactive users
 $tm = time() ;
 $timeout = $tm - 1800; //time out = 30 minutos
-$deloff = mysql_query("DELETE FROM fun_online WHERE actvtime <'".$timeout."'");
+$deloff = $pdo->query("DELETE FROM fun_online WHERE actvtime <'".$timeout."'");
 ///now try to add user to online list and add total time online
-$lastactive = mysql_fetch_array(mysql_query("SELECT lastact FROM fun_users WHERE id='".$uid."'"));
+$lastactive = $pdo->query("SELECT lastact FROM fun_users WHERE id='".$uid."'")->fetch();
 $tolsla = time() - $lastactive[0];
-$totaltimeonline = mysql_fetch_array(mysql_query("SELECT tottimeonl FROM fun_users WHERE id='".$uid."'"));
+$totaltimeonline = $pdo->query("SELECT tottimeonl FROM fun_users WHERE id='".$uid."'")->fetch();
 $totaltimeonline = $totaltimeonline[0] + $tolsla;
 $tf = $lastactive[0]+300;
 $timee = time();
 if($tf>$timee)
 {
-$res = mysql_query("UPDATE fun_users SET tottimeonl='".$totaltimeonline."' WHERE id='".$uid."'");
+$res = $pdo->query("UPDATE fun_users SET tottimeonl='".$totaltimeonline."' WHERE id='".$uid."'");
 }
-$totaltimeonline = mysql_fetch_array(mysql_query("SELECT tempon FROM fun_users WHERE id='".$uid."'"));
+$totaltimeonline = $pdo->query("SELECT tempon FROM fun_users WHERE id='".$uid."'")->fetch();
 $totaltimeonline = $totaltimeonline[0] + $tolsla;
 $tf = $lastactive[0]+300;
 $timee = time();
 if($tf>$timee)
 {
-$res = mysql_query("UPDATE fun_users SET tempon='".$totaltimeonline."' WHERE id='".$uid."'");
+$res = $pdo->query("UPDATE fun_users SET tempon='".$totaltimeonline."' WHERE id='".$uid."'");
 }
-$info = mysql_fetch_array(mysql_query("SELECT tempon, plusses FROM fun_users WHERE id='".$uid."'"));
+$info = $pdo->query("SELECT tempon, plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $tempon = floor($info[0]/60);
 if($tempon>59)
 {
 $pontos = $info[1] + 10;
-mysql_query("UPDATE fun_users SET tempon='0', plusses='".$pontos."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET tempon='0', plusses='".$pontos."' WHERE id='".$uid."'");
 }
 $ttime = time();
-$res = mysql_query("UPDATE fun_users SET lastact='".$ttime."' WHERE id='".$uid."'");
-$res = mysql_query("INSERT INTO fun_online SET userid='".$uid."', actvtime='".$ttime."', place='".$place."', placedet='".$plclink."'");
+$res = $pdo->query("UPDATE fun_users SET lastact='".$ttime."' WHERE id='".$uid."'");
+$res = $pdo->query("INSERT INTO fun_online SET userid='".$uid."', actvtime='".$ttime."', place='".$place."', placedet='".$plclink."'");
 if(!$res)
 {
 //most probably userid already in the online list
 //so just update the place and time
-$res = mysql_query("UPDATE fun_online SET actvtime='".$ttime."', place='".$place."', placedet='".$plclink."' WHERE userid='".$uid."'");
+$res = $pdo->query("UPDATE fun_online SET actvtime='".$ttime."', place='".$place."', placedet='".$plclink."' WHERE userid='".$uid."'");
 }
-$maxmem=mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE id='2'"));
-$result = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_online"));
+$maxmem = $pdo->query("SELECT value FROM fun_settings WHERE id='2'")->fetch();
+$result = $pdo->query("SELECT COUNT(*) FROM fun_online")->fetch();
 if($result[0]>=$maxmem[0])
 {
 $tnow = date("D/d/M/Y - H:i", time());
-mysql_query("UPDATE fun_settings set name='".$tnow."', value='".$result[0]."' WHERE id='2'");
+$pdo->query("UPDATE fun_settings set name='".$tnow."', value='".$result[0]."' WHERE id='2'");
 }
-$maxtoday = mysql_fetch_array(mysql_query("SELECT ppl FROM fun_mpot WHERE ddt='".date("d m y")."'"));
+$maxtoday = $pdo->query("SELECT ppl FROM fun_mpot WHERE ddt='".date("d m y")."'")->fetch();
 if($maxtoday[0]==0||$maxtoday=="")
 {
-mysql_query("INSERT INTO fun_mpot SET ddt='".date("d/m/y")."', ppl='1', dtm='".date("H:i:s")."'");
+$pdo->query("INSERT INTO fun_mpot SET ddt='".date("d/m/y")."', ppl='1', dtm='".date("H:i:s")."'");
 $maxtoday[0]=1;
 }
 if($result[0]>=$maxtoday[0])
 {
-mysql_query("UPDATE fun_mpot SET ppl='".$result[0]."', dtm='".date("H:i:s")."' WHERE ddt='".date("d m y")."'");
+$pdo->query("UPDATE fun_mpot SET ppl='".$result[0]."', dtm='".date("H:i:s")."' WHERE ddt='".date("d m y")."'");
 }
 }
 /////////////////////Get members online
 function getnumonline()
 {
-$nouo = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_online "));
+    global $pdo;
+$nouo = $pdo->query("SELECT COUNT(*) FROM fun_online ")->fetch();
 return $nouo[0];
 }
 //////////////////////////////////////is ignored
 function isignored($tid, $uid)
 {
-$ign = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_ignore WHERE target='".$tid."' AND name='".$uid."'"));
+    global $pdo;
+$ign = $pdo->query("SELECT COUNT(*) FROM fun_ignore WHERE target='".$tid."' AND name='".$uid."'")->fetch();
 if($ign[0]>0)
 {
 return true;
@@ -895,7 +931,8 @@ return $ip;
 //////////////////////////////////////////numero de novos usuarios
 function u_pendentes()
 {
-$pendentes = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE pendente='1'"));
+    global $pdo;
+$pendentes = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE pendente='1'")->fetch();
 return $pendentes[0];
 }
 //////////////////////////////////////////ignore result
@@ -966,7 +1003,8 @@ return $rage;
 /////////////////////////////////////////getavatar
 function getavatar($uid)
 {
-$av = mysql_fetch_array(mysql_query("SELECT avatar FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$av = $pdo->query("SELECT avatar FROM fun_users WHERE id='".$uid."'")->fetch();
 return $av[0];
 }
 //////////////////////////tempo_msg
@@ -991,7 +1029,8 @@ return "$sec Segundos";
 }
 function getstatus($uid)
 {
-$info = mysql_fetch_array(mysql_query("SELECT perm, plusses, vip FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$info = $pdo->query("SELECT perm, plusses, vip FROM fun_users WHERE id='".$uid."'")->fetch();
 if(is_banido($uid))
 {
 return "Banido!";
@@ -1017,7 +1056,7 @@ return "Novato";
 return "Frequente";
 }else if($info[1]<99)
 {
-return "EstaÁ„oBronze";
+return "Bronze";
 }else if($info[1]<249)
 {
 return "Super frequente";
@@ -1026,7 +1065,7 @@ return "Super frequente";
 return "Titan";
 }else if($info[1]<749)
 {
-return "Usu·rio especial";
+return "Usu√°rio especial";
 }else if($info[1]<999)
 {
 return "Super prata";
@@ -1044,7 +1083,7 @@ return "Earthquake";
 return "MelhorOuro";
 }else if($info[1]<3999)
 {
-return "SÛcio amigo";
+return "S√≥cio amigo";
 }else if($info[1]<4999)
 {
 return "Tsunami";
@@ -1062,10 +1101,10 @@ return "Power graduado";
 return "Power super graduado";
 }else if($info[1]<40000)
 {
-return "Smart m·ximus";
+return "Smart m√°ximus";
 }else
 {
-return "Smart m·ximus";
+return "Smart m√°ximus";
 }
 }
 }
@@ -1084,12 +1123,14 @@ return $rets;
 /////////////////////Get unread number of pms
 function getunreadpm($uid)
 {
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."' AND unread='1'"));
+    global $pdo;
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."' AND unread='1'")->fetch();
 return $nopm[0];
 }
 function ip_ban($ip, $br)
 {
-$ipa = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_ban WHERE ip='".$ip."' AND browser='".$br."' AND tipoban='2' "));
+    global $pdo;
+$ipa = $pdo->query("SELECT COUNT(*) FROM fun_ban WHERE ip='".$ip."' AND browser='".$br."' AND tipoban='2' ")->fetch();
 if($ipa[0]==0)
 {
 return false;
@@ -1100,9 +1141,10 @@ return true;
 }
 function is_banido($uid)
 {
+    global $pdo;
 $ttime = time();
-$del = mysql_query("DELETE FROM fun_ban WHERE tempo<'".$ttime."'");
-$not = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')"));
+$del = $pdo->query("DELETE FROM fun_ban WHERE tempo<'".$ttime."'");
+$not = $pdo->query("SELECT COUNT(*) FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')")->fetch();
 if($not[0]==0)
 {
 return false;
@@ -1114,7 +1156,8 @@ return true;
 //////////////////////GET USER NICK FROM USERID
 function getnick_uid($uid)
 {
-$unick = mysql_fetch_array(mysql_query("SELECT name, plusses, perm, vip, sex FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$unick = $pdo->query("SELECT name, plusses, perm, vip, sex FROM fun_users WHERE id='".$uid."'")->fetch();
 if($uid=="1")
 {
 return "<b style=\"color: #000\">$unick[0]</b>";
@@ -1149,22 +1192,25 @@ return $unick[0];
 }
 function getnumpages($tid)
 {
-$nops = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts WHERE tid='".$tid."'"));
+    global $pdo;
+$nops = $pdo->query("SELECT COUNT(*) FROM fun_posts WHERE tid='".$tid."'")->fetch();
 $nops = $nops[0]+1; //where did the 1 come from? the topic text, duh!
 $nopg = ceil($nops/5); //5 is the posts to show in each page
 return $nopg;
 }
 function getnick_uid_noc($uid)
 {
-$unick = mysql_fetch_array(mysql_query("SELECT name,plusses, perm FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$unick = $pdo->query("SELECT name,plusses, perm FROM fun_users WHERE id='".$uid."'")->fetch();
 return $unick[0];
 }
 ///////////////////////////////////////////////Get the smilies
 function getsmilies($text)
 {
+    global $pdo;
 $sql = "SELECT * FROM fun_smilies";
-$smilies = mysql_query($sql);
-while($smilie=mysql_fetch_array($smilies))
+$smilies = $pdo->query($sql);
+while($smilie = $smilies->fetch())
 {
 $scode = $smilie[1];
 $spath = $smilie[2];
@@ -1174,19 +1220,22 @@ return $text;
 }
 function autopm($msg, $who)
 {
-mysql_query("INSERT INTO fun_private SET text='".$msg."', byuid='1', touid='".$who."', unread='1', timesent='".time()."'");
+    global $pdo;
+$pdo->query("INSERT INTO fun_private SET text='".$msg."', byuid='1', touid='".$who."', unread='1', timesent='".time()."'");
 }
 ////////////////////////////////////////////////////Register
 /////////////////////// GET fun_users user id from nickname
 function getuid_nick($nick)
 {
-$uid = mysql_fetch_array(mysql_query("SELECT id FROM fun_users WHERE name='".$nick."'"));
+    global $pdo;
+$uid = $pdo->query("SELECT id FROM fun_users WHERE name='".$nick."'")->fetch();
 return $uid[0];
 }
 ////////////////////////////////////////////is mod
 function ismod($uid)
 {
-$perm = mysql_fetch_array(mysql_query("SELECT perm FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$perm = $pdo->query("SELECT perm FROM fun_users WHERE id='".$uid."'")->fetch();
 if($perm[0]>0 OR $uid=="1")
 {
 return true;
@@ -1200,7 +1249,8 @@ return false;
 /////////////////////////////////////////Is admin?
 function isadmin($uid)
 {
-$admn = mysql_fetch_array(mysql_query("SELECT perm FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$admn = $pdo->query("SELECT perm FROM fun_users WHERE id='".$uid."'")->fetch();
 if($admn[0]=='2' OR $uid=='1')
 {
 return true;
@@ -1212,7 +1262,8 @@ return false;
 /////////////////////////////////////////Is Owner
 function isowner($uid)
 {
-$owner = mysql_fetch_array(mysql_query("SELECT perm FROM fun_users WHERE id='".$uid."'"));
+    global $pdo;
+$owner = $pdo->query("SELECT perm FROM fun_users WHERE id='".$uid."'")->fetch();
 if($owner[0]=='3')
 {
 return true;
@@ -1246,15 +1297,17 @@ return $text;
 /////////////////////////////////Number of registered members
 function regmemcount()
 {
-$rmc = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users"));
+    global $pdo;
+$rmc = $pdo->query("SELECT COUNT(*) FROM fun_users")->fetch();
 return $rmc[0];
 }
 ///////////////////////////function counter
 function addvisitor()
 {
-$cc = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='counter'"));
+    global $pdo;
+$cc = $pdo->query("SELECT value FROM fun_settings WHERE name='counter'")->fetch();
 $cc = $cc[0]+1;
-$res = mysql_query("UPDATE fun_settings SET value='".$cc."' WHERE name='counter'");
+$res = $pdo->query("UPDATE fun_settings SET value='".$cc."' WHERE name='counter'");
 }
 function scharin($word)
 {
