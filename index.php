@@ -12,16 +12,7 @@ echo "</head>";
 echo "<body>";
 
 cleardata();//erases all old data
-//database off
-if(!$bcon)
-{
-echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"*\"/><br />";
-echo "ERRO! banco de dados sem conex�o!<br /><br />";
-echo "Aguarde alguns instantes e tente novamente!<br />";
-echo "</p>";
-exit();
-}
+
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $page = $_GET["page"];
@@ -34,7 +25,7 @@ echo "<p align=\"center\">";
 echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais voc� teve o BAN m�ximo(<b>IP</b>)!";
 echo "<br />";
 echo "<br />";
-$infos_ban = mysql_fetch_array(mysql_query("SELECT tempo, motivo FROM fun_ban WHERE ip='".ver_ip()."' AND browser='".navegador()."' AND tipoban='2'"));
+$infos_ban = $pdo->query("SELECT tempo, motivo FROM fun_ban WHERE ip='".ver_ip()."' AND browser='".navegador()."' AND tipoban='2'")->fetch();
 echo "Tempo para acabar sua penalidade: " . tempo_msg($infos_ban[0]);
 echo "<br />";
 echo "Motivo da sua penalidade: <b>".htmlspecialchars($infos_ban[1])."</b>";
@@ -47,7 +38,7 @@ echo "<p align=\"center\">";
 echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais voc� foi banido do site!";
 echo "<br />";
 echo "<br />";
-$infos_ban = mysql_fetch_array(mysql_query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')"));
+$infos_ban = $pdo->query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')")->fetch();
 echo "Tempo para acabar sua penalidade: " . tempo_msg($infos_ban[0]);
 echo "<br />";
 echo "Motivo da sua penalidade: <b>".htmlspecialchars($infos_ban[1])."</b>";
@@ -57,18 +48,18 @@ exit();
 if((is_logado($sid)==false)||($uid==0) AND $action!="")
 {
 echo "<p align=\"center\">";
-echo "Voc� n�o est� logado!<br /><br />";
+echo "Você não está logado!<br /><br />";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
 }
 //update ip and browser
-mysql_query("UPDATE fun_users SET browserm='".navegador()."', ipadd='".ver_ip()."' WHERE id='".getuid_sid($sid)."'");
+$pdo->query("UPDATE fun_users SET browserm='".navegador()."', ipadd='".ver_ip()."' WHERE id='".getuid_sid($sid)."'");
 ////////////////////////////////////////main page
 if($action=="main")
 {
 addvisitor();//add visit in site
-adicionar_online(getuid_sid($sid),"P�gina principal","");
+adicionar_online(getuid_sid($sid),"Página principal","");
 $uid = getuid_sid($sid);
 echo "<p align=\"center\">";
 echo "".date("D d M y - H:i:s")."<br />";
@@ -90,12 +81,12 @@ $tmsg = getpmcount(getuid_sid($sid));
 $umsg = getunreadpm(getuid_sid($sid));
 echo "<a href=\"inbox.php?action=main&sid=$sid\"><img src=\"images/torpedos.gif\" alt=\"*\"/>";
 echo "Torpedos($umsg/$tmsg)</a><br />";
-$recados = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_gbook WHERE gbowner='".$uid."'"));
+$recados = $pdo->query("SELECT COUNT(*) FROM fun_gbook WHERE gbowner='".$uid."'")->fetch();
 echo "<a href=\"lists.php?action=gbook&sid=$sid&who=$uid\"><img src=\"images/recados.gif\" alt=\"*\"/>Recados($recados[0])</a><br />";
 echo "<a href=\"index.php?action=forum&sid=$sid\"><img src=\"images/folder.gif\" alt=\"*\"/>F�rum</a><br />";
-$chs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs"));
+$chs = $pdo->query("SELECT COUNT(*) FROM fun_clubs")->fetch();
 echo "<a href=\"index.php?action=clmenu&sid=$sid\"><img src=\"images/comunidades.gif\" alt=\"*\"/>Comunidades($chs[0])</a><br />";
-$chs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chonline"));
+$chs = $pdo->query("SELECT COUNT(*) FROM fun_chonline")->fetch();
 echo "<a href=\"index.php?action=chat&sid=$sid\"><img src=\"images/batepapo.gif\">Chat($chs[0])</a><br />";
 $mybuds = getnbuds($uid);
 $onbuds = getonbuds($uid);
@@ -107,9 +98,9 @@ echo ": <a href=\"lists.php?action=reqs&sid=$sid\">$reqs</a>";
 }
 echo "<br />";
 echo "<a href=\"index.php?action=cpanel&sid=$sid\"><img src=\"images/config.gif\" alt=\"*\"/>Configura��es</a><br />";
-$alb = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_albums"));
+$alb = $pdo->query("SELECT COUNT(*) FROM fun_albums")->fetch();
 echo "<a href=\"album.php?&a=albums&sid=$sid\"><img src=\"images/galeria.gif\" alt=\"*\"/>�lbuns($alb[0])</a><br />";
-$down = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads"));
+$down = $pdo->query("SELECT COUNT(*) FROM fun_downloads")->fetch();
 echo "<a href=\"downloads.php?sid=$sid\"><img src=\"images/downloads.gif\" alt=\"*\"/>Downloads($down[0])</a><br />";
 echo "<a href=\"index.php?action=funm&sid=$sid\"><img src=\"images/diversao.gif\" alt=\"*\"/>Divers�o</a><br />";
 echo "<a href=\"index.php?action=sub&sid=$sid\"><img src=\"images/mextra.gif\" alt=\"*\"/>Menu extra</a><br />";
@@ -121,13 +112,13 @@ echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" 
 /////////////menu mod
 if(ismod($uid))
 {
-$tnor = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE reported='tk'"));
+$tnor = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE reported='tk'")->fetch();
 $tot = $tnor[0];
-$tnor = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts WHERE reported='1'"));
+$tnor = $pdo->query("SELECT COUNT(*) FROM fun_posts WHERE reported='1'")->fetch();
 $tot += $tnor[0];
-$tnor = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE reported='1'"));
+$tnor = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE reported='1'")->fetch();
 $tot += $tnor[0];
-$tnol = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_log"));
+$tnol = $pdo->query("SELECT COUNT(*) FROM fun_log")->fetch();
 $tol = $tnol[0]; 
 echo "<a href=\"modcp.php?action=main&sid=$sid\"><img src=\"images/den.gif\" alt=\"*\"/>Mod R/L($tot/$tol)</a><br />";
 }
@@ -135,17 +126,17 @@ echo "<p align=\"center\">";
 echo "<b>Mural de recados</b><br />";
 echo getshoutbox($sid);
 echo "<br /><br />";
-echo "Usu�rios online: <a href=\"index.php?action=online&sid=$sid\">".getnumonline()."</a><br />";
+echo "Usuários online: <a href=\"index.php?action=online&sid=$sid\">".getnumonline()."</a><br />";
 $timeout = 600;
 $timeon = time()-$timeout;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE perm>'0' AND lastact>'".$timeon."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE perm>'0' AND lastact>'".$timeon."'")->fetch();
 echo "Equipe online: <a href=\"index.php?action=stfol&sid=$sid\">".$noi[0]."</a><br />";
 $timeout2 = 600;
 $timeon2 = time()-$timeout2;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE vip='1' AND lastact>'".$timeon2."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE vip='1' AND lastact>'".$timeon2."'")->fetch();
 echo "VIPs online: <a href=\"index.php?action=vipol&sid=$sid\">".$noi[0]."</a><br />";
-$memid = mysql_fetch_array(mysql_query("SELECT id, name  FROM fun_users ORDER BY regdate DESC LIMIT 0,1"));
-echo "Novo usu�rio: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br /><br />";
+$memid = $pdo->query("SELECT id, name  FROM fun_users ORDER BY regdate DESC LIMIT 0,1")->fetch();
+echo "Novo usuário: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br /><br />";
 echo "<a href=\"index.php?action=sair&sid=$sid\"><img src=\"teks/hit.gif\" alt=\"*\"/>";
 echo "Sair</a>";
 echo "</p>";
@@ -158,7 +149,7 @@ echo "<p align=\"center\">";
 echo "<b>Menu extra</b>";
 echo "</p>";
 echo "<p align=\"left\">";
-$trofeus = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_trofeus"));
+$trofeus = $pdo->query("SELECT COUNT(*) FROM fun_trofeus")->fetch();
 echo "<a href=\"relacionamento.php?sid=$sid\"><img src=\"images/coracao.gif\" alt=\"\">Relacionamento</a><br />";
 echo "<a href=\"trofeus.php?sid=$sid\"><img src=\"images/trofeus.gif\" alt=\"*\">Trof�us(".$trofeus[0].")</a><br />";
 echo "<a href=\"banco.php?sid=$sid\"><img src=\"images/banco.png\" alt=\"*\"/>Banco $snome</a><br />";
@@ -166,35 +157,35 @@ echo "<a href=\"loja.php?a=main&sid=$sid\"><img src=\"images/loja.png\" alt=\"*\
 echo "<a href=\"horoscopo.php?sid=$sid\"><img src=\"images/star.gif\" alt=\"*\"/>Hor�scopo</a><br />";
 echo "<a href=\"novelas.php?sid=$sid\"><img src=\"images/novelas.gif\" alt=\"*\">Novelas</a><br />";
 echo "<a href=\"index.php?action=stats&sid=$sid\"><img src=\"images/top.gif\" alt=\"*\"/>Estat�sticas</a><br />";
-$sml = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies"));
+$sml = $pdo->query("SELECT COUNT(*) FROM fun_smilies")->fetch();
 echo "<a href=\"paginas.php?p=sml&sid=$sid\"><img src=\"images/bug.gif\" alt=\"*\"/>Smilies($sml[0])</a><br />";
 echo "<a href=\"index.php?action=search&sid=$sid\"><img src=\"images/buscar.gif\" alt=\"*\"/>Buscar</a><br />";
-$paceiros = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_parceiros"));
+$paceiros = $pdp->query("SELECT COUNT(*) FROM fun_parceiros")->fetch();
 echo "<a href=\"parceiros.php?sid=$sid\"><img src=\"images/parceiros.gif\" alt=\"*\">Paceiros(".$paceiros[0].")</a><br />";
 echo "<a href=\"regras.php?sid=$sid\"><img src=\"images/mextra.gif\" alt=\"*\"/>Regras do site</a>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a><br />";
+echo "Página principal</a><br />";
 echo "</p>";
 }
 ////////////////////////////////////////forum menu
 else if($action=="forum")
 {
 echo "<p align=\"center\">";
-echo "<b>F�rum $snome</b>";
+echo "<b>Fórum $snome</b>";
 echo "</p>";
-$fcats = mysql_query("SELECT id, name FROM fun_fcats ORDER BY position, id");
+$fcats = $pdo->query("SELECT id, name FROM fun_fcats ORDER BY position, id");
 $iml = "<img src=\"images/1.gif\" alt=\"*\"/>";
-while($fcat=mysql_fetch_array($fcats))
+while($fcat= $fcats->fetch())
 {
 $catlink = "<a href=\"index.php?action=viewcat&sid=$sid&cid=$fcat[0]\">$iml$fcat[1]</a>";
 echo "$catlink<br />";
-$forums = mysql_query("SELECT id, name FROM fun_forums WHERE cid='".$fcat[0]."' AND clubid='0' ORDER BY position, id, name");
+$forums = $pdo->query("SELECT id, name FROM fun_forums WHERE cid='".$fcat[0]."' AND clubid='0' ORDER BY position, id, name");
 if(flood_forum()==0)
 {
 echo "";
-while($forum=mysql_fetch_array($forums))
+while($forum= $forums->fetch())
 {
 if(canaccess(getuid_sid($sid),$forum[0]))
 {
@@ -206,7 +197,7 @@ echo "";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a><br />";
+echo "Página principal</a><br />";
 echo "</p>";
 }
 //////////////////////////////////sair do site
@@ -214,8 +205,8 @@ else if($action=="sair")
 {
 adicionar_online(getuid_sid($sid),"Saiu do site","");
 echo "<p align=\"center\">";
-mysql_query("DELETE FROM fun_ses WHERE id = '".$sid."' ");
-echo "<img src=\"images/ok.gif\" alt=\"*\"/>Que pena, ja saiu? Volta outra vez t�?!";
+$pdo->query("DELETE FROM fun_ses WHERE id = '".$sid."' ");
+echo "<img src=\"images/ok.gif\" alt=\"*\"/>Que pena, ja saiu? Volta outra vez tá?!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php\"><img src=\"images/home.gif\" alt=\"*\"/>";
@@ -233,8 +224,8 @@ $whnick = getnick_uid($who);
 echo "<b>Moderar Membro</b>";
 echo "</p>";
 echo "<p>";
-$exs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid.""));
-$cow = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid.""));
+$exs = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid."")->fetch();
+$cow = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid."")->fetch();
 if($exs[0]>0 && $cow[0]>0)
 {
 echo "<a href=\"genproc.php?action=dcm&sid=$sid&who=$who&clid=$clid\">&#187;Expulsar $whnick</a><br />";
@@ -247,7 +238,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Informacao errada!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="gcp")
@@ -256,15 +247,15 @@ $clid = $_GET["clid"];
 $who = $_GET["who"];
 $whnick = getnick_uid($who);
 adicionar_online(getuid_sid($sid),"Moderando Comunidade","");
-$exs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid.""));
-$cow = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid.""));
+$exs = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid."")->fetch();
+$cow = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid."")->fetch();
 if($exs[0]>0 && $cow[0]>0)
 {
 echo "<p align=\"center\">";
 echo "<b>Moderar Pontos</b>";
 echo "</p>";
 echo "<form action=\"genproc.php?action=gcp&sid=$sid&who=$who&clid=$clid\" method=\"post\">";
-echo "A��o: <select name=\"giv\">";
+echo "Ação: <select name=\"giv\">";
 echo "<option value=\"1\">Adicionar</option>";
 echo "<option value=\"0\">Remover</option>";
 echo "</select><br />";
@@ -272,14 +263,14 @@ echo "Valor de Pontos: <input name=\"pnt\" format=\"*N\" size=\"2\" maxlength=\"
 echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "Aten��o, os pontos que voc� vai dar para $whnick ser�o removidos da comunidade!";
+echo "Atenção, os pontos que você vai dar para $whnick serão removidos da comunidade!";
 echo "</p>";
 }else
 {
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="gpl")
@@ -292,12 +283,12 @@ $whnick = getnick_uid($who);
 echo "<b>$whnick</b>";
 echo "</p>";
 echo "<p>";
-$exs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid.""));
-$cow = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid.""));
+$exs = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid."")->fetch();
+$cow = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid."")->fetch();
 if($exs[0]>0 && $cow[0]>0)
 {
 echo "<img src=\"images/point.gif\" alt=\"!\"/>Voce nao pode enviar,receber,trocar,etc...os creditos<br />";
-$cpl = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_clubs WHERE id='".$clid."'"));
+$cpl = $pdo->query("SELECT plusses FROM fun_clubs WHERE id='".$clid."'")->fetch();
 echo "<img src=\"images/point.gif\" alt=\"!\"/>Creditos da comunidade: $cpl[0]<br />";
 echo "<img src=\"images/point.gif\" alt=\"!\"/>Nao abuse dando creditos aos usuarios ou perdera a comunidade!<br /><br />";
 echo "<form action=\"genproc.php?action=gpl&sid=$sid&who=$who&clid=$clid\" method=\"post\">";
@@ -305,20 +296,20 @@ echo "Pontos: <input name=\"pnt\" format=\"*N\" size=\"2\" maxlength=\"2\"/><br 
 echo "<input type=\"submit\" value=\"IR\"/>";
 echo "</form>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Faltando informa��es!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Faltando informações!";
 }
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Control Panel
 else if($action=="cpanel")
 {
-adicionar_online(getuid_sid($sid),"Configura��es","");
+adicionar_online(getuid_sid($sid),"Configurações","");
 echo "<p align=\"center\">";
-echo "<b>Configura��es</b>";
+echo "<b>Configurações</b>";
 echo "</p>";
 echo "<p>";
 $tmsg = getpmcount(getuid_sid($sid));
@@ -329,16 +320,16 @@ echo "<a href=\"index.php?action=myclub&sid=$sid\">&#187;Minhas comunidades</a><
 echo "<a href=\"index.php?action=perfil&sid=$sid&who=$uid\">&#187;Meu perfil</a><br />";
 echo "<a href=\"index.php?action=uset&sid=$sid\">&#187;Editar perfil</a><br />";
 echo "<a href=\"rename.php?sid=$sid\">&#187;Trocar meu nick</a><br />";
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_ignore WHERE name='".$uid."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_ignore WHERE name='".$uid."'")->fetch();
 echo "<a href=\"lists.php?action=ignl&sid=$sid\">&#187;Lista negra($noi[0])</a><br />";
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_gbook WHERE gbowner='".$uid."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_gbook WHERE gbowner='".$uid."'")->fetch();
 echo "<a href=\"lists.php?action=gbook&sid=$sid&who=$uid\">&#187;Recados($noi[0])</a><br />";
 echo "<a href=\"paginas.php?p=humor&sid=$sid\">&#187;Alterar humor</a><br />";
 echo "<a href=\"lists.php?action=bbcode&sid=$sid\">&#187;BBCode</a><br />";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Control Panel
@@ -356,12 +347,12 @@ echo "<a href=\"lists.php?action=clm&who=$myid&sid=$sid&who=$uid\">&#187;Que sou
 echo "<a href=\"lists.php?action=pclb&sid=$sid&who=$uid\">&#187;Mais populares</a><br />";
 echo "<a href=\"lists.php?action=aclb&sid=$sid&who=$uid\">&#187;Com mais postagens</a><br />";
 echo "<a href=\"lists.php?action=rclb&sid=$sid&who=$uid\">&#187;5 aleat�rias</a><br /><br />";
-$ncl = mysql_fetch_array(mysql_query("SELECT id, name FROM fun_clubs ORDER BY created DESC LIMIT 1"));
+$ncl = $pdo->query("SELECT id, name FROM fun_clubs ORDER BY created DESC LIMIT 1")->fetch();
 echo "Nova comunidade: <a href=\"index.php?action=gocl&clid=$ncl[0]&sid=$sid\">".htmlspecialchars($ncl[1])."</a><br />";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////My Clubs
@@ -376,17 +367,17 @@ $uid = getuid_sid($sid);
 if(getplusses($uid)<349)
 {
 echo "<p align=\"left\">";
-echo "Comunidades s�o grupos criados por usu�rios que tem o prop�sito de debater algum assunto interessante, e para criar a sua, voc� deve ter um total de 350 Pontos!";
+echo "Comunidades são grupos criados por usuários que tem o propósito de debater algum assunto interessante, e para criar a sua, vocẽ deve ter um total de 350 Pontos!";
 echo "</p>";
 }else
 {
-$uclubs = mysql_query("SELECT id, name FROM fun_clubs WHERE owner='".$uid."'");
-while($club=mysql_fetch_array($uclubs))
+$uclubs = $pdo->query("SELECT id, name FROM fun_clubs WHERE owner='".$uid."'");
+while($club= $uclubs->fetch())
 {
 echo "<a href=\"index.php?action=gocl&clid=$club[0]&sid=$sid\">$club[1]</a>";
 echo ", <a href=\"genproc.php?action=dlcl&clid=$club[0]&sid=$sid\">[APAGAR]</a><br /><br />";
 }
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."'")->fetch();
 if($noi[0]<8)
 {
 echo "<a href=\"index.php?action=addcl&sid=$sid\">Nova comunidade!</a>";
@@ -395,7 +386,7 @@ echo "<a href=\"index.php?action=addcl&sid=$sid\">Nova comunidade!</a>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clmenu&sid=$sid\">Comunidades</a><br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////My Clubs
@@ -407,7 +398,7 @@ echo "<b>Todas as Comunidades</b>";
 echo "</p>";
 //////ALL LISTS SCRIPT <<
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_clubs")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
@@ -416,10 +407,10 @@ $limit_start = ($page-1)*$items_per_page;
 //changable sql
 $sql = "SELECT id, name, owner, description, created, tipo FROM fun_clubs ORDER BY created DESC LIMIT $limit_start, $items_per_page";
 echo "<p>";
-$items = mysql_query($sql);
-if(mysql_num_rows($items)>0)
+$items = $pdo->query($sql);
+if($items->fetchColumn()>0)
 {
-while ($item = mysql_fetch_array($items))
+while ($item = $items->fetch())
 {
 if($item[5]==0)
 {
@@ -430,10 +421,10 @@ else
 $tipo = "<img src=\"images/fexado.gif\" alt=\"\" />";
 }
 $item[1]=htmlspecialchars($item[1]);
-$mems = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$item[0]."' AND accepted='1'"));
+$mems = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$item[0]."' AND accepted='1'")->fetch();
 $lnk = "$tipo<a href=\"index.php?action=gocl&clid=$item[0]&sid=$sid\">$item[1](".$mems[0].")</a> Dono: <a href=\"index.php?action=perfil&who=$item[2]&sid=$sid\">".getnick_uid($item[2])."</a>";
 echo "$lnk<br />";
-echo htmlspecialchars($item[3])."<br />Data de cria��o: (".date("d/m/y", $item[4]).")<br /><br />";
+echo htmlspecialchars($item[3])."<br />Data de criação: (".date("d/m/y", $item[4]).")<br /><br />";
 }
 }
 echo "</p>";
@@ -452,7 +443,7 @@ echo "<br />$page/$num_pages<br />";
 if($num_pages>2)
 {
 $rets = "<form action=\"index.php\" method=\"get\">";
-$rets .= "Pular para p�gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular para página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= "<input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"sid\" value=\"$sid\"/>";
@@ -462,25 +453,25 @@ echo $rets;
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clmenu&sid=$sid\">Comunidades</a><br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="editcl")
 {
 adicionar_online(getuid_sid($sid),"Editando Comunidade","");
 $clid = $_GET["clid"];
-$clinfo = mysql_fetch_array(mysql_query("SELECT name, owner, description, rules, logo, plusses, created, subdono, tipo, id FROM fun_clubs WHERE id='".$clid."'"));
+$clinfo = $pdo->query("SELECT name, owner, description, rules, logo, plusses, created, subdono, tipo, id FROM fun_clubs WHERE id='".$clid."'")->fetch();
 echo "<p align=\"center\">";
 if(empty($clid)||!is_numeric($clid)||$clinfo[9]==0)//Verifica se a comunidade existe
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade n�o existe!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade não existe!";
 echo "<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P�gina principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
 echo "</p>";exit();
 }
 if(!ismod($uid))
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Voc� n�o tem permi��o para est� aqui!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Você não tem permição para está aqui!";
 }
 else
 {
@@ -489,15 +480,15 @@ echo "</p>";
 echo "<form action=\"genproc.php?action=editcl&sid=$sid&clid=$clid\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Nome: <input name=\"nome\" type=\"text\" value=\"$clinfo[0]\"><br />";
 echo "Regras e Termos: <input name=\"regras\" type=\"text\" value=\"$clinfo[3]\"><br />";
-echo "Descri��o: <br /><textarea name=\"descricao\">$clinfo[2]</textarea><br />";
+echo "Descrição: <br /><textarea name=\"descricao\">$clinfo[2]</textarea><br />";
 echo "Tipo da Comunidade: <select name=\"tipo\">";
 echo "<option value=\"0\">P�blica</option>";
 echo "<option value=\"1\">Privada</option>";
 echo "</select><br />";
 echo "Subdono: <select name=\"subdono\">";
-echo "<option value=\"0\">Padr�o</option>";
-$usuarios = mysql_query("SELECT uid FROM fun_clubmembers WHERE clid = '".$clid."' AND accepted='1', owner!='".$uid."'");
-while($users = mysql_fetch_array($usuarios))
+echo "<option value=\"0\">Padrão</option>";
+$usuarios = $pdo->query("SELECT uid FROM fun_clubmembers WHERE clid = '".$clid."' AND accepted='1', owner!='".$uid."'");
+while($users = $usuarios->fetch())
 {
 echo "<option value=\"$users[0]\">".getnick_uid2($users[0])."</option>";
 }
@@ -512,32 +503,32 @@ echo "<a href=\"genproc.php?action=dlcl&sid=$sid&clid=$clid\">APAGAR COMUNIDADE<
 echo "</p>";
 }
 echo "<p align=\"center\">";
-echo "S� � permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
+echo "Só é permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
 echo "</p>";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clubs&sid=$sid\">";
 echo "Comunidades</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="gocl")
 {
 $clid = addslashes($_GET["clid"]);
-$clinfo = mysql_fetch_array(mysql_query("SELECT name, owner, description, rules, logo, plusses, created, subdono, tipo, id FROM fun_clubs WHERE id='".$clid."'"));
+$clinfo = $pdo->query("SELECT name, owner, description, rules, logo, plusses, created, subdono, tipo, id FROM fun_clubs WHERE id='".$clid."'")->fetch();
 adicionar_online(getuid_sid($sid),"Vendo uma Comunidade","");
 $clnm = htmlspecialchars($clinfo[0]);
 echo "<p align=\"center\">";
 if(empty($clid)||!is_numeric($clid)||$clinfo[9]==0)//Verifica se a comunidade existe
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade n�o existe!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade não existe!";
 echo "<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P�gina principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
 echo "</p>";exit();
 }
 echo "<b>$clnm</b><br />";
-if(trim($clinfo[4])==""||!file_exists($clinfo[4]))//Verificar se existe o logo na table ou se est� dir do site
+if(trim($clinfo[4])==""||!file_exists($clinfo[4]))//Verificar se existe o logo na table ou se está dir do site
 {
 echo "<img src=\"images/logo.png\" alt=\"logo\"/>";
 }else
@@ -548,29 +539,29 @@ echo "</p>";
 echo "<p>";
 echo "ID: <b>$clid</b><br />";
 $uid = getuid_sid($sid);
-$cango = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND uid='".$uid."' AND accepted='1'"));
+$cango = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND uid='".$uid."' AND accepted='1'")->fetch();
 echo "Dono: <a href=\"index.php?action=perfil&who=$clinfo[1]&sid=$sid\">".getnick_uid($clinfo[1])."</a><br />";
-$mems = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND accepted='1'"));
+$mems = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND accepted='1'")->fetch();
 echo "Total de Membros: <a href=\"lists.php?action=clmem&sid=$sid&clid=$clid\">$mems[0]</a><br />";
 echo "Criada em: ".date("d/m/y", $clinfo[6])."<br />";
 echo "Pontos: $clinfo[5]<br />";
-$fid = mysql_fetch_array(mysql_query("SELECT id FROM fun_forums WHERE clubid='".$clid."'"));
-$rid = mysql_fetch_array(mysql_query("SELECT id FROM fun_rooms WHERE clubid='".$clid."'"));
-$tps = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE fid='".$fid[0]."'"));
-$pss = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts a INNER JOIN fun_topics b ON a.tid = b.id WHERE b.fid='".$fid[0]."'"));
+$fid = $pdo->query("SELECT id FROM fun_forums WHERE clubid='".$clid."'")->fetch();
+$rid = $pdo->query("SELECT id FROM fun_rooms WHERE clubid='".$clid."'")->fetch();
+$tps = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE fid='".$fid[0]."'")->fetch();
+$pss = $pdo->query("SELECT COUNT(*) FROM fun_posts a INNER JOIN fun_topics b ON a.tid = b.id WHERE b.fid='".$fid[0]."'")->fetch();
 if(($cango[0]>0)||ismod($uid))
 {
-$noa = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_announcements WHERE clid='".$clid."'"));
+$noa = $pdo->query("SELECT COUNT(*) FROM fun_announcements WHERE clid='".$clid."'")->fetch();
 echo "<br /><a href=\"lists.php?action=annc&sid=$sid&clid=$clid\"><img src=\"teks/cmt.gif\" alt=\"!\"/>An�ncios($noa[0])</a><br />";
-$noa = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chat WHERE rid='".$rid[0]."'"));
+$noa = $pdo->query("SELECT COUNT(*) FROM fun_chat WHERE rid='".$rid[0]."'")->fetch();
 echo "<a href=\"chat.php?sid=$sid&rid=$rid[0]\"><img src=\"images/batepapo.gif\" alt=\"*\"/>Chat($noa[0])</a><br />";
-echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid[0]\"><img src=\"images/folder.gif\" alt=\"*\"/>F�rum($tps[0]/$pss[0])</a><br />";
+echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid[0]\"><img src=\"images/folder.gif\" alt=\"*\"/>Fórum($tps[0]/$pss[0])</a><br />";
 if($clinfo[1]==$uid)
 {
-$mems = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND accepted='0'"));
+$mems = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND accepted='0'")->fetch();
 echo "<a href=\"lists.php?action=clreq&sid=$sid&clid=$clid\">Pedidos pendentes($mems[0])</a><br />";
 }
-$ismem = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND uid='".getuid_sid($sid)."'"));
+$ismem = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE clid='".$clid."' AND uid='".getuid_sid($sid)."'")->fetch();
 if($ismem[0]>0)
 {
 //unjoin
@@ -588,8 +579,8 @@ echo "<br />";
 echo "<a href=\"index.php?action=editcl&sid=$sid&clid=$clid\"><img src=\"images/cp.png\" alt=\"\">Editar comunidade</a>";
 }
 }else{
-echo "T�picos: <b>$tps[0]</b>, Postagens: <b>$pss[0]</b><br />";
-echo "<b>Descri��o: </b>";
+echo "Tópicos: <b>$tps[0]</b>, Postagens: <b>$pss[0]</b><br />";
+echo "<b>Descrição: </b>";
 echo htmlspecialchars($clinfo[2]);
 echo "<br /><br />";
 echo "<b>Regras e Termos: </b>";
@@ -602,7 +593,7 @@ echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=clubs&sid=$sid\">";
 echo "Comunidades</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="vipol")
@@ -612,7 +603,7 @@ adicionar_online(getuid_sid($sid),"VIPs online","");
 if($page=="" || $page<=0)$page=1;
 $timeout = 600;
 $timeon = (time() - $timeadjust)  - $timeout;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE vip='1' AND lastact>'".$timeon."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE vip='1' AND lastact>'".$timeon."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 10;
 $num_pages = ceil($num_items/$items_per_page);
@@ -622,9 +613,8 @@ if($limit_start<0)$limit_start=0;
 //changable sql
 $sql = "SELECT name, specialid, id FROM fun_users WHERE vip='1' AND lastact>'".$timeon."' LIMIT $limit_start, $items_per_page";
 echo "<p><small>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $lnk = "<a href=\"index.php?action=perfil&who=$item[2]&sid=$sid\">".getnick_uid($item[2])."</a>";
 echo "$lnk<br />";
@@ -650,7 +640,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<img src=\"images/home.gif\" alt=\"*\"/><a href=\"index.php?action=main&sid=$sid\">";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="addcl")
@@ -662,38 +652,38 @@ echo "</p>";
 echo "<p>";
 if(getplusses($uid)>=350)
 {
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."'")->fetch();
 if($noi[0]<5)
 {
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Todas as informa��es s�o necess�rias!<br />";
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Al�m de voc�, os moderadores e administradores s�o liberados para moderar sua comunidade!<br />";
-echo "<img src=\"images/point.gif\" alt=\"*\"/>N�o � permitido comunidades iguais!<br />";
-echo "<img src=\"images/point.gif\" alt=\"*\"/>Em caso de abuso sua comunidade ser� apagada!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Todas as informações são necessárias!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Além de vocẽ, os moderadores e administradores são liberados para moderar sua comunidade!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Não é permitido comunidades iguais!<br />";
+echo "<img src=\"images/point.gif\" alt=\"*\"/>Em caso de abuso sua comunidade serã apagada!<br />";
 echo "<form action=\"genproc.php?action=adicionarcl&sid=$sid\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Nome: <input name=\"nome\" maxlength=\"30\"/><br />";
-echo "Descri��o: <input name=\"descricao\" maxlength=\"200\"/><br />";
+echo "Descrição: <input name=\"descricao\" maxlength=\"200\"/><br />";
 echo "Regras: <input name=\"regras\" maxlength=\"500\"/><br />";
 echo "Tipo da comunidade: <select name=\"tipo\">";
-echo "<option value=\"0\">P�blica</option>";
+echo "<option value=\"0\">Pública</option>";
 echo "<option value=\"1\">Privada</option>";
 echo "</select><br />";
 echo "Logo: <input type=\"file\" name=\"logo\" /><br />";
 echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "S� � permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
+echo "Só é permitido no logo imagens do tipo <b>JPG, JPEG, GIF E PNG</b>!";
 echo "</p>";
 }else
 {
-echo "Voc� atingiu o m�ximo de comunidades permitidas(5 comunidades)!";
+echo "Você atingiu o máximo de comunidades permitidas(5 comunidades)!";
 }
 }else{
-echo "Para criar uma comunidade voc� deve ter mais de 350 pontos!";
+echo "Para criar uma comunidade você deve ter mais de 350 pontos!";
 }
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Search
@@ -705,15 +695,15 @@ echo "<img src=\"images/search.gif\" alt=\"*\"/><br />";
 echo "<b>Menu de busca</b>";
 echo "</p>";
 echo "<p>";
-echo "<a href=\"search.php?action=tpc&sid=$sid\">&#0187;Em T�picos</a><br />";
+echo "<a href=\"search.php?action=tpc&sid=$sid\">&#0187;Em Tópicos</a><br />";
 echo "<a href=\"search.php?action=blg&sid=$sid\">&#0187;Em blogs</a><br />";
 echo "<a href=\"search.php?action=nbx&sid=$sid\">&#0187;Em meus torpedos</a><br />";
 echo "<a href=\"search.php?action=clb&sid=$sid\">&#0187;Em Comunidades</a><br /><br />";
-echo "Buscar usu�rios<br />";
+echo "Buscar usuários<br />";
 echo "<a href=\"search.php?action=mbrn&sid=$sid\">&#0187;Em nicks</a><br />";
 //echo "<a href=\"search.php?action=mbrl&sid=$sid\">&#0187;In Location</a><br />";
 //echo "<a href=\"search.php?action=mbrs&sid=$sid\">&#0187;By sex orientation</a><br />";
-echo "Digite o nick do usu�rio abaixo para ver o perfil<br />";
+echo "Digite o nick do usuário abaixo para ver o perfil<br />";
 echo "<form action=\"index.php?action=perfil&sid=$sid\" method=\"post\">";
 echo "<br />Nick <input name=\"mnick\" maxlength=\"15\"/><br />";
 echo "<input type=\"submit\" value=\"Ver perfil\"/>";
@@ -721,7 +711,7 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////Settings
@@ -730,10 +720,10 @@ else if($action=="uset")
 adicionar_online(getuid_sid($sid),"Editando perfil","");
 $uid = getuid_sid($sid);
 $avat = getavatar($uid);
-$email = mysql_fetch_array(mysql_query("SELECT email FROM fun_users WHERE id='".$uid."'"));
-$bdy = mysql_fetch_array(mysql_query("SELECT birthday FROM fun_users WHERE id='".$uid."'"));
-$uloc = mysql_fetch_array(mysql_query("SELECT location FROM fun_users WHERE id='".$uid."'"));
-$sx = mysql_fetch_array(mysql_query("SELECT sex FROM fun_users WHERE id='".$uid."'"));
+$email = $pdo->query("SELECT email FROM fun_users WHERE id='".$uid."'")->fetch();
+$bdy = $pdo->query("SELECT birthday FROM fun_users WHERE id='".$uid."'")->fetch();
+$uloc = $pdo->query("SELECT location FROM fun_users WHERE id='".$uid."'")->fetch();
+$sx = $pdo->query("SELECT sex FROM fun_users WHERE id='".$uid."'")->fetch();
 $uloc[0] = htmlspecialchars($uloc[0]);
 echo "<p align=\"center\">";
 echo "<b>Editar Perfil</b>";
@@ -751,10 +741,10 @@ echo "</select><br />";
 echo "<input type=\"submit\" value=\"Editar\"/>";
 echo "</form>";
 echo "<br />";
-$sml = mysql_fetch_array(mysql_query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'"));
+$sml = $pdo->query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'")->fetch();
 if($sml[0]=="1")
 {
-echo "<a href=\"genproc.php?action=sml&a=nao&sid=$sid\">N�o quero ver smilies!</a>";
+echo "<a href=\"genproc.php?action=sml&a=nao&sid=$sid\">Não quero ver smilies!</a>";
 }else{
 echo "<a href=\"genproc.php?action=sml&a=sim&sid=$sid\">Quero ver smilies!</a>";
 }
@@ -767,58 +757,57 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="stats")
 {
 adicionar_online(getuid_sid($sid),"Estatisticas","");
 echo "<p align=\"center\">";
-$norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users"));
-echo "Usu�rios registrados: <b>$norm[0]</b><br />";
-$memid = mysql_fetch_array(mysql_query("SELECT id, name  FROM fun_users ORDER BY regdate DESC LIMIT 0,1"));
-echo "Novo usu�rio: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br />";
-$mols = mysql_fetch_array(mysql_query("SELECT name, value FROM fun_settings WHERE id='2'"));
-echo "Maior n�mero online: <b>$mols[1]</b> em $mols[0]<br />";
-echo "Maior n�mero online(<a href=\"lists.php?action=moto&sid=$sid\">De hoje</a>): <b>$mols[0]</b><br />";
+$norm = $pdo->query("SELECT COUNT(*) FROM fun_users")->fetch();
+echo "Usuários registrados: <b>$norm[0]</b><br />";
+$memid = $pdo->query("SELECT id, name  FROM fun_users ORDER BY regdate DESC LIMIT 0,1")->fetch();
+echo "Novo usuário: <b><a href=\"index.php?action=perfil&who=$memid[0]&sid=$sid\">".getnick_uid($memid[0])."</a></b><br />";
+$mols = $pdo->query("SELECT name, value FROM fun_settings WHERE id='2'")->fetch();
+echo "Maior número online: <b>$mols[1]</b> em $mols[0]<br />";
+echo "Maior número online(<a href=\"lists.php?action=moto&sid=$sid\">De hoje</a>): <b>$mols[0]</b><br />";
 $tm24 = time() - (24*60*60);
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE lastact>'".$tm24."'"));
-echo mysql_error();
-echo "Usu�rios online hoje <b>$aut[0]</b><br />";
-$notc = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics"));
-$nops = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE lastact>'".$tm24."'")->fetch();
+echo "Usuários online hoje <b>$aut[0]</b><br />";
+$notc = $pdo->query("SELECT COUNT(*) FROM fun_topics")->fetch();
+$nops = $pdo->query("SELECT COUNT(*) FROM fun_posts")->fetch();
 echo "Topicos: <b>$notc[0]</b> - Postagens: <b>$nops[0]</b><br />";
-$nopm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private"));
+$nopm = $pdo->query("SELECT COUNT(*) FROM fun_private")->fetch();
 echo "Total de Torpedos: <b>$nopm[0]</b><br />";
-$nopm = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='Counter'"));
+$nopm = $pdo->query("SELECT value FROM fun_settings WHERE name='Counter'")->fetch();
 echo "Visitas: <b>$nopm[0]</b>";
 echo "";
 echo "</p>";
 echo "<p>";
 echo "";
 /////menu das estatisticas
-echo "<a href=\"index.php?action=l24&sid=$sid\">&#187;O que aconteceu nas �ltimas 24 horas?</a><br />";
-echo "<a href=\"lists.php?action=members&sid=$sid\">&#187;Todos os usu�rios($norm[0])</a><br />";
-$norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE sex='M'"));
+echo "<a href=\"index.php?action=l24&sid=$sid\">&#187;O que aconteceu nas últimas 24 horas?</a><br />";
+echo "<a href=\"lists.php?action=members&sid=$sid\">&#187;Todos os usuários($norm[0])</a><br />";
+$norm = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE sex='M'")->fetch();
 echo "<a href=\"lists.php?action=males&sid=$sid\">&#187;Homens($norm[0])</a><br />";
-$norm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE sex='F'"));
+$norm = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE sex='F'")->fetch();
 echo "<a href=\"lists.php?action=fems&sid=$sid\">&#187;Mulheres($norm[0])</a><br />";
-$tbday=mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users where month(`birthday`) = month(curdate()) and dayofmonth(`birthday`) = dayofmonth(curdate());"));
+$tbday= $pdo->query("SELECT COUNT(*) FROM fun_users where month(`birthday`) = month(curdate()) and dayofmonth(`birthday`) = dayofmonth(curdate());")->fetch();
 echo "<a href=\"lists.php?action=bdy&sid=$sid\">&#187;Aniversariantes($tbday[0])</a><br />";
 echo "<a href=\"lists.php?action=topp&sid=$sid\">&#187;Top Postadores</a><br />";
 echo "<a href=\"lists.php?action=tchat&sid=$sid\">&#187;Top Chatistas</a><br />";
 echo "<a href=\"lists.php?action=longon&sid=$sid\">&#187;Mais Tempo Online</a><br />";
 echo "<a href=\"lists.php?action=tshout&sid=$sid\">&#187;Top Muralistas</a><br />";
-$nobr=mysql_fetch_array(mysql_query("SELECT COUNT(DISTINCT browserm) FROM fun_users WHERE browserm IS NOT NULL "));
+$nobr= $pdo->query("SELECT COUNT(DISTINCT browserm) FROM fun_users WHERE browserm IS NOT NULL ")->fetch();
 echo "<a href=\"lists.php?action=brows&sid=$sid\">&#187;Navegadores($nobr[0])</a><br />";
-$noi = mysql_fetch_array(mysql_query("SELECT count(*) FROM fun_users WHERE perm>'0'"));
+$noi = $pdo->query("SELECT count(*) FROM fun_users WHERE perm>'0'")->fetch();
 echo "<a href=\"lists.php?action=staff&sid=$sid\">&#187;Membros da equipe($noi[0])</a><br />";
-$noi = mysql_fetch_array(mysql_query("SELECT count(*) FROM fun_ban WHERE tipoban='1' OR tipoban='2'"));
+$noi = $pdo->query("SELECT count(*) FROM fun_ban WHERE tipoban='1' OR tipoban='2'")->fetch();
 echo "<a href=\"lists.php?action=banned&sid=$sid\">&#187;Banidos($noi[0])</a><br />";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="l24")
@@ -829,39 +818,39 @@ echo "";
 /////
 echo "O que aconteceu no site nas ultimas 24 horas<br /><br />";
 $tm24 = time() - (24*60*60);
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE lastact>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE lastact>'".$tm24."'")->fetch();
 echo "Usuarios ativos: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE regdate>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE regdate>'".$tm24."'")->fetch();
 echo "Registrados: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE joined>'".$tm24."' AND accepted='1'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE joined>'".$tm24."' AND accepted='1'")->fetch();
 echo "Entraram em comunidades: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE created>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE created>'".$tm24."'")->fetch();
 echo "Comunidades criadas: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_buddies WHERE reqdt>'".$tm24."' AND agreed='1'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_buddies WHERE reqdt>'".$tm24."' AND agreed='1'")->fetch();
 echo "Amigos adicionados: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_gbook WHERE dtime>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_gbook WHERE dtime>'".$tm24."'")->fetch();
 echo "Recados enviados: <b>$aut[0]</b><br />";
 if(ismod(getuid_sid($sid)))
 {
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_log WHERE data>'".$tm24."'"));
-echo "A��es da equipe: <b>$aut[0]</b><br />";
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_log WHERE data>'".$tm24."'")->fetch();
+echo "Ações da equipe: <b>$aut[0]</b><br />";
 }
 $aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts WHERE dtpost>'".$tm24."'"));
 echo "Postagens: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE timesent>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE timesent>'".$tm24."'")->fetch();
 echo "Torpedos enviados: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_shouts WHERE shtime>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_shouts WHERE shtime>'".$tm24."'")->fetch();
 echo "Recados no mural: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE crdate>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE crdate>'".$tm24."'")->fetch();
 echo "Topicos Criados: <b>$aut[0]</b><br />";
-$aut = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE data>'".$tm24."'"));
+$aut = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE data>'".$tm24."'")->fetch();
 echo "Downloads adicionados: <b>$aut[0]</b><br />";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=stats&sid=$sid\"><img src=\"images/stat.gif\" alt=\"*\"/>";
 echo "Estatisticas</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="shout")
@@ -870,23 +859,23 @@ adicionar_online(getuid_sid($sid),"Escrevendo recado no mural","");
 echo "<p align=\"left\">";
 if(getplusses(getuid_sid($sid))<20)
 {
-echo "<center>Voc� deve ter no m�nimo 21 $smoeda para deixar um recado no mural!</center>";
+echo "<center>Vocẽ deve ter no mínimo 21 $smoeda para deixar um recado no mural!</center>";
 }
 else
 {
 $nick = getnick_uid(getuid_sid($sid));
-echo "Ol� $nick, antes de postar no mural leia as informa��es abaixo: <br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Se postar propagandas de outros sites(spam) voc� vai ser banido!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> N�o � permitido postar apenas smilies no mural de recados!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Dependendo do conte�do interpretado pela equipe, seu post estar� sujeita a edi��o!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> N�o � permitido brigas no mural!<br />";
-echo "<img src=\"images/point.gif\" alt=\"\"> Voc� pode enviar at� 3 smilies!<br />";
+echo "Olá $nick, antes de postar no mural leia as informações abaixo: <br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Se postar propagandas de outros sites(spam) vocẽ vai ser banido!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Não é permitido postar apenas smilies no mural de recados!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Dependendo do conteúdo interpretado pela equipe, seu post estará sujeita a edição!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Náo é permitido brigas no mural!<br />";
+echo "<img src=\"images/point.gif\" alt=\"\"> Vocẽ pode enviar até 3 smilies!<br />";
 echo "<form action=\"genproc.php?action=shout&sid=$sid\" method=\"post\">";
 echo "Texto: <input name=\"shtxt\" maxlength=\"200\"/><br />";
 echo "Cor: <select name=\"cor\">";
-echo "<option value=\"#000000\">Padr�o</option>";
+echo "<option value=\"#000000\">Padrão</option>";
 echo "<option value=\"#ff0000\">Vermelho</option>";
-echo "<option value=\"#00ff00\">Lim�o</option>";
+echo "<option value=\"#00ff00\">Limão</option>";
 echo "<option value=\"#ff00ff\">Pink</option>";
 echo "<option value=\"#006600\">Verde</option>";
 echo "<option value=\"#33ffff\">Aqua</option>";
@@ -903,7 +892,7 @@ echo "</form>";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="shout2")
@@ -928,7 +917,7 @@ echo "</select><br />";
 echo "<input type=\"submit\" value=\"Gravar recado\"/>";
 echo "</form>";
 echo "<br /><br /><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////shout
@@ -937,11 +926,11 @@ else if($action=="annc")
 adicionar_online(getuid_sid($sid),"Adicionando um aviso","");
 $clid = $_GET["clid"];
 echo "<p align=\"center\">";
-$cow = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$clid."'"));
+$cow = $pdo->query("SELECT owner FROM fun_clubs WHERE id='".$clid."'")->fetch();
 $uid = getuid_sid($sid);
 if($cow[0]!=$uid)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade n�o � sua!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Essa comunidade não é sua!";
 echo "<br /><br />";
 }else
 {
@@ -951,11 +940,11 @@ echo "Texto: <input name=\"antx\" maxlength=\"200\"/><br />";
 echo "<input type=\"submit\" value=\"Adicionar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
-echo "Est� liberado apenas o uso de <b>BBCodes</b>, todos os smilies desse an�ncio n�o ser�o adicionados!";
+echo "Está liberado apenas o uso de <b>BBCodes</b>, todos os smilies desse anúncio não serão adicionados!";
 echo "</p>";
 }
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////escrevendo recado para usuario
@@ -966,22 +955,22 @@ adicionar_online(getuid_sid($sid),"Escrevendo recado","");
 if(!cansigngb(getuid_sid($sid), $who))
 {
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">Voc� n�o tem permi��o para enviar recados para esse usu�rio!<br /><br />";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\">P�gina principal</a>";
+echo "<img src=\"images/notok.gif\" alt=\"\">Vocẽ não tem permição para enviar recados para esse usuário!<br /><br />";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\">Página principal</a>";
 echo "</p>";
 exit();
 }
 echo "<p align=\"center\">";
 echo "<b>Novo Recado</b><br />";
 echo "<br />";
-echo "Est� liberado o uso apenas de <b>bbcode</b>, todo e qualquer smilie n�o ser� visualizado nos recados!";
+echo "Está liberado o uso apenas de <b>bbcode</b>, todo e qualquer smilie não será visualizado nos recados!";
 echo "</p>";
 echo "<form action=\"genproc.php?action=signgb&sid=$sid\" method=\"post\">";
 echo "Texto: <input name=\"msgtxt\" maxlength=\"500\"/><br />";
 echo "Cor: <select name=\"cor\">";
-echo "<option value=\"#000000\">Padr�o</option>";
+echo "<option value=\"#000000\">Padrão</option>";
 echo "<option value=\"#ff0000\">Vermelho</option>";
-echo "<option value=\"#00ff00\">Lim�o</option>";
+echo "<option value=\"#00ff00\">Limão</option>";
 echo "<option value=\"#ff00ff\">Pink</option>";
 echo "<option value=\"#006600\">Verde</option>";
 echo "<option value=\"#33ffff\">Aqua</option>";
@@ -998,12 +987,12 @@ echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="online")
 {
-adicionar_online(getuid_sid($sid),"Usu�rios online","");
+adicionar_online(getuid_sid($sid),"Usuários online","");
 //////ALL LISTS SCRIPT <<
 if($page=="" || $page<=0)$page=1;
 $timeout = 600;
@@ -1020,9 +1009,8 @@ GROUP BY 1,2
 LIMIT $limit_start, $items_per_page
 ";
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 if ($item[3]=="M"){
 $icon = "";
@@ -1050,7 +1038,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="stfol")
@@ -1060,7 +1048,7 @@ adicionar_online(getuid_sid($sid),"Equipe online","");
 if($page=="" || $page<=0)$page=1;
 $timeout = 600;
 $timeon = time()-$timeout;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE perm>'0' AND lastact>'".$timeon."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE perm>'0' AND lastact>'".$timeon."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 10;
 $num_pages = ceil($num_items/$items_per_page);
@@ -1073,9 +1061,8 @@ SELECT name, perm, id FROM fun_users WHERE perm>'0' AND lastact>'".$timeon."'
 LIMIT $limit_start, $items_per_page
 ";
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $lnk = "<a href=\"index.php?action=perfil&who=$item[2]&sid=$sid\">".getnick_uid($item[2])."</a>";
 if($item[1]==1)
@@ -1108,7 +1095,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="chbmsg")
@@ -1125,7 +1112,7 @@ echo "</form><br />";
 echo "<a href=\"lists.php?action=buds&sid=$sid\">";
 echo "<img src=\"images/pen.png\" alt=\"*\">Meus Amigos</a><br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 /////////////////////////////////perfil profile
@@ -1142,7 +1129,7 @@ $who = getuid_nick($mnick);
 $whonick = getnick_uid($who);
 if($whonick!="")
 {
-$vip = mysql_fetch_array(mysql_query("SELECT vip FROM fun_users WHERE id='".$who."'"));
+$vip = $pdo->query("SELECT vip FROM fun_users WHERE id='".$who."'")->fetch();
 if(ismod($who) OR $vip[0]=="1")
 {
 if($who=="1")
@@ -1167,7 +1154,7 @@ else{
 $avlink = getavatar($who);
 if ($avlink=="")
 {
-$sex = mysql_fetch_array(mysql_query("SELECT sex FROM fun_users WHERE id='".$who."'"));
+$sex = $pdo->query("SELECT sex FROM fun_users WHERE id='".$who."'")->fetch();
 if($sex[0]=='M')
 {
 echo "<br /><img src=\"teks/nophotoboy.gif\" alt=\"avatar\"/><br />";
@@ -1182,7 +1169,7 @@ echo "<br /><img src=\"images/nopic.jpg\" alt=\"avatar\"/><br />";
 {
 echo "<br /><img src=\"$avlink\" width=\"150x150\" alt=\"avatar\"/>";
 }
-$humor = mysql_fetch_array(mysql_query("SELECT humor FROM fun_users WHERE id='".$who."'"));
+$humor = $pdo->query("SELECT humor FROM fun_users WHERE id='".$who."'")->fetch();
 if(!empty($humor[0]))
 {
 echo "<br />";
@@ -1194,7 +1181,7 @@ echo "</p>";
 echo "<p>";
 echo "<left>ID: <b>$who</b></left><br />";
 echo "Nick: $whonick<br />";
-$nopl = mysql_fetch_array(mysql_query("SELECT sex, birthday, location FROM fun_users WHERE id='".$who."'"));
+$nopl = $pdo->query("SELECT sex, birthday, location FROM fun_users WHERE id='".$who."'")->fetch();
 $uage = getage($nopl[1]);
 if($nopl[0]=='M')
 {
@@ -1206,12 +1193,12 @@ $usex = "Feminino";
 $usex = "GLS";
 }else
 {
-$usex = "N�o indentificado!";
+$usex = "Não indentificado!";
 }
 $nopl[2] = htmlspecialchars($nopl[2]);
 echo "<left>Idade: <b>$uage</b></left><br />";
 echo "Sexo: <b>$usex</b><br />";
-$nopl = mysql_fetch_array(mysql_query("SELECT plusses, vip FROM fun_users WHERE id='".$who."'"));
+$nopl = $pdo->query("SELECT plusses, vip FROM fun_users WHERE id='".$who."'")->fetch();
 echo "$smoeda: <b>$nopl[0]</b><br />";
 if(ismod($who) OR $nopl[1]=="1")
 {
@@ -1223,21 +1210,21 @@ if($uid==$who)
 {
 }
 else{
-mysql_query("INSERT INTO visitantes SET vid='".$uid."', uid='".$who."', hora='".time()."'");
+$pdo->query("INSERT INTO visitantes SET vid='".$uid."', uid='".$who."', hora='".time()."'");
 }
-$nv = mysql_fetch_array(mysql_query("SELECT visitas FROM fun_users WHERE id='".$who."'"));
+$nv = $pdo->query("SELECT visitas FROM fun_users WHERE id='".$who."'")->fetch();
 $soma = $nv[0] + 1;
-mysql_query("UPDATE fun_users SET visitas='".$soma."' WHERE id='".$who."'");
-$visitas = mysql_fetch_array(mysql_query("SELECT visitas FROM fun_users WHERE id='".$who."'"));
+$pdo->query("UPDATE fun_users SET visitas='".$soma."' WHERE id='".$who."'");
+$visitas = $pdo->query("SELECT visitas FROM fun_users WHERE id='".$who."'")->fetch();
 echo "Visitas: <a href=\"visitas.php?who=$who&sid=$sid\">$visitas[0]</a><br />";
-$tempo = mysql_fetch_array(mysql_query("SELECT tottimeonl FROM fun_users WHERE id='".$who."'"));
+$tempo = $pdo->query("SELECT tottimeonl FROM fun_users WHERE id='".$who."'")->fetch();
 $tempo = floor($tempo[0]/60);
 echo "Tempo online: <b>$tempo minutos</b><br />";
-$xd = mysql_fetch_array(mysql_query("SELECT sex, birthday, location, specialid FROM fun_users WHERE id='".$who."'"));
+$xd = $pdo->query("SELECT sex, birthday, location, specialid FROM fun_users WHERE id='".$who."'")->fetch();
 $uage = getage($nopl[1]);
-$nopll = mysql_fetch_array(mysql_query("SELECT location FROM fun_users WHERE id='".$who."'"));
+$nopll = $pdo->query("SELECT location FROM fun_users WHERE id='".$who."'")->fetch();
 echo "Localidade: <b>$nopll[0]</b><br />";
-$rperm = mysql_fetch_array(mysql_query("SELECT rperm, ruser FROM fun_users WHERE id='".$uid."'"));
+$rperm = $pdo->query("SELECT rperm, ruser FROM fun_users WHERE id='".$uid."'")->fetch();
 if($rperm[0]==0||$rperm[0]=="")
 {
 echo "Relacionamento: <b>Solteiro(a)</b><br />";
