@@ -9,8 +9,8 @@ $_GET = array_map('strip_tags', $_GET);
 $_POST = array_map('strip_tags', $_POST);
 $_GET = array_map('htmlspecialchars', $_GET);
 $_POST = array_map('htmlspecialchars', $_POST);
-$_GET = array_map('anti_injection', $_GET);
-$_POST = array_map('anti_injection', $_POST);
+//$_GET = array_map('anti_injection', $_GET);
+//$_POST = array_map('anti_injection', $_POST);
 
 function arquivo_extfoto($ext)
 {
@@ -872,21 +872,29 @@ $pdo->query("UPDATE fun_users SET tempon='0', plusses='".$pontos."' WHERE id='".
 }
 $ttime = time();
 $res = $pdo->query("UPDATE fun_users SET lastact='".$ttime."' WHERE id='".$uid."'");
-$res = $pdo->query("INSERT INTO fun_online SET userid='".$uid."', actvtime='".$ttime."', place='".$place."', placedet='".$plclink."'");
-if(!$res)
+
+////consultar se tem resgistro do usuario online
+$on = $pdo->query("SELECT userid FROM fun_online WHERE userid='".$uid."'")->fetch();
+if($on[0] == $uid) {
+    //se encontrar somente atualizar para nao inserir outro resgisto
+    $pdo->query("UPDATE fun_online SET actvtime='".$ttime."', place='".$place."', placedet='".$plclink."' WHERE userid='".$uid."'");
+}
+else
 {
-//most probably userid already in the online list
-//so just update the place and time
-$res = $pdo->query("UPDATE fun_online SET actvtime='".$ttime."', place='".$place."', placedet='".$plclink."' WHERE userid='".$uid."'");
+    //se nao encontrar inserir os dados
+    $pdo->query("INSERT INTO fun_online SET userid='".$uid."', actvtime='".$ttime."', place='".$place."', placedet='".$plclink."'");
 }
 $maxmem = $pdo->query("SELECT value FROM fun_settings WHERE id='2'")->fetch();
 $result = $pdo->query("SELECT COUNT(*) FROM fun_online")->fetch();
+//especificar que a variavel $maxmem nao e um array para nao gerar erro
+if(!is_array($maxmem)) $maxmem = [];
 if($result[0]>=$maxmem[0])
 {
 $tnow = date("D/d/M/Y - H:i", time());
 $pdo->query("UPDATE fun_settings set name='".$tnow."', value='".$result[0]."' WHERE id='2'");
 }
 $maxtoday = $pdo->query("SELECT ppl FROM fun_mpot WHERE ddt='".date("d m y")."'")->fetch();
+if(!is_array($maxtoday)) $maxtoday = [];
 if($maxtoday[0]==0||$maxtoday=="")
 {
 $pdo->query("INSERT INTO fun_mpot SET ddt='".date("d/m/y")."', ppl='1', dtm='".date("H:i:s")."'");

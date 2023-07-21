@@ -2,8 +2,7 @@
 //include core.php and config.php files
 include("core.php");
 include("config.php");
-//db connect
-bd_connect();
+
 //html code
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -28,11 +27,11 @@ $localidade = $_POST["localidade"];
 echo "<p>";
 if(!canreg())
 {
-echo "<img src=\"images/notok.gif\"/>Cadastros n„o disponiveis no momento, futuro usu·rio por favor tente novamente mais tarde!";
+echo "<img src=\"images/notok.gif\"/>Cadastros n√£o disponiveis no momento, futuro usu√°rio por favor tente novamente mais tarde!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a></p>";
+echo "P√°gina principal</a></p>";
 exit;
 }
 if(empty($nome))//empty name
@@ -76,9 +75,9 @@ else
 $by 	 = "$ano-$mes-$dia";//niver format
 $_POST   = array_map("trim", $_POST);//scape spacing in words
 $comando = "INSERT INTO fun_users SET name='".$nome."', pass='".md5($senha)."', birthday='".$by."', sex='".$sex."', location='".$localidade."', plusses='21', ipadd='".ver_ip()."', regdate='".time()."'";
-mysql_query($comando) or die(mysql_error());
+$pdo->query($comando);
 //auto pm welcome
-$msg = "Ol· /reader, seja bem vindo ao $snome, estamos felizes por se cadastrar em nossa comunidade! Ser· um prazer trazer laser e divers„o para vocÍ! Divirta-se postando no [b]forum[/b], compartilhe fotos no seu [b]·lbum[/b], poste sua opiniıes no [b]mural[/b] e muito mais![br/]AtÈ breve, AbraÁos da equipe!";
+$msg = "Ol√° /reader, seja bem vindo ao $snome, estamos felizes por se cadastrar em nossa comunidade! Ser√° um prazer trazer laser e divers√£o para voc·∫Ω! Divirta-se postando no [b]forum[/b], compartilhe fotos no seu [b]√Ålbum[/b], poste sua opini√µes no [b]mural[/b] e muito mais![br/]At√© breve, Abra√ßos da equipe!";
 autopm($msg, getuid_nick($nome));
 //fim
 echo "<img src=\"images/ok.gif\">Cadastro realizado com sucesso!<br>";
@@ -90,10 +89,10 @@ exit();
 //form register.php
 echo "<br />";
 echo "<form action=\"\" method=\"POST\">";
-echo "Usu·rio: <input name=\"nome\" maxlength=\"50\"><br>";
+echo "Usu√°rio: <input name=\"nome\" maxlength=\"50\"><br>";
 echo "Senha: <input name=\"senha\" maxlength=\"50\" type=\"PASSWORD\"><br>";
 echo "Repita a senha: <input name=\"senha2\" maxlength=\"50\" type=\"PASSWORD\"><br>";
-echo "Anivers·rio<small>(DD-MM-YYYY)</small>: <input name=\"dia\" style=\"-wap-input-format:'*N'\" maxlength=\"2\" size=\"2\"> <input name=\"mes\" style=\"-wap-input-format:'*N'\" maxlength=\"2\" size=\"2\"> <input name=\"ano\" style=\"-wap-input-format:'*N'\" maxlength=\"4\" size=\"4\"><br>";
+echo "Anivers√°rio<small>(DD-MM-YYYY)</small>: <input name=\"dia\" style=\"-wap-input-format:'*N'\" maxlength=\"2\" size=\"2\"> <input name=\"mes\" style=\"-wap-input-format:'*N'\" maxlength=\"2\" size=\"2\"> <input name=\"ano\" style=\"-wap-input-format:'*N'\" maxlength=\"4\" size=\"4\"><br>";
 echo "Sexo: <select name=\"sex\">";
 echo "<option value=\"M\">Homem</option>";
 echo "<option value=\"F\">Mulher</option>";
@@ -105,5 +104,5 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a></p>";
+echo "P√°gina principal</a></p>";
 ?>
