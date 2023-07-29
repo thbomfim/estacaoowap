@@ -35,7 +35,7 @@ exit();
 if(is_banido($uid))
 {
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais voc� foi banido do site!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais você foi banido do site!";
 echo "<br />";
 echo "<br />";
 $infos_ban = $pdo->query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')")->fetch();
