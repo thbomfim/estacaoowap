@@ -70,7 +70,7 @@ $Hour = date("G",time());
 $nick = getnick_uid($uid);
 if ($Hour <= 4) { $saldacao = "Boa Madrugada <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 11) { $saldacao = "Bom Dia <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
-else if ($Hour <= 12) { $saldacao = "Bom Almo�o <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
+else if ($Hour <= 12) { $saldacao = "Bom Almoço <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 17) { $saldacao = "Boa Tarde <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 22) { $saldacao = "Boa Noite <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
 else if ($Hour <= 24) { $saldacao = "Boa Madrugada <a href=\"index.php?action=perfil&who=$uid&sid=$sid\">$nick</a>!"; }
