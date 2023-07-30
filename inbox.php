@@ -1,7 +1,7 @@
 <?php
 //inludes core.php and config.php file
-include("core.php");
 include("config.php");
+include("core.php");
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
@@ -10,7 +10,6 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-bd_connect();//connect db
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $page = $_GET["page"];
@@ -21,7 +20,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ© logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -30,10 +29,10 @@ exit();
 if(is_banido($uid))
 {
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais você foi banido do site!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais vocï¿½ foi banido do site!";
 echo "<br />";
 echo "<br />";
-$infos_ban = mysql_fetch_array(mysql_query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')"));
+$infos_ban = $pdo->query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')")->fetch();
 echo "Tempo para acabar sua penalidade: " . tempo_msg($infos_ban[0]);
 echo "<br />";
 echo "Motivo da sua penalidade: <b>".htmlspecialchars($infos_ban[1])."</b>";
@@ -48,24 +47,24 @@ $whonick = getnick_uid($who);
 $uidnick = getnick_uid($uid);
 if(!isuser($who))
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Usuário não encontrado no banco de dados!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">UsuÃ¡rio nÃ£o encontrado no banco de dados!";
 echo "<br />";
 }
 else if($who == $uid)
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Não é possível enviar torpedos para você mesmo!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">NÃ£o Ã© possÃ­vel enviar torpedos para vocÃª mesmo!";
 echo "<br />";
 }
 else 
 {
-echo "Olá $uidnick, não tente enviar spam ou propagandas de outros sites para $whonick, você poderá ser punido!";
+echo "OlÃ¡ $uidnick, nÃ£o tente enviar spam ou propagandas de outros sites para $whonick, vocÃª poderÃ¡ ser punido!";
 echo "</p>";
 echo "<form action=\"inbxproc.php?action=sendpm&who=$who&sid=$sid\" method=\"post\">";
 echo "Texto: <input name=\"pmtext\" maxlength=\"500\"/><br/>";
 echo "Cor: <select name=\"cor\">";
-echo "<option value=\"#000000\">Padrão</option>";
+echo "<option value=\"#000000\">PadrÃ£o</option>";
 echo "<option value=\"#ff0000\">Vermelho</option>";
-echo "<option value=\"#00ff00\">Limão</option>";
+echo "<option value=\"#00ff00\">LimÃ£o</option>";
 echo "<option value=\"#ff00ff\">Pink</option>";
 echo "<option value=\"#006600\">Verde</option>";
 echo "<option value=\"#33ffff\">Aqua</option>";
@@ -82,7 +81,7 @@ echo "</form>";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////main pms full
@@ -172,9 +171,8 @@ LIMIT $limit_start, $items_per_page
 ";
 }
 echo "<p><small>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 if($item[3]=="1")
 {
@@ -198,7 +196,7 @@ echo "$lnk<br/>";
 echo "</small></p>";
 echo "<p align=\"center\">";
 $npage = $page+1;
-echo "<a href=\"m.php?sid=$sid\">Torpedo Multimídia</a><br/><br/>";
+echo "<a href=\"m.php?sid=$sid\">Torpedo Multimï¿½dia</a><br/><br/>";
 if($page>1)
 {
 $ppage = $page-1;
@@ -207,13 +205,13 @@ echo "<a href=\"inbox.php?action=main&page=$ppage&sid=$sid&view=$view$exp\">&#17
 if($page<$num_pages)
 {
 $npage = $page+1;
-echo "<a href=\"inbox.php?action=main&page=$npage&sid=$sid&view=$view$exp\">Próxima&#187;</a>";
+echo "<a href=\"inbox.php?action=main&page=$npage&sid=$sid&view=$view$exp\">Prï¿½xima&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/>";
 if($num_pages>2)
 {
 $rets = "<form action=\"inbox.php\" method=\"get\">";
-$rets .= "Pular para página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular para pï¿½gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= "	<input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"sid\" value=\"$sid\"/>";
@@ -236,23 +234,23 @@ else
 {
 /////error case pm = 0
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">No momento você não tem novos torpedos!";
+echo "<img src=\"images/notok.gif\" alt=\"\">No momento vocï¿½ nï¿½o tem novos torpedos!";
 echo "</p>";
 }
 /////final links
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="readpm")
 {
 adicionar_online(getuid_sid($sid),"Lendo sms","");
 echo "<p>";
-$pminfo = mysql_fetch_array(mysql_query("SELECT text, byuid, timesent,touid, reported, cor FROM fun_private WHERE id='".$pmid."'"));
+$pminfo = $pdo->query("SELECT text, byuid, timesent,touid, reported, cor FROM fun_private WHERE id='".$pmid."'")->fetch();
 if(getuid_sid($sid)==$pminfo[3])
 {
-$chread = mysql_query("UPDATE fun_private SET unread='0' WHERE id='".$pmid."'");//marca como lida
+$chread = $pdo->query("UPDATE fun_private SET unread='0' WHERE id='".$pmid."'");//marca como lida
 }
 if(($pminfo[3]==getuid_sid($sid))||($pminfo[1]==getuid_sid($sid)))
 {
@@ -289,7 +287,7 @@ if(isspam($pmtext))
 ////////reporta a pm
 if(($pminfo[4]=="0") && ($pminfo[1]!=1))
 {
-mysql_query("UPDATE fun_private SET reported='tk' WHERE id='".$pmid."'");
+$pdo->query("UPDATE fun_private SET reported='tk' WHERE id='".$pmid."'");
 }
 }
 echo "<div style=\"color:$pminfo[5]\">$pmtext</div>";
@@ -298,9 +296,9 @@ echo "<p align=\"center\">";
 echo "<form action=\"inbxproc.php?action=sendpm&who=$pminfo[1]&sid=$sid&pmid=$pmid\" method=\"post\">";
 echo "Resposta: <input name=\"pmtext\" maxlength=\"500\"/><br/>";
 echo "Cor: <select name=\"cor\">";
-echo "<option value=\"#000000\">Padrão</option>";
+echo "<option value=\"#000000\">Padrï¿½o</option>";
 echo "<option value=\"#ff0000\">Vermelho</option>";
-echo "<option value=\"#00ff00\">Limão</option>";
+echo "<option value=\"#00ff00\">LimÃ£o</option>";
 echo "<option value=\"#ff00ff\">Pink</option>";
 echo "<option value=\"#006600\">Verde</option>";
 echo "<option value=\"#33ffff\">Aqua</option>";
@@ -316,7 +314,7 @@ echo "<input type=\"submit\" value=\"Enviar\"/>";
 echo "</form><br/>";
 $real = $pminfo[6]-1;
 echo "<br/><form action=\"inbxproc.php?action=proc&sid=$sid\" method=\"post\">";
-echo "Ação: <select name=\"pmact\">";
+echo "AÃ§Ã£o: <select name=\"pmact\">";
 echo "<option value=\"del-$pmid\">Apagar</option>";
 if(isstarred($pmid))
 {
@@ -332,11 +330,11 @@ echo "<br/><a href=\"inbox.php?action=dialog&sid=$sid&who=$pminfo[1]\">Ver Dialo
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Torpedo não existe!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Torpedo nÃ£o existe!";
 }
 echo "<br/><br/><a href=\"inbox.php?action=main&sid=$sid\">Voltar aos torpedos</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 ////////////dialog page
@@ -346,8 +344,7 @@ adicionar_online(getuid_sid($sid),"Vendo dialogo","");
 $uid = getuid_sid($sid);
 if($page=="" || $page<=0)$page=1;
 $myid = getuid_sid($sid);
-$pms = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE (byuid='".$uid."' AND touid='".$who."') OR (byuid='".$who."' AND touid='".$uid."') ORDER BY timesent"));
-echo mysql_error();
+$pms = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE (byuid='".$uid."' AND touid='".$who."') OR (byuid='".$who."' AND touid='".$uid."') ORDER BY timesent")->fetch();
 $num_items = $pms[0]; //changable
 $items_per_page= 7;
 $num_pages = ceil($num_items/$items_per_page);
@@ -356,8 +353,8 @@ $limit_start = ($page-1)*$items_per_page;
 if($num_items>0)
 {
 echo "<p>";
-$pms = mysql_query("SELECT byuid, text, timesent FROM fun_private WHERE (byuid='".$uid."' AND touid='".$who."') OR (byuid='".$who."' AND touid='".$uid."') ORDER BY timesent LIMIT $limit_start, $items_per_page");
-while($pm=mysql_fetch_array($pms))
+$pms = $pdo->query("SELECT byuid, text, timesent FROM fun_private WHERE (byuid='".$uid."' AND touid='".$who."') OR (byuid='".$who."' AND touid='".$uid."') ORDER BY timesent LIMIT $limit_start, $items_per_page");
+while($pm= $pms->fetch())
 {
 if(isonline($pm[0]))
 {
@@ -384,13 +381,13 @@ echo "<a href=\"inbox.php?action=dialog&page=$ppage&sid=$sid&who=$who\">&#171;An
 if($page<$num_pages)
 {
 $npage = $page+1;
-echo "<a href=\"inbox.php?action=dialog&page=$npage&sid=$sid&who=$who\">Próxima&#187;</a>";
+echo "<a href=\"inbox.php?action=dialog&page=$npage&sid=$sid&who=$who\">Prï¿½xima&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/>";
 if($num_pages>2)
 {
 $rets = "<form action=\"inbox.php\" method=\"get\">";
-$rets .= "Pular para página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular para pï¿½gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= " <input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"sid\" value=\"$sid\"/>";
@@ -401,14 +398,14 @@ echo $rets;
 }else
 {
 echo "<p align=\"center\">";
-echo "Sem dialogos disponíveis!";
+echo "Sem dialogos disponï¿½veis!";
 echo "<br />";
 }
 //////fim link
 echo "<br />";
 echo "<a href=\"inbox.php?action=main&sid=$sid\">Voltar aos torpedos</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 echo "</body>";

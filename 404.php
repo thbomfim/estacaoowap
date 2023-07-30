@@ -12,8 +12,8 @@ echo "</head>";
 
 echo "<p align=\"center\">";
 echo "<img src=\"images/logo.gif\"><br>";
-echo "<b>ERRO 404 - PAGINA N√O EXISTE!</b><br>A pagina que vocÍ est· tentando acessar n„o existe em nosso servidor ou esta temporariamente indisponivel!<br></p>";
+echo "<b>ERRO 404 - PAGINA N√ÉO EXISTE!</b><br>A pagina que voc√™ est√© tentando acessar n√£o existe em nosso servidor ou esta temporariamente indisponivel!<br></p>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php\"><img src=\"images/home.gif\">P·gina principal</a></p>";
+echo "<a href=\"index.php\"><img src=\"images/home.gif\">P√°gina principal</a></p>";
 
 ?>

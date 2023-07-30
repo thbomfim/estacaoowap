@@ -11,8 +11,6 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-//db connect
-bd_connect();
 //get 
 $sid = $_GET["sid"];
 $a = $_GET["a"];
@@ -22,7 +20,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o est· logado!<br/><br/>";
+echo "Voc√™ n√£o est√° logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -31,7 +29,7 @@ exit();
 if($who==""||$who==0||isuser($who)==false)
 {
 echo "<p align=\"center\">";
-echo "Usu·rio n„o existe!<br><br>";
+echo "Usu√°rio n√£o existe!<br><br>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -40,12 +38,12 @@ exit();
 if($a=="a")
 {
 $p = $_GET["p"];
-adicionar_online("Vendo aÁıes", "", $sid);
+adicionar_online("Vendo a√ß√µes", "", $sid);
 echo "<p align=\"center\">";
 $nick = getnick_uid($who);
-echo "<b>AÁıes de $nick</b><br></p>";
+echo "<b>A√ß√µes de $nick</b><br></p>";
 if($p==""||$p<=0)$p=1;
-$n = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_acoes WHERE who='".$who."'"));
+$n = $pdo->query("SELECT COUNT(*) FROM fun_acoes WHERE who='".$who."'")->fetch();
 $num_itens = $n[0];
 $itens_per_page = 5;
 $num_pages = ceil($num_itens/$itens_per_page);
@@ -53,8 +51,8 @@ if(($p>$num_pages) AND $p!=1)$p = $num_itens;
 $limit_start = ($p-1)*$itens_per_page;
 $sql = "SELECT id, uid, acao, who, date FROM fun_acoes WHERE who='".$who."' ORDER BY date DESC LIMIT $limit_start,$itens_per_page";
 
-$reg = mysql_query($sql);
-while($acoes=mysql_fetch_array($reg))
+$reg = $pdo->query($sql);
+while($acoes = $reg->fetch())
 { 
 $n1 = getnick_uid($acoes[1]);
 $n2 = getnick_uid($acoes[3]);
@@ -77,36 +75,36 @@ echo "<br>$p/$num_pages<br><br>";
 if($uid!=$who)
 {
 $n = getnick_uid($who);
-echo "<a href=\"?a=enviar&sid=$sid&who=$who\">Enviar aÁ„o para $n</a><br>";
+echo "<a href=\"?a=enviar&sid=$sid&who=$who\">Enviar a√ß√£o para $n</a><br>";
 }
 echo "</p>";
 }
 else if($a=="enviar2")
 {
-adicionar_online("Enviando aÁ„o", "", $sid);
+adicionar_online("Enviando a√ß√£o", "", $sid);
 $acao = $_POST["acao"];
 echo "<p align=\"center\">";
 if(empty($who)||$who==0||!isuser($who))
 {
-echo "<img src=\"images/notok.gif\" alt=\"\"/>Usu·rio n„o existe!<br>";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Usu√°rio n√£o existe!<br>";
 }
 else if($uid==$who)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\"/>VocÍ n„o pode enviar aÁıes para vocÍ mesmo!<br>";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Voc√£ n√£o pode enviar a√ß√µes para voc·∫Ω mesmo!<br>";
 }
 else if(getplusses($uid)<149)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\"/>VocÍ deve ter 150 pontos para enviar uma aÁ„o!<br>";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Voc√™ deve ter 150 pontos para enviar uma a√ß√£o!<br>";
 }
 else
 {
-$res = mysql_query("INSERT INTO fun_acoes SET acao='".$acao."', who='".$who."', uid='".$uid."', date='".time()."'");
+$res = $pdo->query("INSERT INTO fun_acoes SET acao='".$acao."', who='".$who."', uid='".$uid."', date='".time()."'");
 if($res)
 {
 $de = getnick_uid2($uid);
-$sms = "Ol· /reader, vocÍ recebeu uma aÁ„o do usu·rio[b] $de [/b], para visualiza-la v· atÈ seu perfil![br/][small]Torpedo Altom·tico![/small]";
+$sms = "Ol√° /reader, voc√™ recebeu uma a√ß√£o do usu√°rio[b] $de [/b], para visualiza-la v√° at√© seu perfil![br/][small]Torpedo Altom√°tico![/small]";
 autopm($sms, $who);
-echo "<img src=\"images/ok.gif\" alt=\"\"/>AÁ„o enviada com sucesso!<br>";
+echo "<img src=\"images/ok.gif\" alt=\"\"/>A√ß√£o enviada com sucesso!<br>";
 }
 else
 {
@@ -116,21 +114,21 @@ echo "<img src=\"images/notok.gif\" alt=\"\"/>Erro, tente mais tarde!<br>";
 }
 else if($a=="enviar")
 {
-adicionar_online("Enviando aÁ„o", "", $sid);
+adicionar_online("Enviando a√ß√£o", "", $sid);
 echo "<p align=\"center\">";
-echo "<b>Enviar AÁıes</b><br/></p>";
+echo "<b>Enviar A√ß√µes</b><br/></p>";
 echo "<form action=\"?a=enviar2&sid=$sid&who=$who\" method=\"post\">";
-echo "AÁ„o: <select name=\"acao\">";
+echo "A√ß√£o: <select name=\"acao\">";
 //nick  voce
-echo "<option value=\"um abraÁo em\">AbraÁo</option>";
+echo "<option value=\"um abra√ßo em\">Abra√ßo</option>";
 echo "<option value=\"cutucou\">Cutucar</option>";
-echo "<option value=\"deu um pis„o em\">Pis„o</option>";
+echo "<option value=\"deu um pis√£o em\">Pis√£o</option>";
 echo "<option value=\"deu tapa em\">Tapa</option>";
 echo "<option value=\"deu um selino em\">Selinho</option>";
 echo "<option value=\"beliscou\">Beliscar</option>";
 echo "<option value=\"piscou para\">Piscar</option>";
 echo "<option value=\"gritou com\">Gritar</option>";
-echo "<option value=\"apertou a m„o de\">Aperto de m„o</option>";
+echo "<option value=\"apertou a m√£o de\">Aperto de m√£o</option>";
 echo "<option value=\"mandou uma cantada para\">Cantada</option>";
 echo "<option value=\"puxou o cabelo de\">Puxar Cabelo</option>";
 echo "<option value=\"deu uma rasteira em\">Rasteira</option>";
@@ -142,5 +140,5 @@ else
 {
 }
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P·gina principal</a></p>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P√°gina principal</a></p>";
 ?>

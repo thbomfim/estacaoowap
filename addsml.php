@@ -10,8 +10,6 @@ echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
 
-bd_connect();
-
 $sid = $_GET["sid"];
 $a = $_GET["a"];
 
@@ -20,7 +18,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o est· logado!<br/><br/>";
+echo "Voc√™ n√£o est√° logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -29,7 +27,7 @@ exit();
 if(!isadmin($uid))
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o È adminstrador!<br/><br/>";
+echo "Voc√™ n√£o √© adminstrador!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -48,14 +46,14 @@ $file = str_replace("H", "", $file);
 $file_ext = explode('.', $file);  
 $file_ext = strtolower($file_ext[count($file_ext) - 1]);
 $kbsize = (round($_FILES['sml']['size']/1024));
-$sml = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE scode='".$codigo."'"));
+$sml = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE scode='".$codigo."'")->fetch();
 if(empty($codigo)||strlen($codigo)<3)
 {
-echo "<b>Codigo do smilie deve conter mais de 4 caracteres e n„o pode ficar em branco!</b>";
+echo "<b>Codigo do smilie deve conter mais de 4 caracteres e n√£o pode ficar em branco!</b>";
 }
 else if($sml[0]>'0')
 {
-echo "<b>Smilie j· existe!</b>";
+echo "<b>Smilie j√° existe!</b>";
 }
 else if(empty($_FILES['sml']['name']))
 {
@@ -63,16 +61,16 @@ echo "<b>Selecione um arquivo para enviar!</b>";
 }
 else if($kbsize > 500)
 {
-echo "<b>Arquivo n„o pode ser maior que 500KB!</b>";
+echo "<b>Arquivo n√£o pode ser maior que 500KB!</b>";
 }
 else if(arquivo_extfoto($file_ext)=="1")
 {
-echo "<b>Esse aquivo n„o È um smilie!</b>";
+echo "<b>Esse aquivo n√£o √© um smilie!</b>";
 }
 else
 {
 $new_name = "SML_COD_".rand(1,100).rand(100,200).rand(1000,9999).".".$file_ext;
-$res = mysql_query("INSERT INTO fun_smilies SET scode='".$codigo."', imgsrc='".$pasta.$new_name."', hidden='0', cat='".$cat."'");
+$res = $pdo->query("INSERT INTO fun_smilies SET scode='".$codigo."', imgsrc='".$pasta.$new_name."', hidden='0', cat='".$cat."'");
 if($res)
 {
 move_uploaded_file($_FILES["sml"]["tmp_name"], $pasta.$new_name);
@@ -90,13 +88,13 @@ echo "<p align=\"center\">";
 echo "<b>Adicionar Smilies</b><br></p>";
 echo "<form action=\"?a=add&sid=$sid\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Arquivo: <input name=\"sml\" type=\"file\"><br>";
-echo "CÛdigo: <input name=\"codigo\"><br>";
+echo "CÔøΩdigo: <input name=\"codigo\"><br>";
 echo "Categoria: <select name=\"cat\"><br>";
 echo "<option value=\"1\">Diversas</option>";
 echo "<option value=\"2\">Datas especiais</option>";
 echo "<option value=\"3\">Personalizadas</option>";
 echo "<option value=\"4\">Terror/Halloween</option>";
-echo "<option value=\"5\">Amor/EmoÁıes</option>";
+echo "<option value=\"5\">Amor/Emo√ß√µes</option>";
 echo "<option value=\"6\">Times/Clubes</option>";
 echo "<option value=\"7\">Plaquinhas/Assinaturas</option>";
 echo "</select><br>";
@@ -104,5 +102,5 @@ echo "<input value=\"Enviar\" type=\"submit\"></form>";
 }
 echo "</p>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>P·gina principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>P√°gina principal</a>";
 ?>
