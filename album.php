@@ -8,8 +8,8 @@ return $texto;
 }
 
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -23,7 +23,6 @@ echo "</head>";
 
 echo "<body>";
 
-bd_connect();
 $a = $_GET["a"];
 $sid = $_GET["sid"];
 $page = $_GET["page"];
@@ -36,7 +35,7 @@ $vit = $_GET["vit"];
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -47,26 +46,26 @@ if($a=="new")
 {
 adicionar_online(getuid_sid($sid),"Criando um album","");
 echo "<p align=\"center\">";
-$meus = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_albums WHERE uid='".$uid."'"));
+$meus = $pdo->query("SELECT COUNT(*) FROM fun_albums WHERE uid='".$uid."'")->fetch();
 if($meus[0]==0)
 {
-mysql_query("INSERT INTO fun_albums SET uid='".$uid."', nome='".$uid."', logo='images/logo.gif', cmt='Nenhuma', time='".$time."', atul='".time()."'");
-echo "<b>Parabéns agora você tem seu álbum pessoal!</b><br/>";
+$pdo->query("INSERT INTO fun_albums SET uid='".$uid."', nome='".$uid."', logo='images/logo.gif', cmt='Nenhuma', time='".$time."', atul='".time()."'");
+echo "<b>ParabÃªns agora vocÃª tem seu Ã¡lbum pessoal!</b><br/>";
 }
 else
 {
-echo "<b>Desculpe, mais você já possue um álbum!</b><br>";
+echo "<b>Desculpe, mais vocÃª jÃ¡ possue um Ã¡lbum!</b><br>";
 }
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 
 else if($a=="cmt")
 {
-adicionar_online(getuid_sid($sid),"Comentarios do álbum","");
+adicionar_online(getuid_sid($sid),"Comentarios do Ã¡lbum","");
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_cmt_a WHERE did='".$did."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_cmt_a WHERE did='".$did."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
@@ -82,9 +81,8 @@ SELECT id, uid, did, texto, cor, time  FROM fun_cmt_a WHERE did='".$did."' ORDER
 LIMIT $limit_start, $items_per_page
 ";
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $nick = getnick_uid($item[1]);
 $text = scan_msg($item[3], $sid);
@@ -116,14 +114,14 @@ echo "<a href=\"?a=cmt&page=$npage&sid=$sid&did=$did\">Proximo&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/><br/>";
 }else{
-echo "<b>Não há comentarios neste album!</b><br/>";
+echo "<b>NÃ£o hÃ¡ comentarios neste album!</b><br/>";
 }
 echo "<br/><a href=\"album.php?a=cmt2&sid=$sid&did=$did\"><img src=\"teks/cmt.gif\" alt=\"*\"/>";
 echo "Adicionar comentario</a><br/>";
 echo "<a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 
@@ -148,9 +146,9 @@ echo "</select><br/>";
 echo "<input type=\"submit\" value=\"Gravar\"/>";
 echo "</form>";
 echo "<br/><a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 
 }
@@ -162,19 +160,19 @@ $texto = $_POST["texto"];
 $cor = $_POST["cor"];
 if($texto=="")
 {
-echo "<b>Digite álgum texto!</b><br/>";
+echo "<b>Digite algum texto!</b><br/>";
 }
 else
 {
 $time = time();
-mysql_query("INSERT INTO fun_cmt_a SET uid='".$uid."', did='".$did."', texto='".$texto."', cor='".$cor."', time='".$time."'");
-mysql_query("UPDATE fun_albums SET time='".$time."' WHERE id='".$did."'");
+$pdo->query("INSERT INTO fun_cmt_a SET uid='".$uid."', did='".$did."', texto='".$texto."', cor='".$cor."', time='".$time."'");
+$pdo->query("UPDATE fun_albums SET time='".$time."' WHERE id='".$did."'");
 echo "<b>Comentario enviado com sucesso!</b><br/>";
 }
 echo "<br/><a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 
@@ -184,18 +182,18 @@ adicionar_online(getuid_sid($sid),"Mudando avatar","");
 echo "<p align=\"center\">";
 if(candelfoto($uid, $vit))
 {
-$foto = mysql_fetch_array(mysql_query("SELECT url FROM fun_fotos WHERE id='".$vit."'"));
+$foto = $pdo->query("SELECT url FROM fun_fotos WHERE id='".$vit."'")->fetch();
 $url ="fotos/$foto[0]";
-mysql_query("UPDATE fun_users SET avatar='".$url."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET avatar='".$url."' WHERE id='".$uid."'");
 echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Avatar atualizado com sucesso!<br/>";
 }else
 {
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao mudar avatar!<br/>";
 }
 echo "<br/><a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 
@@ -206,13 +204,13 @@ adicionar_online(getuid_sid($sid),"Apagando foto de album","");
 echo "<p align=\"center\">";
 if(candelfoto($uid, $vit))
 {
-$url = mysql_fetch_array(mysql_query("SELECT url FROM fun_fotos WHERE id='".$vit."'"));
+$url = $pdo->query("SELECT url FROM fun_fotos WHERE id='".$vit."'")->fetch();
 $urls = "fotos/".$url[0];
 if(file_exists($urls))
 {
 unlink($urls);
 }
-mysql_query("DELETE FROM fun_fotos WHERE id='".$vit."'");
+$pdo->query("DELETE FROM fun_fotos WHERE id='".$vit."'");
 echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Foto apagada com sucesso!<br/>";
 }
 else
@@ -220,9 +218,9 @@ else
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao apagar foto!<br/>";
 }
 echo "<br/><a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 }
@@ -233,16 +231,16 @@ adicionar_online(getuid_sid($sid),"Apagando comentario de album","");
 echo "<p align=\"center\">";
 if(candelcmta($uid, $vit))
 {
-mysql_query("DELETE FROM fun_cmt_a WHERE id='".$vit."'");
+$pdo->query("DELETE FROM fun_cmt_a WHERE id='".$vit."'");
 echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Comentario apagado com sucesso!<br/>";
 }else
 {
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao apagar o comentario!<br/>";
 }
 echo "<br/><a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 else if($a=="albapagar")
@@ -251,39 +249,39 @@ adicionar_online(getuid_sid($sid),"Apagando album","");
 echo "<p align=\"center\">";
 if(candelalbum($uid, $vit))
 {
-mysql_query("DELETE FROM fun_albums WHERE id='".$vit."'");
-mysql_query("DELETE FROM fun_fotos WHERE did='".$vit."'");
-mysql_query("DELETE FROM fun_cmt_a WHERE did='".$vit."'");
-echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Álbum excluido com sucesso!<br/>";
+$pdo->query("DELETE FROM fun_albums WHERE id='".$vit."'");
+$pdo->query("DELETE FROM fun_fotos WHERE did='".$vit."'");
+$pdo->query("DELETE FROM fun_cmt_a WHERE did='".$vit."'");
+echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Ã¡lbum excluido com sucesso!<br/>";
 }else
 {
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao apagar album!<br/>";
 }
 echo "<br><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 
 else if($a=="capa")
 {
-adicionar_online(getuid_sid($sid),"Mudando capa do álbum","");
+adicionar_online(getuid_sid($sid),"Mudando capa do Ã¡lbum","");
 
 echo "<p align=\"center\">";
 
 $vit = $_GET["vit"];
 
-$a = mysql_fetch_array(mysql_query("SELECT url FROM fun_fotos WHERE id='".$vit."'"));
-$c = mysql_query("UPDATE fun_albums SET logo='".$a[0]."', atul='".time()."' WHERE id='".$vit."'");
+$a = $pdo->query("SELECT url FROM fun_fotos WHERE id='".$vit."'")->fetch();
+$c = $pdo->query("UPDATE fun_albums SET logo='".$a[0]."', atul='".time()."' WHERE id='".$vit."'");
 if($c)
 {
-echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Capa do álbum alterada com sucesso!<br>";
+echo "<img src=\"images/ok.gif\" alt=\"ok\"/>Capa do Ã¡lbum alterada com sucesso!<br>";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao mudar a capa do álbum!<br>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao mudar a capa do Ã¡lbum!<br>";
 }
 echo "<br><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 
@@ -295,7 +293,7 @@ echo "<p align=\"center\">";
 if($page=="" || $page<=0)$page=1;
 $timeout = 600;
 $timeon = time()-$timeout;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fotos WHERE did='".$did."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_fotos WHERE did='".$did."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 4;
 $num_pages = ceil($num_items/$items_per_page);
@@ -308,9 +306,8 @@ SELECT id, uid, url, cmt, time, did  FROM fun_fotos WHERE did='".$did."' ORDER B
 LIMIT $limit_start, $items_per_page
 ";
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $text = htmlspecialchars($item[3]);
 $tmstamp = $item[4];
@@ -340,15 +337,15 @@ echo "<a href=\"?a=fotos&page=$npage&sid=$sid&did=$did\">Proximo&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/><br/>";
 }else{
-echo "<b>Não há fotos neste album!</b><br/>";
+echo "<b>NÃ£o hÃ¡ fotos neste album!</b><br/>";
 }
 echo "<br>";
-$item = mysql_fetch_array(mysql_query("SELECT id, uid FROM fun_albums WHERE id='".$did."'"));
+$item = $pdo->query("SELECT id, uid FROM fun_albums WHERE id='".$did."'")->fetch();
 if($item[1]==getuid_sid($sid))echo "<a href=\"?a=upload&sid=$sid&did=$did\"><img src=\"images/add.gif\">Enviar Fotos</a><br>";
 echo "<a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 else if($a=="upload")
@@ -356,16 +353,16 @@ else if($a=="upload")
 adicionar_online(getuid_sid($sid),"Adicionando foto no album","");
 
 echo "<p align=\"left\">";
-echo "<img src=\"images/point.gif\">Não é premitidas fotos de núdez, em posições sexuais e pornograficas!.<br>";
-echo "<img src=\"images/point.gif\">Extenções permitidas: JPG, JPEG, PNG, GIF E BMP.<br>";
-echo "<img src=\"images/point.gif\">A equipe está liberada para moderar qualquer álbum sendo protegido por senha ou não!.<br>";
+echo "<img src=\"images/point.gif\">NÃ£o Ã© premitidas fotos de nudez, em posiÃ§Ãµes sexuais e pornograficas!.<br>";
+echo "<img src=\"images/point.gif\">ExtenÃ§Ãµes permitidas: JPG, JPEG, PNG, GIF E BMP.<br>";
+echo "<img src=\"images/point.gif\">A equipe estÃ¡ liberada para moderar qualquer Ã¡lbum sendo protegido por senha ou nÃ£o!.<br>";
 echo "<form action=\"album.php?sid=$sid&a=upfotos&did=$did\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Arquivo: <input type=\"file\" name=\"foto\"/><br/>";
-echo "Descrição: <input type=\"text\" name=\"cmt\"/><br/>";
+echo "DescriÃ§Ã£o: <input type=\"text\" name=\"cmt\"/><br/>";
 echo "<input type=\"submit\" value=\"Upload\"/>";
 echo "</form><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 }
@@ -381,14 +378,14 @@ $file_ext = explode('.', $clean_name);
 $file_ext = strtolower($file_ext[count($file_ext) - 1]);
 $kbsize = (round($_FILES['foto']['size']/1024));
 $clean_name = nome_arquivo($clean_name);
-$dono = mysql_fetch_array(mysql_query("SELECT uid FROM fun_albums WHERE id='".$did."'"));
+$dono = $pdo->query("SELECT uid FROM fun_albums WHERE id='".$did."'")->fetch();
 if($dono[0] != $uid)
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Você não é dono desse álbum!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"*\">VocÃª nÃ£o Ã© dono desse Ã¡lbum!<br/>";
 }
 else if(file_exists("fotos/$clean_name")) 
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Arquivo já existe no álbum!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"*\">Arquivo jÃ¡ existe no Ã¡lbum!<br/>";
 }
 else if($kbsize > 1024)
 {
@@ -396,22 +393,22 @@ echo "<img src=\"images/notok.gif\" alt=\"*\">Tamanho da imagem ultrapassa limit
 }else if(arquivo_extfoto($file_ext)=="1")
 {
 //log
-$msg = "%$uid% tentou enviar um arquivo com a extenção .".strtoupper($file_ext).", para seu álbum!";
+$msg = "%$uid% tentou enviar um arquivo com a extenÃ§Ã£o .".strtoupper($file_ext).", para seu Ã¡lbum!";
 addlog($msg);
-echo "<img src=\"images/notok.gif\" alt=\"*\">Não é permitido arquivos de fotos com extenção .".strtoupper($file_ext)."!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"*\">NÃ£o Ã© permitido arquivos de fotos com extenÃ§Ã£o .".strtoupper($file_ext)."!<br/>";
 }else
 {
 $nome_real = rand(0,9).rand(100,200).rand(1000,9999).".".$file_ext;
 move_uploaded_file($_FILES['foto']['tmp_name'], "fotos/".$nome_real);
 $time = time();
-mysql_query("INSERT INTO fun_fotos SET uid='".$uid."', url='".$nome_real."', cmt='".$cmt."', time='".$time."', did='".$did."'");
-mysql_query("UPDATE fun_albums SET atul='".time()."' WHERE id='".$did."'");
+$pdo->query("INSERT INTO fun_fotos SET uid='".$uid."', url='".$nome_real."', cmt='".$cmt."', time='".$time."', did='".$did."'");
+$pdo->query("UPDATE fun_albums SET atul='".time()."' WHERE id='".$did."'");
 echo "<img src=\"images/ok.gif\" alt=\"*\">Foto enviada com sucesso!<br/>";
 }
 echo "<br/><a href=\"album.php?a=ver&sid=$sid&id=$did\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 }
@@ -420,20 +417,20 @@ else if($a=="ver")
 {
 adicionar_online(getuid_sid($sid),"Visitando album","");
 echo "<p align=\"center\">";
-$album = mysql_fetch_array(mysql_query("SELECT id, uid, nome, logo, cmt, time, vis, pontos, senha, atul FROM fun_albums WHERE id='".$id."'"));
+$album = $pdo->query("SELECT id, uid, nome, logo, cmt, time, vis, pontos, senha, atul FROM fun_albums WHERE id='".$id."'")->fetch();
 if($album[0]==0)
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Álbum não existe, ou foi apagado!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Ã¡lbum nÃ£o existe, ou foi apagado!";
 echo "<br><br>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 exit;
 }
 $senha = $_POST["senha"];
 if($senha==$album[8] or $album[8]=="" or $album[1]==$uid or ismod($uid))
 {
-echo "<b>Álbum de ".getnick_uid($album[2])."</b><br/>";
+echo "<b>Ã¡lbum de ".getnick_uid($album[2])."</b><br/>";
 
 if(empty($album[3]) or !file_exists("fotos/".$album[3]))
 {
@@ -446,20 +443,20 @@ echo "<img src=\"fotos/$album[3]\" alt=\"*\" width=\"150x150\"/><br/>";
 echo "</p>";
 echo "<p align=\"left\">";
 $nick = getnick_uid($album[1]);
-echo "Descrição: <b>".htmlspecialchars($album[4])."</b><br>";
+echo "DescriÃ§Ã£o: <b>".htmlspecialchars($album[4])."</b><br>";
 echo "Dono: <b><a href=\"index.php?action=perfil&who=$album[1]&sid=$sid\">$nick</a></b><br/>";
 $vis = $album[6]+1;
 $pontos = "0";
 $valor = "0";
-mysql_query("UPDATE fun_albums SET vis='".$vis."', pontos='".$pontos."', valor='".$valor."' WHERE id='".$id."'");
+$pdo->query("UPDATE fun_albums SET vis='".$vis."', pontos='".$pontos."', valor='".$valor."' WHERE id='".$id."'");
 echo "Visitas: <b>$vis</b><br/><br/>";
 $data = date("d/m/Y - H:i:s", $album[9]);
-echo "Última atualização: $data<br><br>";
-$fotos = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fotos WHERE did='".$album[0]."'"));
+echo "Ãºltima atualizaÃ§Ã£o: $data<br><br>";
+$fotos = $pdo->query("SELECT COUNT(*) FROM fun_fotos WHERE did='".$album[0]."'")->fetch();
 echo "<a href=\"album.php?a=fotos&sid=$sid&did=$album[0]\"><img src=\"teks/galeria.gif\" alt=\"*\"/>";
 echo "Fotos($fotos[0])</a><br/><br/>";
-$cmt = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_cmt_a WHERE did='".$album[0]."'"));
-echo "<a href=\"album.php?a=cmt&sid=$sid&did=$album[0]\"><img src=\"teks/cmt.gif\" alt=\"*\"/>Comentários($cmt[0])</a><br/>";
+$cmt = $pdo->query("SELECT COUNT(*) FROM fun_cmt_a WHERE did='".$album[0]."'")->fetch();
+echo "<a href=\"album.php?a=cmt&sid=$sid&did=$album[0]\"><img src=\"teks/cmt.gif\" alt=\"*\"/>ComentÃ¡rios($cmt[0])</a><br/>";
 if($uid=="$album[1]" OR ismod($uid))
 {
 echo "<a href=\"album.php?a=editar&sid=$sid&id=$id\"><img src=\"images/cp.png\" alt=\"*\"/>";
@@ -475,22 +472,22 @@ echo "<form action=\"\" method=\"post\">";
 echo "Senha: <input name=\"senha\" type=\"text\"><br>";
 echo "<input type=\"submit\" value=\"Entrar\"></form>";
 }
-echo "<br/><a href=\"album.php?sid=$sid&a=albums\"><img src=\"images/0a.gif\" alt=\"*\"/>Álbums</a><br/>";
+echo "<br/><a href=\"album.php?sid=$sid&a=albums\"><img src=\"images/0a.gif\" alt=\"*\"/>Ã¡lbums</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 else if($a=="editar")
 {
 adicionar_online(getuid_sid($sid),"Editando album","");
-$album = mysql_fetch_array(mysql_query("SELECT id, uid, nome, logo, cmt, time, senha FROM fun_albums WHERE id='".$id."'"));
+$album = $pdo->query("SELECT id, uid, nome, logo, cmt, time, senha FROM fun_albums WHERE id='".$id."'")->fetch();
 echo "<p align=\"center\">";
 if($uid=="$album[1]" OR ismod($uid))
 {
 echo "<p align=\"center\">";
-echo "<b>Definições gerais</b>";
+echo "<b>DefiniÃ§Ãµes gerais</b>";
 echo "<form action=\"album.php?a=editar2&sid=$sid&id=$id\" method=\"post\">";
-echo "Descrição: <input name=\"cmt\" value=\"$album[4]\" maxlength=\"300\"/><br/>";
+echo "DescriÃ§Ã£o: <input name=\"cmt\" value=\"$album[4]\" maxlength=\"300\"/><br/>";
 echo "Senha (deixe em branco para desativar): <input name=\"senha\" type=\"text\" value=\"$album[6]\"><br>";
 echo "<input type=\"submit\" value=\"Editar album\"/>";
 echo "</form><p align=\"center\"><br/>";
@@ -498,50 +495,50 @@ echo "<a href=\"album.php?a=albapagar&sid=$sid&vit=$id\"><img src=\"teks/pro.png
 echo "Apagar album</a><br/>";
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Esse álbum não é seu!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Esse Ã¡lbum nÃ£o Ã© seu!<br/>";
 echo "<br />";
 }
 echo "<a href=\"album.php?a=ver&sid=$sid&id=$id\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 
 else if($a=="editar2")
 {
 adicionar_online(getuid_sid($sid),"Editando album","");
-$album = mysql_fetch_array(mysql_query("SELECT id, uid, nome, logo, cmt, time FROM fun_albums WHERE id='".$id."'"));
+$album = $pdo->query("SELECT id, uid, nome, logo, cmt, time FROM fun_albums WHERE id='".$id."'")->fetch();
 echo "<p align=\"center\">";
 if($uid=="$album[1]" OR ismod($uid))
 {
 $senha = $_POST["senha"];
 $cmt = $_POST["cmt"];
 $time = time();
-mysql_query("UPDATE fun_albums SET nome='".$uid."', cmt='".$cmt."', time='".$time."', senha='".$senha."' WHERE id='".$id."'");
-echo "<b>Álbum atualizado com sucesso!</b><br/>";
+$pdo->query("UPDATE fun_albums SET nome='".$uid."', cmt='".$cmt."', time='".$time."', senha='".$senha."' WHERE id='".$id."'");
+echo "<b>Ã¡lbum atualizado com sucesso!</b><br/>";
 }else
 {
-echo "<b>Esse álbum não é seu!</b><br/>";
+echo "<b>Esse Ã¡lbum nÃ£o Ã© seu!</b><br/>";
 }
 echo "<br><a href=\"album.php?a=ver&sid=$sid&id=$id\"><img src=\"images/0a.gif\" alt=\"*\"/>";
-echo "Voltar para o Álbum</a><br/>";
+echo "Voltar para o Ã¡lbum</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 }
 
 else if($a=="albums")
 {
-adicionar_online(getuid_sid($sid),"Vendo álbums","");
+adicionar_online(getuid_sid($sid),"Vendo ï¿½lbums","");
 echo "<p align=\"center\">";
 
 if($page=="" || $page<=0)$page=1;
 $vip = 'tek';
 $timeout = 600;
 $timeon = time()-$timeout;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_albums "));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_albums ")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 6;
 $num_pages = ceil($num_items/$items_per_page);
@@ -556,12 +553,11 @@ SELECT id, uid, nome, logo, cmt, time  FROM fun_albums ORDER BY time DESC
 LIMIT $limit_start, $items_per_page
 ";
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $lnk = "<a href=\"album.php?id=$item[0]&sid=$sid&a=ver\"><img src=\"images/0a.gif\" alt=\"*\"/>".getnick_uid($item[2])."</a><br/>";
-$fotos = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fotos WHERE did='".$item[0]."'"));
+$fotos = $pdo->query("SELECT COUNT(*) FROM fun_fotos WHERE did='".$item[0]."'")->fetch();
 $nick = getnick_uid($item[1]);
 
 echo "$lnk Fotos: $fotos[0]<br/><br/>";
@@ -581,17 +577,17 @@ echo "<a href=\"?a=albums&page=$npage&sid=$sid\">Proximo&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/><br/>";
 }else{
-echo "<b>Nenhum álbum no momento!</b><br/><br/>";
+echo "<b>Nenhum Ã¡lbum no momento!</b><br/><br/>";
 }
-$na = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_albums WHERE uid='".$uid."'"));
+$na = $pdo->query("SELECT COUNT(*) FROM fun_albums WHERE uid='".$uid."'")->fetch();
 if($na[0]<1)
 {
 echo "<a href=\"album.php?a=new&sid=$sid\"><img src=\"teks/arrow.gif\" alt=\"*\"/>";
-echo "Novo álbum</a><br/>";
+echo "Novo ï¿½lbum</a><br/>";
 }
 
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "Pï¿½gina principal</a><br/>";
 
 echo "</p>";
 }

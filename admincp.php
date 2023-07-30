@@ -10,7 +10,6 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-bd_connect();
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $uid = getuid_sid($sid);
@@ -18,16 +17,16 @@ $uid = getuid_sid($sid);
 if(!isadmin(getuid_sid($sid)))
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o È admin!<br/>";
+echo "Voc√™ n√£o √© admin!<br/>";
 echo "<br/>";
-echo "<a href=\"index.php\"><img src=\"images/home.gif\" alt=\"*\">P·gina principal</a>";
+echo "<a href=\"index.php\"><img src=\"images/home.gif\" alt=\"*\">P√°gina principal</a>";
 echo "</p>";
 exit();
 }
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Voce nao est· logado!<br/><br/>";
+echo "Voce nao est√° logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -42,31 +41,31 @@ echo "<p align=\"center\">";
 echo "<b>Admin CP</b>";
 echo "</p>";
 echo "<p>";
-echo "<b> - FÛrum e Chat</b><br/>";
-echo "<a href=\"admincp.php?action=cforum&sid=$sid\">&#187;Categorias do fÛrum</a><br/>";
-echo "<a href=\"admincp.php?action=forums&sid=$sid\">&#187;Subcategorias do fÛrum</a><br/>";
+echo "<b> - F√≥rum e Chat</b><br/>";
+echo "<a href=\"admincp.php?action=cforum&sid=$sid\">&#187;Categorias do f√≥rum</a><br/>";
+echo "<a href=\"admincp.php?action=forums&sid=$sid\">&#187;Subcategorias do f√≥rum</a><br/>";
 echo "<a href=\"admincp.php?action=chrooms&sid=$sid\">&#187;Salas de chat</a><br/>";
 echo "<br />";
-echo "<b> - ConfiguraÁıes do Site</b><br />";
+echo "<b> - Configura√ß√µes do Site</b><br />";
 echo "<a href=\"admincp.php?action=general&sid=$sid\">&#187;Configurar site</a><br/>";
 echo "<a href=\"admincp.php?action=clrdta&sid=$sid\">&#187;Limpar dados</a><br/>";
 echo "<a href=\"parceiros.php?a=admin&sid=$sid\">&#187;Adicionar parceiro</a><br />";
 echo "<a href=\"admincp.php?action=spam&sid=$sid\">&#187;Guardian Anti-Spam</a><br/>";
 echo "<br />";
-echo "<b> - Moderar Usu·rios</b><br />";
+echo "<b> - Moderar Usu√°rios</b><br />";
 echo "<a href=\"admincp.php?action=ip&sid=$sid\">&#187;Buscar por IP</a><br/>";
-echo "<a href=\"admincp.php?action=chuinfo&sid=$sid\">&#187;Modificar usu·rio</a><br/>";
+echo "<a href=\"admincp.php?action=chuinfo&sid=$sid\">&#187;Modificar usu√°rio</a><br/>";
 echo "<br />";
-echo "<b> - ¡rea dos Smilies</b><br />";
+echo "<b> - √°rea dos Smilies</b><br />";
 echo "<a href=\"addsml.php?sid=$sid\">&#187;Adicionar Smilies</a><br/>";
 echo "</p>";
 echo "<p align=\"center\">";
 $nick = getnick_uid($uid);
-echo "Ol· $nick, todas as suas aÁıes no painel da equipe est„o sendo registras em logs!";
+echo "Ol√° $nick, todas as suas a√ß√µes no painel da equipe est√£o sendo registras em logs!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////spam page
@@ -76,11 +75,11 @@ echo "<p align=\"center\">";
 echo "<b>Guardian  Anti-Spam</b>";
 echo "<br />";
 echo "<br />";
-echo "Ol·, seja bem vindo ao <b>Guardian</b> È o anti-spam do site, aqui vocÍ pode ver as palavras que ser„o detectadas pelo Guardian!";
+echo "Ol√°, seja bem vindo ao <b>Guardian</b> √© o anti-spam do site, aqui voc√™ pode ver as palavras que ser√£o detectadas pelo Guardian!";
 echo "<br />";
 $total = "SELECT COUNT(*) FROM fun_spam WHERE id";
-$total = mysql_query($total);
-$total = mysql_fetch_array($total);
+$total = $pdo->query($total);
+$total = $total->fetch();
 echo "Palavras prontas para serem detectadas: <b>".$total[0]." palavra(s)</b>!";
 echo "<br />";
 echo "<br />";
@@ -91,7 +90,7 @@ echo "</b>";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////ver spam
@@ -101,15 +100,15 @@ echo "<p align=\"center\">";
 echo "<b>Nova Palavra</b>";
 echo "</p>";
 $c = "SELECT id, txt FROM fun_spam WHERE id";
-$c = mysql_query($c);
-while ($txt = mysql_fetch_array($c))
+$c = $pdo->query($c);
+while ($txt = $c->fetch())
 {
 echo "Palavra: <b>$txt[1]</b> - <a href=\"admproc.php?action=aspam&id=$txt[0]&sid=$sid\">[X]</a>";
 echo "<br />";
 }
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////add spam
@@ -123,20 +122,20 @@ $add = $_POST["a"];
 if($add=="Adicionar")
 {
 $p = $_POST["p"];
-$outras = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_spam WHERE txt='".$p."'"));
+$outras = $pdo->query("SELECT COUNT(*) FROM fun_spam WHERE txt='".$p."'")->fetch();
 if(empty($p)||$p==""||is_numeric($p)||$outras[0]>0)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">N„o foi possÌvel adicionar a palavra!";
+echo "<img src=\"images/notok.gif\" alt=\"\">NÔøΩo foi possÔøΩvel adicionar a palavra!";
 }
 else
 {
-mysql_query("INSERT INTO fun_spam SET txt='".$p."'");
+$pdo->query("INSERT INTO fun_spam SET txt='".$p."'");
 echo "<img src=\"images/ok.gif\" alt=\"\">Palavra adicionada com sucesso!";
 }
 }
 else
 {
-echo "Cuidado ao adicionar palavras no guardian, pois todas as palavras <b>ser„o</b> detectadas por ele!";
+echo "Cuidado ao adicionar palavras no guardian, pois todas as palavras <b>ser√£o</b> detectadas por ele!";
 }
 echo "<form action=\"\" method=\"post\">";
 echo "Palavra: <input name=\"p\" type=\"text\"><br />";
@@ -144,39 +143,39 @@ echo "<input name=\"a\" type=\"submit\" value=\"Adicionar\">";
 echo "</form>";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////editar smilies
 else if($action=="editsml")
 {
 $smid = $_GET["smid"];
-$msg = "%$uid% est· editando os smilies!";
+$msg = "%$uid% est√° editando os smilies!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Editar Smilie</b><br/><br/>";
-$infos = mysql_fetch_array(mysql_query("SELECT scode FROM fun_smilies WHERE id='".$smid."'"));
+$infos = $pdo->query("SELECT scode FROM fun_smilies WHERE id='".$smid."'")->fetch();
 echo "<form action=\"admproc.php?action=editsml&sid=$sid&smid=$smid\" method=\"POST\">";
-echo "CÛdigo: <input name=\"codigo\" value=\"$infos[0]\"><br>";
+echo "C√≥digo: <input name=\"codigo\" value=\"$infos[0]\"><br>";
 echo "Categoria: <select name=\"cat\"><br>";
 echo "<option value=\"1\">Diversas</option>";
 echo "<option value=\"2\">Datas especiais</option>";
 echo "<option value=\"3\">Personalizadas</option>";
 echo "<option value=\"4\">Terror/Halloween</option>";
-echo "<option value=\"5\">Amor/EmoÁoes</option>";
+echo "<option value=\"5\">Amor/Emo√ß√µes</option>";
 echo "<option value=\"6\">Times/Clubes</option>";
 echo "<option value=\"7\">Plaquinhas/Assinaturas</option>";
 echo "</select><br>";
 echo "<input value=\"Atualizar\" type=\"submit\"></form><br>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////busca por ip //ok
 else if($action=="ip")
 {
-$msg = "%$uid% est· iniciando a busca de usu·rios por IP!";
+$msg = "%$uid% est√° iniciando a busca de usu√°rios por IP!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Buscar por IP</b>";
@@ -187,23 +186,23 @@ echo "<input type=\"submit\" value=\"Buscar\"/>";
 echo "</form>";
 echo "<br />";
 echo "<p align=\"center\">";
-echo "Para buscar usu·rios pelo IP voce deve digita-lo completo, exemplo: (<b>127.0.0.1</b>)!";
+echo "Para buscar usu√°rios pelo IP voce deve digita-lo completo, exemplo: (<b>127.0.0.1</b>)!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 }
 //////////////////////////////////ver ip resultados //ok
 else if($action=="verip")
 {
 $page = $_GET["page"];
 $ip = $_GET["ip"];
-$msg = "%$uid% est· vendo resultados da busca por IP($ip)!";
+$msg = "%$uid% est√° vendo resultados da busca por IP($ip)!";
 addlog($msg);
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE ipadd='".$ip."' "));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE ipadd='".$ip."' ")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 10;
 $num_pages = ceil($num_items/$items_per_page);
@@ -215,10 +214,10 @@ echo "</p>";
 //changable sql
 $sql = "SELECT id FROM fun_users WHERE ipadd='".$ip."' ORDER BY regdate LIMIT $limit_start, $items_per_page";
 echo "<p>";
-$items = mysql_query($sql);
-if(mysql_num_rows($items)>0)
+$items = $pdo->query($sql);
+if($items->rowCount()>0)
 {
-while ($item = mysql_fetch_array($items))
+while ($item = $items->fetch())
 {
 $nick = getnick_uid($item[0]);
 $lnk = "<a href=\"index.php?action=perfil&who=$item[0]&sid=$sid\">$nick</a>";
@@ -240,13 +239,13 @@ echo "<a href=\"admincp.php?action=$action&page=$npage&sid=$sid&ip=$ip\">Proximo
 echo "<br/>$page/$num_pages<br/>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////configuracoes do site //ok
 else if($action=="general")
 {
-$msg = "%$uid% est· alterando as configuraÁoes do site!";
+$msg = "%$uid% est√° alterando as configura√ß√µes do site!";
 addlog($msg);
 $xtm = getsxtm();
 $paf = flood_torpedos();
@@ -260,11 +259,11 @@ $arv = "e";
 $arv= "d";
 }
 echo "<p align=\"center\">";
-echo "<b>ConfiguraÁoes</b><br/>";
+echo "<b>Configura√ß√µes</b><br/>";
 echo "</p>";
 echo "<p>";
 echo "<form action=\"admproc.php?action=general&sid=$sid\" method=\"post\">";
-echo "PerÌodo da sessao: ";
+echo "Per√≠odo da sessao: ";
 echo "<input name=\"sesp\" format=\"*N\" maxlength=\"3\" size=\"3\ value=\"$xtm\"/>";
 echo "<br/>PM antiflood: <input name=\"pmaf\" format=\"*N\" maxlength=\"3\" size=\"3\" value=\"$paf\"/>";
 echo "<br/>Mural Admin: ";
@@ -281,16 +280,16 @@ echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////categorias do forum //ok
 else if($action=="cforum")
 {
-$msg = "%$uid% est· alterando as categorias do fÛrum!";
+$msg = "%$uid% est√° alterando as categorias do fÔøΩrum!";
 addlog($msg);
 echo "<p align=\"center\">";
-echo "<b>Categorias do FÛrum</b><br></p>";
+echo "<b>Categorias do F√≥rum</b><br></p>";
 echo "<a href=\"admincp.php?action=addcat&sid=$sid\">&#187;Nova Categoria</a><br/>";
 echo "<a href=\"admincp.php?action=edtcat&sid=$sid\">&#187;Modificar Categoria</a><br/>";
 echo "<a href=\"admincp.php?action=delcat&sid=$sid\">&#187;Apagar Categoria</a><br/>";
@@ -299,23 +298,23 @@ echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////////editar salas de chat //ok
 else if($action=="chrooms")
 {
-$msg = "%$uid%, est· alterando as salas de chat do site!";
+$msg = "%$uid%, est√° alterando as salas de chat do site!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Salas de Chat</b></p>";
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_rooms"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_rooms")->fetch();
 if($noi[0]>0)
 {
 echo "<form action=\"admproc.php?action=delchr&sid=$sid\" method=\"post\">";
-$rss = mysql_query("SELECT name, id FROM fun_rooms");
+$rss = $pdo->query("SELECT name, id FROM fun_rooms");
 echo "Apagar Sala: <select name=\"chrid\">";
-while($rs=mysql_fetch_array($rss))
+while($rs = $rss->fetch())
 {
 echo "<option value=\"$rs[1]\">$rs[0]</option>";
 }
@@ -332,16 +331,16 @@ echo "<br />";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////////sub cat do forum //ok
 else if($action=="forums")
 {
-$msg = "%$uid% est· alterando as sub. cats do fÛrum!";
+$msg = "%$uid% est√° alterando as sub. cats do fÔøΩrum!";
 addlog($msg);
 echo "<p align=\"center\">";
-echo "<b>Subcategorias FÛrum</b><br></p>";
+echo "<b>Subcategorias F√≥rum</b><br></p>";
 echo "<a href=\"admincp.php?action=addfrm&sid=$sid\">&#187;Add subcat</a><br/>";
 echo "<a href=\"admincp.php?action=edtfrm&sid=$sid\">&#187;Editar subcat</a><br/>";
 echo "<a href=\"admincp.php?action=delfrm&sid=$sid\">&#187;Apagar subcat</a><br/>";
@@ -350,13 +349,13 @@ echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////////apagar dados antigos //ok
 else if($action=="clrdta")
 {
-$msg = "%$uid% est· limpando dados do site!";
+$msg = "%$uid% est√° limpando dados do site!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Limpar Dados</b><br></p>";
@@ -370,49 +369,49 @@ echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////////add categoria do forum //ok
 else if($action=="addcat")
 {
-$msg = "%$uid% est· adicionando uma nova categoria no fÛrum do site!";
+$msg = "%$uid% est√° adicionando uma nova categoria no fÔøΩrum do site!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Adicionar Categoria</b><br/><br/>";
-echo "O campo <b>posiÁao</b> vai alterar nas <b>posiÁoes reais dos tÛpicos</b>, para baixo ou cima!";
+echo "O campo <b>posi√ß√£o</b> vai alterar nas <b>posi√ß√µes reais dos t√≥picos</b>, para baixo ou cima!";
 echo "<br />";
 echo "<br />";
 echo "<form action=\"admproc.php?action=addcat&sid=$sid\" method=\"post\">";
-echo "Tit˙lo: <input name=\"fcname\" maxlength=\"30\"/><br/>";
-/* Aqui ser· gerado uma posicao altomatica logica: Posicao_Atual + 1 = Nova_Posicao */
-$max_id = mysql_fetch_array(mysql_query("SELECT MAX(position) FROM fun_fcats"));
+echo "Tit√∫lo: <input name=\"fcname\" maxlength=\"30\"/><br/>";
+/* Aqui ser√° gerado uma posicao altomatica logica: Posicao_Atual + 1 = Nova_Posicao */
+$max_id = $pdo->query("SELECT MAX(position) FROM fun_fcats")->fetch();
 $max_id = $max_id[0] + 1;
-echo "PosiÁao: <input name=\"fcpos\" format=\"*N\" size=\"3\" value=\"$max_id\" maxlength=\"3\"/><br/>";
+echo "Posi√ß√£o: <input name=\"fcpos\" format=\"*N\" size=\"3\" value=\"$max_id\" maxlength=\"3\"/><br/>";
 echo "<input type=\"submit\" value=\"Adicionar\"/>";
 echo "</form>";
 echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=cforum&sid=$sid\">";
-echo "Categorias do FÛrum</a><br/>";
+echo "Categorias do F√≥rum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////////
 else if($action=="addfrm")
 {
-$msg = "%$uid% est· adicionando uma sub cat no forum do site!";
+$msg = "%$uid% est√° adicionando uma sub cat no forum do site!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Add Subcat</b><br/><br/>";
 echo "<form action=\"admproc.php?action=addfrm&sid=$sid\" method=\"post\">";
 echo "Nome: <input name=\"frname\" maxlength=\"30\"/><br/>";
-echo "PosiÁao: <input name=\"frpos\" format=\"*N\" size=\"3\"  maxlength=\"3\"/><br/>";
-$cforum = mysql_query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
+echo "Posi√ß√£o: <input name=\"frpos\" format=\"*N\" size=\"3\"  maxlength=\"3\"/><br/>";
+$cforum = $pdo->query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
 echo "Categoria: <select name=\"fcid\">";
-while ($fcat=mysql_fetch_array($cforum))
+while ($fcat = $cforum->fetch())
 {
 echo "<option value=\"$fcat[0]\">$fcat[1]</option>";
 }
@@ -424,20 +423,20 @@ echo "Subcats do Forum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////Add nova sala de chat //ok
 else if($action=="addchr")
 {
-$msg = "%$uid% est· adicionando uma nova sala de chat no site!";
+$msg = "%$uid% est√° adicionando uma nova sala de chat no site!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Add Sala de Chat</b><br/><br/>";
 echo "<form action=\"admproc.php?action=addchr&sid=$sid\" method=\"post\">";
-echo "Tit˙lo: <input name=\"chrnm\" maxlength=\"30\"/><br/>";
+echo "Tit√∫lo: <input name=\"chrnm\" maxlength=\"30\"/><br/>";
 echo "Minimo de postagens: <input name=\"chrpst\" format=\"*N\" maxlength=\"4\" size=\"4\"/><br/>";
-echo "PermiÁao: <select name=\"chrprm\">";
+echo "Permi√ß√£o: <select name=\"chrprm\">";
 echo "<option value=\"0\">Todos</option>";
 echo "<option value=\"1\">Mods</option>";
 echo "<option value=\"2\">Admins</option>";
@@ -449,29 +448,29 @@ echo "Salas de Chat</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////////editando sub cats do forum
 else if($action=="edtfrm")
 {
-$msg = "%$uid% est· editando as sub cats do fÛrum!";
+$msg = "%$uid% est√° editando as sub cats do f√≥rum!";
 addlog($msg);
 echo "<p align=\"center\">";
-echo "<b>Editar sub cat do FÛrum</b><br/><br/>";
-$forums = mysql_query("SELECT id,name FROM fun_forums ORDER BY position, id, name");
+echo "<b>Editar sub cat do FÔøΩrum</b><br/><br/>";
+$forums = $pdo->query("SELECT id,name FROM fun_forums ORDER BY position, id, name");
 echo "<form action=\"admproc.php?action=edtfrm&sid=$sid\" method=\"post\">";
 echo "Forum: <select name=\"fid\">";
-while($forum=mysql_fetch_array($forums))
+while($forum = $forums->fetch())
 {
 echo "<option value=\"$forum[0]\">$forum[1]</option>";
 }
 echo "</select>";
 echo "<br/>Nome:<input name=\"frname\" maxlength=\"30\"/><br/>";
-echo "PosiÁao:<input name=\"frpos\" format=\"*N\" size=\"3\"  maxlength=\"3\"/><br/>";
-$cforum = mysql_query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
+echo "Posi√ß√£o:<input name=\"frpos\" format=\"*N\" size=\"3\"  maxlength=\"3\"/><br/>";
+$cforum = $pdo->query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
 echo "Categoria: <select name=\"fcid\">";
-while ($fcat=mysql_fetch_array($cforum))
+while ($fcat = $cforum->fetch())
 {
 echo "<option value=\"$fcat[0]\">$fcat[1]</option>";
 }
@@ -483,20 +482,20 @@ echo "Forums</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////apagando as subcats do forum
 else if($action=="delfrm")
 {
-$msg = "%$uid% est· querendo apagar alguma sub cat do fÛrum!";
+$msg = "%$uid% est√° querendo apagar alguma sub cat do f√≥rum!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Apagar Subcats</b><br/><br/>";
-$forums = mysql_query("SELECT id,name FROM fun_forums ORDER BY position, id, name");
+$forums = $pdo->query("SELECT id,name FROM fun_forums ORDER BY position, id, name");
 echo "<form action=\"admproc.php?action=delfrm&sid=$sid\" method=\"post\">";
 echo "Selecione: <select name=\"fid\">";
-while($forum=mysql_fetch_array($forums))
+while($forum = $forums->fetch())
 {
 echo "<option value=\"$forum[0]\">$forum[1]</option>";
 }
@@ -508,44 +507,44 @@ echo "Forum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 else if($action=="edtcat")
 {
-$msg = "%$uid% est· editando as categorias do fÛrum!";
+$msg = "%$uid% est√° editando as categorias do f√≥rum!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Editar Categoria</b><br/><br/>";
-$cforum = mysql_query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
+$cforum = $pdo->query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
 echo "<form action=\"admproc.php?action=edtcat&sid=$sid\" method=\"post\">";
 echo "Editar: <select name=\"fcid\">";
-while ($fcat=mysql_fetch_array($cforum))
+while ($fcat = $cforum->fetch())
 {
 echo "<option value=\"$fcat[0]\">$fcat[1]</option>";
 }
 echo "</select><br/>";
-echo "Tit˙lo: <input name=\"fcname\" maxlength=\"30\"/><br/>";
-echo "PosiÁao: <input name=\"fcpos\" format=\"*N\" size=\"3\"  maxlength=\"3\"/><br/>";
+echo "Tit√∫lo: <input name=\"fcname\" maxlength=\"30\"/><br/>";
+echo "Posi√ß√£o: <input name=\"fcpos\" format=\"*N\" size=\"3\"  maxlength=\"3\"/><br/>";
 echo "<input type=\"submit\" value=\"Editar\"/>";
 echo "</form>";
 echo "<br/><br/><a href=\"admincp.php?action=cforum&sid=$sid\">";
-echo "Categorias do FÛrum</a><br/>";
+echo "Categorias do F√≥rum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }else if($action=="delcat")
 {
-$msg = "%$uid% est· modificando as categorias do site!";
+$msg = "%$uid% est√° modificando as categorias do site!";
 addlog($msg);
 echo "<p align=\"center\">";
 echo "<b>Apagar Categoria</b><br/><br/>";
-$cforum = mysql_query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
+$cforum = $pdo->query("SELECT id, name FROM fun_fcats ORDER BY position, id, name");
 echo "<form action=\"admproc.php?action=delcat&sid=$sid\" method=\"post\"/>";
 echo "Selecione: <select name=\"fcid\">";
-while ($fcat=mysql_fetch_array($cforum))
+while ($fcat = $cforum->fetch())
 {
 echo "<option value=\"$fcat[0]\">$fcat[1]</option>";
 }
@@ -553,20 +552,20 @@ echo "</select><br/>";
 echo "<input type=\"submit\" value=\"Apagar\"/>";
 echo "</form>";
 echo "<br/><br/><a href=\"admincp.php?action=cforum&sid=$sid\">";
-echo "Categorias do FÛrum</a><br/>";
+echo "Categorias do F√≥rum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////user info
 else if($action=="chuinfo")
 {
-$msg = "%$uid% vai modificar o perfil de algum usu·rio!";
+$msg = "%$uid% vai modificar o perfil de algum usu√°rio!";
 addlog($msg);
 echo "<p align=\"center\">";
-echo "<b>Mod AvanÁado</b><br/><br/>";
+echo "<b>Mod Avan√ßado</b><br/><br/>";
 echo "<form action=\"admincp.php?action=acui&sid=$sid\" method=\"post\">";
 echo "ID do usuario: <input name=\"unick\" format=\"*x\" maxlength=\"15\"/><br/>";
 echo "<input type=\"submit\" value=\"Buscar\"/>";
@@ -574,7 +573,7 @@ echo "</form>";
 echo "<br/><br/><a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////Change User info
@@ -586,19 +585,19 @@ $whn = getnick_uid2($tid);
 echo "<p align=\"center\">";
 if($tid == 1)
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\"/>Usu·rio de ID 1 nao pode ser modificado!";
+echo "<img src=\"images/notok.gif\" alt=\"*\"/>Usu√°rio de ID 1 nao pode ser modificado!";
 echo "<br />";
 echo "<br />";
 }
 else if($tid==0||!isuser($tid))
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\"/>Usu·rio nao existe!";
+echo "<img src=\"images/notok.gif\" alt=\"*\"/>Usu√°rio nao existe!";
 echo "<br />";
 echo "<br />";
 }else
 {
 //log
-$msg = "%$uid% est· alterando perfil de $whn!";
+$msg = "%$uid% est√° alterando perfil de $whn!";
 addlog($msg);
 echo "</p>";
 echo "<p>";
@@ -609,11 +608,11 @@ echo "</p>";
 echo "<p align=\"center\">";
 }
 echo "<a href=\"admincp.php?action=chuinfo&sid=$sid\">";
-echo "Mod AvanÁado</a><br/>";
+echo "Mod Avan√ßado</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////////////////editar perfil de user
@@ -621,28 +620,28 @@ else if($action=="chubi")
 {
 $who = $_GET["who"];
 $whn = getnick_uid2($who);
-$msg = "%$uid% est· editando o perfil completo de $whn!";
+$msg = "%$uid% est√° editando o perfil completo de $whn!";
 addlog($msg);
 $unick = getnick_uid($who);
-$email = mysql_fetch_array(mysql_query("SELECT email FROM fun_users WHERE id='".$who."'"));
-$bdy = mysql_fetch_array(mysql_query("SELECT birthday FROM fun_users WHERE id='".$who."'"));
-$uloc = mysql_fetch_array(mysql_query("SELECT location FROM fun_users WHERE id='".$who."'"));
-$unick = mysql_fetch_array(mysql_query("SELECT name FROM fun_users WHERE id='".$who."'")); 
-$sx = mysql_fetch_array(mysql_query("SELECT sex FROM fun_users WHERE id='".$who."'"));
-$perm = mysql_fetch_array(mysql_query("SELECT perm FROM fun_users WHERE id='".$who."'"));
+$email = $pdo->query("SELECT email FROM fun_users WHERE id='".$who."'")->fetch();
+$bdy = $pdo->query("SELECT birthday FROM fun_users WHERE id='".$who."'")->fetch();
+$uloc = $pdo->query("SELECT location FROM fun_users WHERE id='".$who."'")->fetch();
+$unick = $pdo->query("SELECT name FROM fun_users WHERE id='".$who."'")->fetch(); 
+$sx = $pdo->query("SELECT sex FROM fun_users WHERE id='".$who."'")->fetch();
+$perm = $pdo->query("SELECT perm FROM fun_users WHERE id='".$who."'")->fetch();
 echo "<p>";
 echo "<form action=\"admproc.php?action=uprof&sid=$sid&who=$who\" method=\"post\">";
 echo "Nick: <input name=\"unick\" value=\"$unick[0]\"/><br/>";
 echo "E-Mail: <input name=\"semail\" maxlength=\"100\" value=\"$email[0]\"/><br/>";
-echo "Anivers·rio <small>(YYYY-MM-DD)</small>: <input name=\"ubday\" maxlength=\"50\" value=\"$bdy[0]\"/><br/>";
+echo "Anivers√°rio <small>(YYYY-MM-DD)</small>: <input name=\"ubday\" maxlength=\"50\" value=\"$bdy[0]\"/><br/>";
 echo "Localidade: <input name=\"uloc\" maxlength=\"50\" value=\"$uloc[0]\"/><br/>";
 echo "Sexo: <select name=\"usex\" value=\"$sx[0]\">";
 echo "<option value=\"M\">Masculino</option>";
 echo "<option value=\"F\">Feminino</option>";
 echo "<option value=\"G\">GLS</option>";
 echo "</select><br/>";
-echo "PrivilÈgios: <select name=\"perm\" value=\"$perm[0]\">";
-echo "<option value=\"0\">Usu·rio</option>";
+echo "Privil√©gios: <select name=\"perm\" value=\"$perm[0]\">";
+echo "<option value=\"0\">Usu√°rio</option>";
 echo "<option value=\"1\">Moderador</option>";
 echo "<option value=\"2\">Adminstrador</option>";
 echo "</select><br/>";
@@ -656,11 +655,11 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=chuinfo&sid=$sid\">";
-echo "Mod AvanÁado</a><br/>";
+echo "Mod Avan√ßado</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 else

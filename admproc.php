@@ -9,23 +9,22 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-bd_connect();
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $uid = getuid_sid($sid);
 if(!isadmin(getuid_sid($sid)))
 {
 echo "<p align=\"center\">";
-echo "Você não é admin!<br/>";
+echo "VocÃª nÃ£o Ã© admin!<br/>";
 echo "<br/>";
-echo "<a href=\"index.php\">Página principal</a>";
+echo "<a href=\"index.php\">PÃ¡gina principal</a>";
 echo "</p>";
 exit();
 }
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -46,10 +45,10 @@ else
 {
 $arv = 1;
 }
-$msg = "%$uid% atualizou todas as informações do site!";
+$msg = "%$uid% atualizou todas as informaÃ§Ãµes do site!";
 addlog($msg);
 echo "<p align=\"center\">";
-$res = mysql_query("UPDATE fun_settings SET value='".$fmsg."' WHERE name='4ummsg'");
+$res = $pdo->query("UPDATE fun_settings SET value='".$fmsg."' WHERE name='4ummsg'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Mural atualizado com sucesso!<br/>";
@@ -57,22 +56,22 @@ echo "<img src=\"images/ok.gif\" alt=\"O\"/>Mural atualizado com sucesso!<br/>";
 {
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error ao atualizar o mural!<br/>";
 }
-$res = mysql_query("UPDATE fun_settings SET value='".$xtm."' WHERE name='sesxp'");
+$res = $pdo->query("UPDATE fun_settings SET value='".$xtm."' WHERE name='sesxp'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"O\"/>Período da sessão atualizado!<br/>";
+echo "<img src=\"images/ok.gif\" alt=\"O\"/>PerÃ­odo da sessÃ£o atualizado!<br/>";
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error ao atualizar período da sessão!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error ao atualizar perÃ­odo da sessÃ£o!<br/>";
 }
-$res = mysql_query("UPDATE fun_settings SET value='".$pmaf."' WHERE name='pmaf'");
+$res = $pdo->query("UPDATE fun_settings SET value='".$pmaf."' WHERE name='pmaf'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>PM antiflood atualizado para $pmaf segundos!<br/>";
 }else{
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error ao atualizar antiflood!<br/>";
 }
-$res = mysql_query("UPDATE fun_settings SET value='".$arv."' WHERE name='reg'");
+$res = $pdo->query("UPDATE fun_settings SET value='".$arv."' WHERE name='reg'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Cadastros atualizados!<br/>";
@@ -83,24 +82,24 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error ao atualizar os cadastros!<
 }
 echo "<br/>";
 echo "<a href=\"admincp.php?action=general&sid=$sid\">";
-echo "Configurações</a><br/>";
+echo "ConfiguraÃ§Ãµes</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 /////////apagar spam
 else if($action=="aspam")
 {
 $id = $_GET["id"];
-mysql_query("DELETE FROM fun_spam WHERE id='".$id."'");
+$pdo->query("DELETE FROM fun_spam WHERE id='".$id."'");
 echo "<p align=\"center\">";
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Palavra apagada com sucesso!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="editsml")
@@ -111,19 +110,19 @@ $cat = $_POST["cat"];
 $smid = $_GET["smid"];
 if(empty($smid)||$smid==0)
 {
-echo "<b>Smilie não existe!</b><br>";
+echo "<b>Smilie nÃ£o existe!</b><br>";
 }
 else if(empty($c))
 {
-echo "<b>Digite um código para o smilie!</b><br>";
+echo "<b>Digite um cÃ³digo para o smilie!</b><br>";
 }
 else
 {
-$res = mysql_query("UPDATE fun_smilies SET scode='".$c."', cat='".$cat."' WHERE id='".$smid."'");
+$res = $pdo->query("UPDATE fun_smilies SET scode='".$c."', cat='".$cat."' WHERE id='".$smid."'");
 if($res)
 {
 ///log
-$msg = "%$uid% atualizou as informações do smilie ID($smid)!";
+$msg = "%$uid% atualizou as informaÃ§Ãµes do smilie ID($smid)!";
 addlog($msg);
 echo "<b>Smilie atualizado com sucesso!</b><br>";
 }
@@ -133,7 +132,7 @@ echo "<b>Erro, tente mais tarde!</b><br>";
 }
 }
 echo "<br><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delclub")
@@ -154,7 +153,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!<br/>";
 echo "<br/><br/><a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////adicionar nova categoria no forum
@@ -169,15 +168,15 @@ echo "<img src=\"images/notok.gif\" alt=\"*\">Por favor, digite o nome da <b>cat
 }
 else if(empty($fcpos))
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Por favor, digite a posição da categoria!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">Por favor, digite a posiï¿½ï¿½o da categoria!";
 }
 else if(!is_numeric($fcpos))
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Por favor, digite apenas números na posição!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">Por favor, digite apenas nï¿½meros na posiï¿½ï¿½o!";
 }
 else
 {
-$res = mysql_query("INSERT INTO fun_fcats SET name='".$fcname."', position='".$fcpos."'");
+$res = $pdo->query("INSERT INTO fun_fcats SET name='".$fcname."', position='".$fcpos."'");
 if($res)
 {
 /////log
@@ -193,11 +192,11 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro ao adicionar categoria!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"admincp.php?action=cforum&sid=$sid\">";
-echo "Categorias do Fórum</a><br/>";
+echo "Categorias do FÃ³rum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="addfrm")
@@ -212,20 +211,20 @@ if(empty($frname)||strlen($frname)<2)
 echo "<b>Verifique o nome da subcat!</b><br>";
 echo "</p>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a><br>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a><br>";
 echo "</p>";
 exit();
 }
 else if(!is_numeric($frpos))
 {
-echo "<b>Verifique a posição da subcat!</b><br>";
+echo "<b>Verifique a posiÃ§Ã£o da subcat!</b><br>";
 echo "</p>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a><br>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a><br>";
 echo "</p>";
 exit();
 }
-$res = mysql_query("INSERT INTO fun_forums SET name='".$frname."', position='".$frpos."', cid='".$fcid."'");
+$res = $pdo->query("INSERT INTO fun_forums SET name='".$frname."', position='".$frpos."', cid='".$fcid."'");
 if($res)
 {
 ////log
@@ -241,14 +240,14 @@ echo "Forum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delsm")
 {
 $smid = $_GET["smid"];
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_smilies WHERE id='".$smid."'");
+$res = $pdo->query("DELETE FROM fun_smilies WHERE id='".$smid."'");
 if($res)
 {
 $msg = "%$uid% apagou um smilie ID($smid)!";
@@ -261,7 +260,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error ao apagar o smilie!";
 echo "<br/><br/><a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="addchr")
@@ -276,8 +275,7 @@ echo "<b>Digite um nome para a sala de chat!</b>";
 }
 else
 {
-$res = mysql_query("INSERT INTO fun_rooms SET clubid='0', name='".$chrnm."', static='1', pass='', mage='0', chposts='".$chrpst."', perms='".$chrprm."', censord='0' , freaky='0'");
-echo mysql_error();
+$res = $pdo->query("INSERT INTO fun_rooms SET clubid='0', name='".$chrnm."', static='1', pass='', mage='0', chposts='".$chrpst."', perms='".$chrprm."', censord='0' , freaky='0'");
 if($res)
 {
 ////log
@@ -294,7 +292,7 @@ echo "Mod Chat</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Update profile
@@ -308,16 +306,16 @@ $ubday = $_POST["ubday"];
 $uloc = $_POST["uloc"];
 $usex = $_POST["usex"];
 echo "<p align=\"center\">";
-$onk = mysql_fetch_array(mysql_query("SELECT name FROM fun_users WHERE id='".$who."'"));
-$exs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE name='".$unick."'"));
+$onk = $pdo->query("SELECT name FROM fun_users WHERE id='".$who."'")->fetch();
+$exs = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE name='".$unick."'")->fetch();
 if($onk[0]!=$unick)
 {
 if($exs[0]>0)
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Este nick já está sendo usado!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Este nick jï¿½ estï¿½ sendo usado!<br/>";
 }else
 {
-$res = mysql_query("UPDATE fun_users SET avatar='".$savat."', email='".$semail."', birthday='".$ubday."', location='".$uloc."', sex='".$usex."', name='".$unick."', perm='".$perm."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET avatar='".$savat."', email='".$semail."', birthday='".$ubday."', location='".$uloc."', sex='".$usex."', name='".$unick."', perm='".$perm."' WHERE id='".$who."'");
 if($res)
 {
 ///log
@@ -331,7 +329,7 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao atualizar $unick!<br/>";
 }
 }else
 {
-$res = mysql_query("UPDATE fun_users SET avatar='".$savat."', email='".$semail."', birthday='".$ubday."', location='".$uloc."', sex='".$usex."', name='".$unick."', perm='".$perm."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET avatar='".$savat."', email='".$semail."', birthday='".$ubday."', location='".$uloc."', sex='".$usex."', name='".$unick."', perm='".$perm."' WHERE id='".$who."'");
 if($res)
 {
 ///log
@@ -343,11 +341,11 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao atualizar $unick!<br/>";
 }
 }
 echo "<br/><a href=\"admincp.php?action=chuinfo&sid=$sid\">";
-echo "Mod Avançado</a><br/>";
+echo "Mod AvanÃ§ado</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 /////////////user password
@@ -358,11 +356,11 @@ $who = $_GET["who"];
 echo "<p align=\"center\">";
 if((strlen($npwd)<4) || (strlen($npwd)>15))
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>A senha deve ter no mínimo 4 e no máximo 15 caracteres!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>A senha deve ter no mÃ­nimo 4 e no mÃ¡ximo 15 caracteres!<br/>";
 }else
 {
 $pwd = md5($npwd);
-$res = mysql_query("UPDATE fun_users SET pass='".$pwd."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET pass='".$pwd."' WHERE id='".$who."'");
 if($res)
 {
 ///log
@@ -375,11 +373,11 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao modificar!<br/>";
 }
 }
 echo "<br/><a href=\"admincp.php?action=chuinfo&sid=$sid\">";
-echo "Mod Avançado</a><br/>";
+echo "Mod AvanÃ§ado</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="edtfrm")
@@ -391,11 +389,11 @@ $fcid = $_POST["fcid"];
 echo "<p align=\"center\">";
 echo $frname;
 echo "<br/>";
-$res = mysql_query("UPDATE fun_forums SET name='".$frname."', position='".$frpos."', cid='".$fcid."' WHERE id='".$fid."'");
+$res = $pdo->query("UPDATE fun_forums SET name='".$frname."', position='".$frpos."', cid='".$fcid."' WHERE id='".$fid."'");
 if($res)
 {
 ///log
-$msg = "%$uid% atualizou uma subcat do fórum ID($fid), NOME($frname)!";
+$msg = "%$uid% atualizou uma subcat do fÃ³rum ID($fid), NOME($frname)!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Forum atualizado com sucesso!";
 }else
@@ -407,7 +405,7 @@ echo "Forums</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="edtcat")
@@ -422,11 +420,11 @@ echo "<b>Verifique o titulo da categoria!</b>";
 }
 else
 {
-$res = mysql_query("UPDATE fun_fcats SET name='".$fcname."', position='".$fcpos."' WHERE id='".$fcid."'");
+$res = $pdo->query("UPDATE fun_fcats SET name='".$fcname."', position='".$fcpos."' WHERE id='".$fcid."'");
 if($res)
 {
 ///log
-$msg = "%$uid% editou uma categoria do fórum ID($fcid), NOME($fcname)!";
+$msg = "%$uid% editou uma categoria do fÃ³rum ID($fcid), NOME($fcname)!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Categoria atualizada com sucesso!";
 }else
@@ -439,19 +437,19 @@ echo "Forum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delfrm")
 {
 $fid = $_POST["fid"];
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_forums WHERE id='".$fid."'");
+$res = $pdo->query("DELETE FROM fun_forums WHERE id='".$fid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Subcat apagado com sucesso!";
 ///log
-$msg = "%$uid% apagou uma subcat do fórum ID($fid)!";
+$msg = "%$uid% apagou uma subcat do fÃ³rum ID($fid)!";
 addlog($msg);
 }
 else
@@ -463,16 +461,16 @@ echo "Forum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delpms")
 {
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_private WHERE reported!='1' AND starred='0' AND unread='0'");
+$res = $pdo->query("DELETE FROM fun_private WHERE reported!='1' AND starred='0' AND unread='0'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"O\"/>Todos os torpedos, excerto não lidos e reportados, foram apagados!";
+echo "<img src=\"images/ok.gif\" alt=\"O\"/>Todos os torpedos, excerto nï¿½o lidos e reportados, foram apagados!";
 ///log
 $msg = "%$uid% apagou todos os torpedos do site!";
 addlog($msg);
@@ -485,14 +483,13 @@ echo "Limpar dados</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="clrmlog")
 {
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM addlog($msg);");
-echo mysql_error();
+$res = $pdo->query("DELETE FROM addlog($msg);");
 if($res)
 {
 ///log
@@ -508,14 +505,14 @@ echo "Limpar dados</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delsht")
 {
 echo "<p align=\"center\">";
 $altm = time()-(5*24*60*60);
-$res = mysql_query("DELETE FROM fun_shouts WHERE shtime<'".$altm."'");
+$res = $pdo->query("DELETE FROM fun_shouts WHERE shtime<'".$altm."'");
 if($res)
 {
 ///log
@@ -531,14 +528,14 @@ echo "Limpar dados</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delchr")
 {
 $chrid = $_POST["chrid"];
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_rooms WHERE id='".$chrid."'");
+$res = $pdo->query("DELETE FROM fun_rooms WHERE id='".$chrid."'");
 if($res)
 {
 ///log
@@ -555,7 +552,7 @@ echo "Mod Chat</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delu")
@@ -569,38 +566,38 @@ exit();
 }    
 echo "<p align=\"center\">";
 echo "<br/>";
-$res = mysql_query("DELETE FROM fun_buddies WHERE tid='".$who."' OR uid='".$who."'");
-$res = mysql_query("DELETE FROM fun_gbook WHERE gbowner='".$who."' OR gbsigner='".$who."'");
-$res = mysql_query("DELETE FROM fun_ignore WHERE name='".$who."' OR target='".$who."'");
-$res = mysql_query("DELETE FROM fun_penalties WHERE uid='".$who."' OR exid='".$who."'");
-$res = mysql_query("DELETE FROM fun_posts WHERE uid='".$who."'");
-$res = mysql_query("DELETE FROM fun_private WHERE byuid='".$who."' OR touid='".$who."'");
-$res = mysql_query("DELETE FROM fun_shouts WHERE shouter='".$who."'");
-$res = mysql_query("DELETE FROM fun_topics WHERE authorid='".$who."'");
-$res = mysql_query("DELETE FROM fun_chat WHERE chatter='".$who."'");
-$res = mysql_query("DELETE FROM fun_chat WHERE who='".$who."'");
-$res = mysql_query("DELETE FROM fun_chonline WHERE uid='".$who."'");
-$res = mysql_query("DELETE FROM fun_online WHERE userid='".$who."'");
-$res = mysql_query("DELETE FROM fun_ses WHERE uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_buddies WHERE tid='".$who."' OR uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_gbook WHERE gbowner='".$who."' OR gbsigner='".$who."'");
+$res = $pdo->query("DELETE FROM fun_ignore WHERE name='".$who."' OR target='".$who."'");
+$res = $pdo->query("DELETE FROM fun_penalties WHERE uid='".$who."' OR exid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_posts WHERE uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_private WHERE byuid='".$who."' OR touid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_shouts WHERE shouter='".$who."'");
+$res = $pdo->query("DELETE FROM fun_topics WHERE authorid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_chat WHERE chatter='".$who."'");
+$res = $pdo->query("DELETE FROM fun_chat WHERE who='".$who."'");
+$res = $pdo->query("DELETE FROM fun_chonline WHERE uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_online WHERE userid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_ses WHERE uid='".$who."'");
 deleteMClubs($who);
-$res = mysql_query("DELETE FROM fun_users WHERE id='".$who."'");
+$res = $pdo->query("DELETE FROM fun_users WHERE id='".$who."'");
 if($res)
 {
 ///log
-$msg = "%$uid% apagou o usuário $whn do site!";
+$msg = "%$uid% apagou o usuÃ¡rio $whn do site!";
 addlog($msg);
-echo "<img src=\"images/ok.gif\" alt=\"O\"/>Usuário apagado com sucesso!";
+echo "<img src=\"images/ok.gif\" alt=\"O\"/>UsuÃ¡rio apagado com sucesso!";
 }
 else
 {
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro!";
 }
 echo "<br/><br/><a href=\"admincp.php?action=chuinfo&sid=$sid\">";
-echo "Mod Avançado</a><br/>";
+echo "Mod AvanÃ§ado</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 //////////// Delete users posts
@@ -610,14 +607,14 @@ $who = $_GET["who"];
 if($who=="1")exit();    
 echo "<p align=\"center\">";
 echo "<br/>";
-$res = mysql_query("DELETE FROM fun_posts WHERE uid='".$who."'");
-$res = mysql_query("DELETE FROM fun_topics WHERE authorid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_posts WHERE uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_topics WHERE authorid='".$who."'");
 if($res)
 {
-mysql_query("UPDATE fun_users SET plusses='0' where id='".$who."'");
+$pdo->query("UPDATE fun_users SET plusses='0' where id='".$who."'");
 ///log
 $whn = getnick_uid2($who);
-$msg = "%$uid% apagou todas as postagens do usuário $whn!";
+$msg = "%$uid% apagou todas as postagens do usuÃ¡rio $whn!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Todas as postagens foram deletadas!";
 }else
@@ -625,18 +622,18 @@ echo "<img src=\"images/ok.gif\" alt=\"O\"/>Todas as postagens foram deletadas!"
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro ao deletar!";
 }
 echo "<br/><br/><a href=\"admincp.php?action=chuinfo&sid=$sid\">";
-echo "Mod Avançado</a><br/>";
+echo "Mod AvanÃ§ado</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="delcat")
 {
 $fcid = $_POST["fcid"];
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_fcats WHERE id='".$fcid."'");
+$res = $pdo->query("DELETE FROM fun_fcats WHERE id='".$fcid."'");
 if($res)
 {
 ///log
@@ -653,7 +650,7 @@ echo "Forum</a><br/>";
 echo "<a href=\"admincp.php?action=main&sid=$sid\"><img src=\"images/admn.gif\" alt=\"*\"/>";
 echo "Admin CP</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="logadmin")
@@ -662,7 +659,7 @@ echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
 if($uid == 1)
 {
-mysql_query("TRUNCATE TABLE fun_log");
+$pdo->query("TRUNCATE TABLE fun_log");
 echo "<img src=\"images/ok.gif\" alt=\"*\">Todos os logs foram apagados!";
 /////log
 $msg = "%$uid% limpou todos os logs!";
@@ -670,12 +667,12 @@ addlog($msg);
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Você não tem permição para limpar os logs!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">VocÃª nÃ£o tem permiÃ§Ã£o para limpar os logs!";
 }
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else
