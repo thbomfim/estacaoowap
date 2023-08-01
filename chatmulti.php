@@ -1,7 +1,6 @@
 <?php
 
 include("core.php");
-bd_connect();
 $a = $_GET["a"];
 $sid = $_GET["sid"];
 $rid = $_GET["rid"];
@@ -28,7 +27,7 @@ exit();
 }
 move_uploaded_file($_FILES['arquivo']['tmp_name'], $pasta.$nome);
 $uid = getuid_sid($sid);
-mysql_query("INSERT INTO fun_chat SET  chatter='".$uid."', who='".$who."', para='".$user."', timesent='".time()."', msgtext='[url=m/".$nome."]".$nome."[/url]', rid='".$rid."';");
+$pdo->query("INSERT INTO fun_chat SET  chatter='".$uid."', who='".$who."', para='".$user."', timesent='".time()."', msgtext='[url=m/".$nome."]".$nome."[/url]', rid='".$rid."';");
 $url = "chat.php?rid=$rid&rpw=$rpw&sid=$sid";
 header("Location: ".$url);
 }
@@ -51,9 +50,9 @@ echo "</p>";
 echo "<form action=\"chatmulti.php?a=enviar&rid=$rid&sid=$sid&rpw=$rpw\" method=\"post\" enctype=\"multipart/form-data\">";
 echo "Para:<br/><select name=\"usuario\">";
 echo "<option value=\"0\">Todos</option>";
-$inside=mysql_query("SELECT DISTINCT * FROM fun_chonline WHERE rid='".$rid."' and uid IS NOT NULL");
+$inside = $pdo->query("SELECT DISTINCT * FROM fun_chonline WHERE rid='".$rid."' and uid IS NOT NULL");
 
-while($ins=mysql_fetch_array($inside))
+while($ins = $inside->fetch())
 {
 $unick = getnick_uid2($ins[1]);
 echo "<option value=\"$ins[1]\">$unick</option>";

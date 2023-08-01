@@ -1,8 +1,7 @@
 <?php
 //include core.php and config.php file
-include("core.php");
 include("config.php");
-bd_connect();
+include("core.php");
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
@@ -20,7 +19,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid) == false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br><br>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br><br>";
 echo "<a href=\"index.php\">Login</a><br></p>";
 exit;
 }
@@ -29,19 +28,19 @@ if($a=="d")
 if(ismod($uid))
 {
 echo "<p align=\"center\">";
-$d = mysql_query("DELETE FROM fun_downloads WHERE id='".$id."'");
+$d = $pdo->query("DELETE FROM fun_downloads WHERE id='".$id."'");
 if($d)
 {
 echo "<img src=\"images/ok.gif\" alt=\"\">Download deletado com sucesso!";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Download não apagado!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Download nÃ£o apagado!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você não faz parte da equipe!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª nÃ£o faz parte da equipe!";
 }
 }
 else if($a=="adds")
@@ -54,17 +53,17 @@ $ext = arquivo_ext($nome);
 $size = (round($_FILES['file']['size']/1024));
 if(empty($_FILES["file"]["name"])||empty($n)) 
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Todos os campos são obrigatorios!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Todos os campos sÃ£o obrigatorios!";
 }
 else if($size>5120)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Arquivo é muito grande!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Arquivo Ã© muito grande!";
 }
 else if(arquivo($ext)=="1")
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Não é permitido enviar arquivos com a extenção .$ext!";
+echo "<img src=\"images/notok.gif\" alt=\"\">NÃ£o Ã© permitido enviar arquivos com a extenÃ§Ã£o .$ext!";
 //log
-$msg = "%uid% tentou enviar um arquivo da extenção .$ext para a página de downloads do site!";
+$msg = "%uid% tentou enviar um arquivo da extenÃ§Ã£o .$ext para a pÃ¡gina de downloads do site!";
 addlog($msg);
 }
 else
@@ -75,7 +74,7 @@ $new_name = strtoupper($new_name);
 $upload = move_uploaded_file($_FILES["file"]["tmp_name"], $pasta.$new_name);
 if($upload)
 {
-$res = mysql_query("INSERT INTO fun_downloads SET url='".$new_name."', nome='".$n."', visitas='0', categoria='".$c."', uid='".$uid."', data='".time()."'");
+$res = $pdo->query("INSERT INTO fun_downloads SET url='".$new_name."', nome='".$n."', visitas='0', categoria='".$c."', uid='".$uid."', data='".time()."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"\">Download enviado com sucesso!";
@@ -87,7 +86,7 @@ echo "<img src=\"images/notok.gif\" alt=\"\">Erro sql tente mais tarde!";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Arquivo não foi enviado!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Arquivo nÃ£o foi enviado!";
 }
 }
 }
@@ -110,7 +109,7 @@ echo "<input value=\"Enviar\" type=\"submit\"></form>";
 else if($a=="a")
 {
 echo "<p>";
-$total = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='".$cat."'"));
+$total = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='".$cat."'")->fetch();
 if($p=="" || $p<=0)$p=1;
 $itens = $total[0];
 $itens_p = 10;
@@ -119,10 +118,10 @@ if(($p>$n_paginas)&&$p!=1)$p = $n_paginas;
 $limite = ($p-1)*$itens_p;
 
 $sql = "SELECT id, nome, url, visitas, uid, data FROM fun_downloads WHERE categoria='".$cat."' ORDER BY data DESC LIMIT $limite, $itens_p";
-$sql = mysql_query($sql);
-if(mysql_num_rows($sql)>0)
+$sql = $pdo->query($sql);
+if($sql->rowCount()>0)
 {
-while($d = mysql_fetch_array($sql))
+while($d = $sql->fetch())
 {
 $data = date("d/m/y H:i:s", $d[5]);
 $link = "Nome: $d[1]<br>Downloads: $d[3]<br>Por: ".getnick_uid($d[4])."<br>Data: $data<br><a href=\"baixar.php?id=$d[0]\">DOWNLOAD</a>";
@@ -155,7 +154,7 @@ else if($a=="t")
 {
 echo "<p align=\"center\">";
 echo "<b>Top Downloads</b><br/></p>";
-$total = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads ORDER BY visitas"));
+$total = $pdo->query("SELECT COUNT(*) FROM fun_downloads ORDER BY visitas")->fetch();
 if($p=="" || $p<=0)$p=1;
 $itens = $total[0];
 $itens_p = 10;
@@ -164,10 +163,10 @@ if(($p>$n_paginas)&&$p!=1)$p = $n_paginas;
 $limite = ($p-1)*$itens_p;
 
 $sql = "SELECT id, nome, url, visitas, uid, data FROM fun_downloads ORDER BY visitas DESC LIMIT $limite, $itens_p";
-$sql = mysql_query($sql);
-if(mysql_num_rows($sql)>0)
+$sql = $pdo->query($sql);
+if($sql->rowCount()>0)
 {
-while($d = mysql_fetch_array($sql))
+while($d = $sql->fetch())
 {
 echo getnick_uid($d[4]).": $d[3] downloads<br>";
 }
@@ -190,7 +189,7 @@ else if($a=="m")
 {
 echo "<p align=\"center\">";
 echo "<b>Mais Baixados</b><br/></p>";
-$total = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads ORDER BY visitas"));
+$total = $pdo->query("SELECT COUNT(*) FROM fun_downloads ORDER BY visitas")->fetch();
 if($p=="" || $p<=0)$p=1;
 $itens = $total[0];
 $itens_p = 10;
@@ -199,10 +198,10 @@ if(($p>$n_paginas)&&$p!=1)$p = $n_paginas;
 $limite = ($p-1)*$itens_p;
 
 $sql = "SELECT id, nome, url, visitas, uid, data FROM fun_downloads ORDER BY visitas DESC LIMIT $limite, $itens_p";
-$sql = mysql_query($sql);
-if(mysql_num_rows($sql)>0)
+$sql = $pdo->query($sql);
+if($sql->rowCount()>0)
 {
-while($d = mysql_fetch_array($sql))
+while($d = $sql->fetch())
 {
 $data = date("d/m/y H:i:s", $d[5]);
 $link = "Nome: $d[1]<br>Downloads: $d[3]<br>Por: ".getnick_uid($d[4])."<br>Data: $data<br><a href=\"baixar.php?id=$d[0]\">DOWNLOAD</a>";
@@ -235,17 +234,17 @@ else
 {
 echo "<p align=\"center\">";
 echo "<b>Downloads</b><br></p>";
-$m = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='1'"));
-echo "<a href=\"?a=a&c=1&sid=$sid\"><img src=\"images/music.gif\" alt=\"\"/>Músicas($m[0])</a><br>";
-$i = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='2'"));
+$m = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='1'")->fetch();
+echo "<a href=\"?a=a&c=1&sid=$sid\"><img src=\"images/music.gif\" alt=\"\"/>MÃºsicas($m[0])</a><br>";
+$i = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='2'")->fetch();
 echo "<a href=\"?a=a&c=2&sid=$sid\"><img src=\"images/image.gif\" alt=\"\"/>Imagens($i[0])</a><br>";
-$v = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='3'"));
-echo "<a href=\"?a=a&c=3&sid=$sid\"><img src=\"images/video.gif\" alt=\"\"/>Vídeos($v[0])</a><br>";
-$j = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='4'"));
+$v = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='3'")->fetch();
+echo "<a href=\"?a=a&c=3&sid=$sid\"><img src=\"images/video.gif\" alt=\"\"/>VÃ­deos($v[0])</a><br>";
+$j = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='4'")->fetch();
 echo "<a href=\"?a=a&c=4&sid=$sid\"><img src=\"images/jogos.gif\" alt=\"\"/>Jogos($j[0])</a><br>";
-$a = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='5'"));
+$a = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='5'")->fetch();
 echo "<a href=\"?a=a&c=5&sid=$sid\"><img src=\"teks/servicos.gif\" alt=\"\"/>Aplicativos($a[0])</a><br>";
-$o = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='6'"));
+$o = $pdo->query("SELECT COUNT(*) FROM fun_downloads WHERE categoria='6'")->fetch();
 echo "<a href=\"?a=a&c=6&sid=$sid\"><img src=\"images/outros.gif\" alt=\"\"/>Outros arquivos($o[0])</a><br>";
 echo "<p align=\"center\">";
 echo "<a href=\"?a=add&sid=$sid\">Add Download</a> - <a href=\"?a=m&sid=$sid\">Mais baixados</a> - <a href=\"?a=t&sid=$sid\">Top Downloads</a>";
@@ -253,5 +252,5 @@ echo "</p>";
 }
 echo "<p align=\"center\">";
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 ?>

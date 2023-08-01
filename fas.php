@@ -17,8 +17,6 @@ echo "</head>";
 
 echo "<body>";
 
-bd_connect();
-
 $sid = $_GET["sid"];
 $a = $_GET["a"];
 
@@ -44,7 +42,7 @@ echo "Voce nao esta logado!<br/><br/>";
 
 }
 
-adicionar_online(getuid_sid($sid),"Vendo f„s","");
+adicionar_online(getuid_sid($sid),"Vendo f√£s","");
 
 $uid = getuid_sid($sid);
 
@@ -55,7 +53,7 @@ if($a=="ver")
 $id = $_GET["id"];
 if($page=="" || $page<=0)$page=1;
 
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$id."'"));
+$noi = $pdo->query("SELECT COUNT(**) FROM fun_fas WHERE vid='".$id."'")->fetch();
 
     $num_items = $num_items = $noi[0]; //changable
 
@@ -85,14 +83,12 @@ if($num_items>0)
 
     echo "<p>";
 echo "</p><p align=\"center\">";
-echo "<b>F„s</b><br/>";
+echo "<b>F√£s</b><br/>";
 echo "</p><p align=\"left\">";
 
-    $items = mysql_query($sql);
+    $items = $pdo->query($sql);
 
-    echo mysql_error();
-
-    while ($item = mysql_fetch_array($items))
+    while ($item = $items->fetch())
 
     {
 
@@ -191,16 +187,16 @@ echo "";
 
 }else{
 echo "</p><p align=\"center\">";
-echo "<b>F„s</b><br/>";
-echo "<b>Este usuario nao possui f„s!</b><br/>";
+echo "<b>F√£s</b><br/>";
+echo "<b>Este usuario nao possui f√£s!</b><br/>";
 
 }
   $nick = getnick_uid($id);
   if($id!="$uid"){
-  $aaa = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$id."' AND uid='".$uid."'"));
+  $aaa = $pdo->query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$id."' AND uid='".$uid."'")->fetch();
   if($aaa[0]=="0")
   {
-  echo "<br/><a href=\"fas.php?a=entrar&id=$id&sid=$sid\">Virar f„ de $nick</a><br/>";
+  echo "<br/><a href=\"fas.php?a=entrar&id=$id&sid=$sid\">Virar f√£ de $nick</a><br/>";
   }}
 echo "<p align=\"center\"><a href=\"../index.php?action=perfil&who=$id&sid=$sid\">Perfil de $nick</a><br/>";
 }else if($a=="entrar")
@@ -209,34 +205,34 @@ echo "</p><p align=\"center\">";
 $id = $_GET["id"];
 $tek = $_GET["tek"];
   if($id!="$uid"){
-  $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$id."' AND uid='".$uid."'"));
+  $noi = $pdo->query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$id."' AND uid='".$uid."'")->fetch();
   if(!$noi[0]=="0")
   {
-  echo "<b>VocÍ ja e f„ desse usuario!</b><br/>";
+  echo "<b>Voc√™ ja e f√£ desse usuario!</b><br/>";
   }else{
-  mysql_query("INSERT INTO fun_fas SET uid='".$uid."', vid='".$id."'");
-  echo "<b>F„ adicionado com sucesso!</b><br/>";
+  $pdo->query("INSERT INTO fun_fas SET uid='".$uid."', vid='".$id."'");
+  echo "<b>F√£ adicionado com sucesso!</b><br/>";
   }}
 }else if($a=="remover"){
 $id = $_GET["id"];
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'")->fetch();
    if($noi[0]=="0")
   {
 echo "</p><p align=\"center\">";
-  echo "<b>VocÍ n„o e f„ desse usuario!</b><br/>";
+  echo "<b>Voc√™ n√£o e f√£ desse usuario!</b><br/>";
 }else{
-mysql_query("DELETE FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'");
-echo "<b>F„ apagado com sucesso!</b><br/>";
+$pdo->query("DELETE FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'");
+echo "<b>F√£ apagado com sucesso!</b><br/>";
 }}else if($a=="star"){
 $id = $_GET["id"];
 $tek = $_GET["tek"];
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'")->fetch();
   if($noi[0]=="0")
   {
 echo "</p><p align=\"center\">";
-  echo "<b>VocÍ ja e f„ desse usuario!</b><br/>";
+  echo "<b>Voc√™ ja e f√£ desse usuario!</b><br/>";
 }else{
-$star = mysql_fetch_array(mysql_query("SELECT star FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'"));
+$star = $pdo->query("SELECT star FROM fun_fas WHERE vid='".$uid."' AND uid='".$id."'")->fetch();
   if($tek=="a")
   {
   if($star[0]=='5'){$tek="5";}else{
@@ -245,10 +241,10 @@ $star = mysql_fetch_array(mysql_query("SELECT star FROM fun_fas WHERE vid='".$ui
   if($star[0]=='0'){$tek="0";}else{
   $tek = $star[0]-1;
   }}
-mysql_query("UPDATE fun_fas SET star='".$tek."' WHERE vid='".$uid."' AND uid='".$id."'");
+$pdo->query("UPDATE fun_fas SET star='".$tek."' WHERE vid='".$uid."' AND uid='".$id."'");
 echo "<p align=\"center\">";
 echo "<b>Estrelas editadas com sucesso!</b><br/>";
-echo "<br/><a href=\"fas.php?a=ver&id=$uid&sid=$sid\">Voltar aos f„s</a>";
+echo "<br/><a href=\"fas.php?a=ver&id=$uid&sid=$sid\">Voltar aos f√£s</a>";
 }
 
 
@@ -266,5 +262,5 @@ echo "</p>";
 
 
 echo "<p align=\"center\">";
-echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>P·gina principal</a>";?>
+echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÔøΩgina principal</a>";?>
 

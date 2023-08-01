@@ -9,7 +9,6 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-bd_connect();
 cleardata();//limpar dados do site
 $action = $_GET["action"];
 $sid = $_GET["sid"];
@@ -17,7 +16,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -30,12 +29,12 @@ $tpctxt = $_POST["tpctxt"];//desc
 if(!canaccess(getuid_sid($sid), $fid))
 {
 echo "<p align=\"center\">";
-echo "Você não tem permição para ver esse forum!<br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
+echo "VocÃª nÃ£o tem permiÃ§Ã£o para ver esse forum!<br/><br/>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a>";
 echo "</p>";
 exit();
 }
-adicionar_online(getuid_sid($sid),"Criando novo tópico","");
+adicionar_online(getuid_sid($sid),"Criando novo tÃ³pico","");
 echo "<p align=\"center\">";
 $crdate = time();
 if(empty($tpctxt) OR empty($ntitle))
@@ -44,26 +43,26 @@ echo "<img src=\"images/notok.gif\" alt=\"*\">Verifique os campos em branco!";
 }
 else
 {
-$texst = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE name LIKE '".$ntitle."' AND fid='".$fid."'"));
+$texst = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE name LIKE '".$ntitle."' AND fid='".$fid."'")->fetch();
 if($texst[0]==0)
 {
 $res = false;
-$ltopic = mysql_fetch_array(mysql_query("SELECT crdate FROM fun_topics WHERE authorid='".$uid."' ORDER BY crdate DESC LIMIT 1"));
+$ltopic = $pdo->query("SELECT crdate FROM fun_topics WHERE authorid='".$uid."' ORDER BY crdate DESC LIMIT 1")->fetch();
 global $topic_af;
 $antiflood = time()-$ltopic[0];
 if($antiflood>$topic_af)
 {
-$res = mysql_query("INSERT INTO fun_topics SET name='".$ntitle."', fid='".$fid."', authorid='".$uid."', text='".$tpctxt."', crdate='".$crdate."', lastpost='".$crdate."'");
+$res = $pdo->query("INSERT INTO fun_topics SET name='".$ntitle."', fid='".$fid."', authorid='".$uid."', text='".$tpctxt."', crdate='".$crdate."', lastpost='".$crdate."'");
 if($res)
 {
 $tnm = htmlspecialchars($ntitle);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico <b>$tnm</b> criado com sucesso!";
-$tid = mysql_fetch_array(mysql_query("SELECT id FROM fun_topics WHERE name='".$ntitle."' AND fid='".$fid."'"));
+$tid = $pdo->query("SELECT id FROM fun_topics WHERE name='".$ntitle."' AND fid='".$fid."'")->fetch();
 echo "<br/><br/><a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid[0]\">";
 echo "Ver Topico</a>";
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Aconteceu algum erro ao criar esse tópico!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Aconteceu algum erro ao criar esse tÃ³pico!";
 }
 }
 else
@@ -74,7 +73,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Controle anti-flood: $af segundos
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Tópico com esse nome já existe no fórum!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>TÃ³pico com esse nome jÃ¡ existe no fÃ³rum!";
 }
 }
 $fname = getfname($fid);
@@ -83,7 +82,7 @@ echo "<br />";
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 ///atualizar humor
@@ -91,7 +90,7 @@ else if($action=="humor")
 {
 $humor = $_POST["humor"];
 echo "<p align=\"center\">";
-$althu = mysql_query("UPDATE fun_users SET humor='".$humor."' WHERE id='".$uid."'");
+$althu = $pdo->query("UPDATE fun_users SET humor='".$humor."' WHERE id='".$uid."'");
 if($althu)
 {
 echo "<img src=\"images/ok.gif\" alt=\"\">Humor atualizado com sucesso!";
@@ -103,7 +102,7 @@ echo "<img src=\"images/notok.gif\" alt=\"\">Erro!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////smilie preferencias
@@ -113,22 +112,22 @@ $a = $_GET["a"];
 echo "<p align=\"center\">";
 if($a=="nao")
 {
-mysql_query("UPDATE fun_users SET hvia='0' WHERE id='".$uid."'");
-echo "<img src=\"images/ok.gif\" alt=\"*\">Você não vai ver mais smilies!";
+$pdo->query("UPDATE fun_users SET hvia='0' WHERE id='".$uid."'");
+echo "<img src=\"images/ok.gif\" alt=\"*\">VocÃª nÃ£o vai ver mais smilies!";
 }
 else if($a=="sim")
 {
-mysql_query("UPDATE fun_users SET hvia='1' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET hvia='1' WHERE id='".$uid."'");
 echo "<img src=\"images/ok.gif\" alt=\"*\">Smilies ativados com sucesso!";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Opção selecionada não é válida!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">OpÃ§Ã£o selecionada nÃ£o Ã© vÃ¡lida!";
 }
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////editar comunidade
@@ -145,26 +144,26 @@ $logo = $_FILES["logo"]["name"];
 $logo_ext = arquivo_ext($logo);
 $size = (round($_FILES["logo"]["size"]/1024));
 $_POST = array_map("htmlspecialchars", $_POST);
-$outra = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE name LIKE '".$nome."' AND id!='".$clid."'"));
+$outra = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE name LIKE '".$nome."' AND id!='".$clid."'")->fetch();
 if($outra[0]==0)
 {
 if(empty($nome)||empty($regras)||empty($desc))
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Todos os campos são obrigatorios, em exessão ao logo!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Todos os campos sÃ£o obrigatorios, em exessÃ£o ao logo!";
 }
 else if(!empty($logo))//Atualiza o logotipo se ele for acionado
 {
 if($size > 1024)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">O logo não pode ser maior que 1024KBs(<b>1MB</b>)!";
+echo "<img src=\"images/notok.gif\" alt=\"\">O logo nï¿½o pode ser maior que 1024KBs(<b>1MB</b>)!";
 }
 else if(arquivo_extfoto($logo_ext)=="1")
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Arquivos com a extenção <b>.$logo_ext</b> não são aceitos pelo site!";
+echo "<img src=\"images/notok.gif\" alt=\"\">Arquivos com a extenÃ§Ã£o <b>.$logo_ext</b> nÃ£o sÃ£o aceitos pelo site!";
 }
 else
 {
-$logo_antigo = mysql_fetch_array(mysql_query("SELECT logo FROM fun_clubs WHERE id='".$clid."'"));
+$logo_antigo = $pdo->query("SELECT logo FROM fun_clubs WHERE id='".$clid."'")->fetch();
 if(file_exists($logo_antigo[0]))
 {
 unlink($logo_antigo[0]);
@@ -172,33 +171,33 @@ unlink($logo_antigo[0]);
 $pasta = "other/";
 $novo_nome = "comunidade_".time().".".$logo_ext;
 move_uploaded_file($_FILES["logo"]["tmp_name"], $pasta.$novo_nome);
-mysql_query("UPDATE fun_clubs SET logo = '".$pasta.$novo_nome."' WHERE id='".$clid."'");
+$pdo->query("UPDATE fun_clubs SET logo = '".$pasta.$novo_nome."' WHERE id='".$clid."'");
 echo "<img src=\"images/ok.gif\" alt=\"\">Logo da comunidade foi atualizado com sucesso!";
 }
 }
 else
 {
-mysql_query("UPDATE fun_clubs SET name='".$nome."', rules='".$regras."', description='".$desc."', tipo='".$tipo."', subdono='".$subdono."' WHERE id='".$clid."'");
+$pdo->query("UPDATE fun_clubs SET name='".$nome."', rules='".$regras."', description='".$desc."', tipo='".$tipo."', subdono='".$subdono."' WHERE id='".$clid."'");
 echo "<img src=\"images/ok.gif\" alt=\"\">Comunidade atualizada com sucesso!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Já existe uma comunidade com esse nome!";
+echo "<img src=\"images/notok.gif\" alt=\"\">JÃ¡ existe uma comunidade com esse nome!";
 }
 echo "<br><br><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($action=="post")
 {
 $tid = $_POST["tid"];
-$tfid = mysql_fetch_array(mysql_query("SELECT fid FROM fun_topics WHERE id='".$tid."'"));
+$tfid = $pdo->query("SELECT fid FROM fun_topics WHERE id='".$tid."'")->fetch();
 if(!canaccess(getuid_sid($sid), $tfid[0]))
 {
 echo "<p align=\"center\">";
-echo "Você não tem permição para ver esse topico!<br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
+echo "VocÃª nÃ£o tem permiÃ§Ã£o para ver esse topico!<br/><br/>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a>";
 echo "</p>";
 exit();
 }
@@ -209,25 +208,25 @@ echo "<p align=\"center\">";
 $crdate = time();
 $fid = getfid($tid);
 $res = false;
-$closed = mysql_fetch_array(mysql_query("SELECT closed FROM fun_topics WHERE id='".$tid."'"));
+$closed = $pdo->query("SELECT closed FROM fun_topics WHERE id='".$tid."'")->fetch();
 if(($closed[0]!='1')||(ismod($uid)))
 {
-$lpost = mysql_fetch_array(mysql_query("SELECT dtpost FROM fun_posts WHERE uid='".$uid."' ORDER BY dtpost DESC LIMIT 1"));
+$lpost = $pdo->query("SELECT dtpost FROM fun_posts WHERE uid='".$uid."' ORDER BY dtpost DESC LIMIT 1")->fetch();
 global $post_af;
 $antiflood = time()-$lpost[0];
 if($antiflood>$post_af)
 {
 if(trim($reptxt)!="")
 {
-$res = mysql_query("INSERT INTO fun_posts SET text='".$reptxt."', tid='".$tid."', uid='".$uid."', dtpost='".$crdate."', quote='".$qut."'");
+$res = $pdo->query("INSERT INTO fun_posts SET text='".$reptxt."', tid='".$tid."', uid='".$uid."', dtpost='".$crdate."', quote='".$qut."'");
 }
 if($res)
 {
-$usts = mysql_fetch_array(mysql_query("SELECT posts, plusses FROM fun_users WHERE id='".$uid."'"));
+$usts = $pdo->query("SELECT posts, plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $ups = $usts[0]+1;
 $upl = $usts[1]+2;
-mysql_query("UPDATE fun_users SET posts='".$ups."', plusses='".$upl."' WHERE id='".$uid."'");
-mysql_query("UPDATE fun_topics SET lastpost='".$crdate."' WHERE id='".$tid."'");
+$pdo->query("UPDATE fun_users SET posts='".$ups."', plusses='".$upl."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_topics SET lastpost='".$crdate."' WHERE id='".$tid."'");
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Resposta enviada com sucesso!";
 echo "<br/><br/><a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid&go=last\">";
 echo "Ver Topico</a>";
@@ -242,13 +241,13 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Antiflood Control: $af";
 }
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico está fechado para postagens!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico estÃ¡ fechado para postagens!";
 }
 $fname = getfname($fid);
 echo "<br/><br/><a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "Voltar para $fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////editando pontos da comunidade
@@ -267,14 +266,14 @@ if($exs[0]>0 && $cow[0]>0)
 {
 if(getplusses_cl($clid)<$pnt AND $giv == 1)
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">A comunidade não tem um saldo de pontos suficientes!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">A comunidade nï¿½o tem um saldo de pontos suficientes!";
 }
 else
 {
 $pontos_w = mysql_fetch_array(mysql_query("SELECT points FROM fun_clubmembers WHERE uid='".$who."' AND clid='".$clid."'"));
 if($pontos_w[0] == 0 || $pontos_w[0] < $pnt)
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">O usuário não tem pontos suficientes para ser retirado!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">O usuï¿½rio nï¿½o tem pontos suficientes para ser retirado!";
 }
 else if($giv == 1)
 {
@@ -288,7 +287,7 @@ $info = mysql_fetch_array(mysql_query("SELECT plusses, name FROM fun_clubs WHERE
 mysql_query("UPDATE fun_clubmembers SET points='".$pnt."' WHERE uid='".$who."' AND clid='".$clid."'");
 if($giv == 1)
 {
-$msg = "Olá /reader, você acaba de receber ".$_POST["pnt"]." pontos da comunidade $info[1], para resgatar para seu perfil vá no menu comunidades([b]Resgatar Pontos[/b])![br/][br/]Torpedo Automático!";
+$msg = "Olï¿½ /reader, vocï¿½ acaba de receber ".$_POST["pnt"]." pontos da comunidade $info[1], para resgatar para seu perfil vï¿½ no menu comunidades([b]Resgatar Pontos[/b])![br/][br/]Torpedo Automï¿½tico!";
 autopm($msg, $who);
 $p = $info[0] - $_POST["pnt"];
 mysql_query("UPDATE fun_clubs SET plusses='".$p."' WHERE id='".$clid."'");
@@ -309,7 +308,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro, tente novamente!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="gpl")
@@ -338,7 +337,7 @@ echo "<img src=\"images/notok.gif\">Erro, tente novamente!<br>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="mkroom")
@@ -364,10 +363,10 @@ echo "<img src=\"images/ok.gif\" alt=\"O\"/>Sala criada com sucesso!<br/><br/>";
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro!<br/><br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você só pode criar no máximo 10 salas!<br/><br/>";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Vocï¿½ sï¿½ pode criar no mï¿½ximo 10 salas!<br/><br/>";
 }
 echo "<a href=\"index.php?action=uchat&sid=$sid\"><img src=\"images/chat.gif\" alt=\"*\"/>salas de chat</a><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="signgb")
@@ -378,8 +377,8 @@ adicionar_online(getuid_sid($sid),"Enviando recado","");
 if(!cansigngb(getuid_sid($sid), $who))
 {
 echo "<p align=\"center\">";
-echo "Você não pode enviar recados para esse usuário!<br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
+echo "Vocï¿½ nï¿½o pode enviar recados para esse usuï¿½rio!<br/><br/>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Pï¿½gina principal</a>";
 echo "</p>";
 exit();
 }
@@ -401,7 +400,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro ao adicionar recado!";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="delan")
@@ -424,10 +423,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Aviso apagado com sucesso da comunid
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode remover esse anuncio!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode remover esse anuncio!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="dlcl")
@@ -448,10 +447,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Comunidade apagada com sucesso!";
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode apagar esta comunidade!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode apagar esta comunidade!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="reqjc")
@@ -469,7 +468,7 @@ if($tipo[0]==0)
 $res = mysql_query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid."', accepted='1', points='0', joined='".time()."'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"o\"/>Parabéns você já está participando dessa comunidade!";
+echo "<img src=\"images/ok.gif\" alt=\"o\"/>Parabï¿½ns vocï¿½ jï¿½ estï¿½ participando dessa comunidade!";
 }
 else
 {
@@ -481,7 +480,7 @@ else if($tipo[0]==1)
 $res = mysql_query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid."', accepted='0', points='0', joined='".time()."'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"o\"/>Foi enviado uma solicitação para o dono da comunidade, aguarde o torpedo de confirmação!";
+echo "<img src=\"images/ok.gif\" alt=\"o\"/>Foi enviado uma solicitaï¿½ï¿½o para o dono da comunidade, aguarde o torpedo de confirmaï¿½ï¿½o!";
 }
 else
 {
@@ -495,10 +494,10 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro desconhecido, tente novament
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>A solicitação para entrar nessa comunidade ainda está pedente, por favor aguarde!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>A solicitaï¿½ï¿½o para entrar nessa comunidade ainda estï¿½ pedente, por favor aguarde!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="unjc")
@@ -513,15 +512,15 @@ if($isin[0]>0){
 $res = mysql_query("DELETE FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"o\"/>Você saiu da comunidade com sucesso!";
+echo "<img src=\"images/ok.gif\" alt=\"o\"/>Vocï¿½ saiu da comunidade com sucesso!";
 }else{
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode sair dessa comunidade!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode sair dessa comunidade!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //explsar membro de comunidade
@@ -537,26 +536,26 @@ if($cowner[0]==$uid)
 {
 if($cowner[0]==$who)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\"/>O dono da comunidade não pode ser expulso!";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>O dono da comunidade nï¿½o pode ser expulso!";
 }
 else
 {
 $res = mysql_query("DELETE FROM fun_clubmembers  WHERE clid='".$clid."' AND uid='".$who."'");
 if($res)
 {
-$pm = "Olá /reader, você foi expulso da comunidade [b]$cowner[1][/b]![br/]Torpedo Altomático!";
+$pm = "Olï¿½ /reader, vocï¿½ foi expulso da comunidade [b]$cowner[1][/b]![br/]Torpedo Altomï¿½tico!";
 autopm($pm, $who);
-echo "<img src=\"images/ok.gif\" alt=\"\"/>Usuário expulso da comunidade com sucesso!";
+echo "<img src=\"images/ok.gif\" alt=\"\"/>Usuï¿½rio expulso da comunidade com sucesso!";
 }else
 {
 echo "<img src=\"images/notok.gif\" alt=\"\"/>Erro no banco de dados!";
 }
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"\"/>Você não pode fazer isso!!";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Vocï¿½ nï¿½o pode fazer isso!!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //aceitar membro na comunidade
@@ -572,19 +571,19 @@ if($cowner[0]==$uid){
 $res = mysql_query("UPDATE fun_clubmembers SET accepted='1' WHERE clid='".$clid."' AND uid='".$who."'");
 if($res)
 {
-$pm = "Olá /reader, agora você já está participando da comunidade [b]$cowner[1][/b]![br/]Torpedo Altomático!";
+$pm = "Olï¿½ /reader, agora vocï¿½ jï¿½ estï¿½ participando da comunidade [b]$cowner[1][/b]![br/]Torpedo Altomï¿½tico!";
 autopm($pm, $who);
-echo "<img src=\"images/ok.gif\" alt=\"\"/>Usuário adicionado com sucesso na comunidade!";
+echo "<img src=\"images/ok.gif\" alt=\"\"/>Usuï¿½rio adicionado com sucesso na comunidade!";
 }
 else
 {
 echo "<img src=\"images/notok.gif\" alt=\"\"/>Erro no banco de dados!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"\"/>Você não pode fazer isso!";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Vocï¿½ nï¿½o pode fazer isso!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //aceitar todos os membros da comunidade
@@ -604,10 +603,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Todos os membros foram adicionados!"
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode fazer isso!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode fazer isso!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="denall")
@@ -627,10 +626,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Todos membros rejeitados!";
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Comunidade não é sua!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Comunidade nï¿½o ï¿½ sua!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////shout
@@ -647,11 +646,11 @@ $pmfl = $flood[0]+180;
 $time8 = time();
 if(empty($text))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você deve digitar o recado!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Vocï¿½ deve digitar o recado!";
 }
 else if($nos>3)
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você ultrapassou o limite de 3 smilies!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Vocï¿½ ultrapassou o limite de 3 smilies!";
 }
 else  if($pmfl>$time8)
 {
@@ -677,7 +676,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="shout2")
@@ -712,7 +711,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 }         echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Announce
@@ -726,7 +725,7 @@ $uid = getuid_sid($sid);
 echo "<p align=\"center\">";
 if($cow[0]!=$uid)
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você não pode fazer isso!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Vocï¿½ nï¿½o pode fazer isso!";
 }else{
 $shtxt = $shtxt;
 //$uid = getuid_sid($sid);
@@ -740,7 +739,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="delfgb")
@@ -758,11 +757,11 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Recado apagado!<br/>";
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você não pode apagar esse recado!<br>";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Vocï¿½ nï¿½o pode apagar esse recado!<br>";
 }
 echo "<br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="rpost")
@@ -785,7 +784,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Postagem ja reportada!";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="rtpc")
@@ -808,7 +807,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico ja encontra se reportado";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else if($action=="bud")
@@ -833,7 +832,7 @@ if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Pedido de amizade feito com sucesso!<br/>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode adicionar $tnick a lista de amigos!<br/>";
 }
 }
 else if(budres($uid, $who)==1)
@@ -843,14 +842,14 @@ if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Amigo adicionado com sucesso!<br/>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode adicionar $tnick a lista de amigos!<br/>";
 }
 }
 else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode adicionar $tnick a lista de amigos!<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode adicionar $tnick a lista de amigos!<br/>";
 }
 }else if($todo="del")
 {
@@ -859,12 +858,12 @@ if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Amigo apagado com sucesso!<br/>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode apagar esse amigo!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode apagar esse amigo!<br/>";
 }
 }
 echo "<br>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Update buddy message
@@ -886,7 +885,7 @@ echo "<br/>";
 echo "<a href=\"lists.php?action=buds&sid=$sid\">";
 echo "Lista de amigos</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////// add club
@@ -915,15 +914,15 @@ if($outra[0]==0)
 {
 if(trim($nome)==""||trim($descricao)==""||trim($regras)==""||trim($logo)=="")
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Todos os campos são obrigatórios!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Todos os campos sï¿½o obrigatï¿½rios!";
 }
 else if(is_numeric($nome))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">O nome da comunidade não pode conter apenas números!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">O nome da comunidade nï¿½o pode conter apenas nï¿½meros!";
 }
 else if(arquivo_extfoto($logo_ext)=="1")
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem que você enviou não é válida, por favor tente novamente!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem que vocï¿½ enviou nï¿½o ï¿½ vï¿½lida, por favor tente novamente!";
 }
 else
 {
@@ -945,25 +944,25 @@ mysql_query("INSERT INTO fun_rooms SET name='".$cnm."', pass='', static='1', mag
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Não é permitido criar uma comunidade clone(igual), por favor verifique o nome!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Nï¿½o ï¿½ permitido criar uma comunidade clone(igual), por favor verifique o nome!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Você deve ter mais de 350 $smoeda para criar uma comunidade!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Vocï¿½ deve ter mais de 350 $smoeda para criar uma comunidade!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Você atingiu o limite máximo de comunidades por usuário!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Vocï¿½ atingiu o limite mï¿½ximo de comunidades por usuï¿½rio!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem enviada é maior que 1024KBs(<b>1MB</b>), tente outra!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem enviada ï¿½ maior que 1024KBs(<b>1MB</b>), tente outra!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////Add remove from ignoire list
@@ -987,7 +986,7 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>$tnick adicionado na lista negra!<br
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Error!<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista negra!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Vocï¿½ nï¿½o pode adicionar $tnick a lista negra!<br/>";
 }
 }else if($todo="del")
 {
@@ -1001,13 +1000,13 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>$tnick removido com sucesso da lista
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Error Updating Database<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>$tnick não está na lista negra!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>$tnick nï¿½o estï¿½ na lista negra!<br/>";
 }
 }
 echo "<br/><a href=\"lists.php?action=ignl&sid=$sid\">";
 echo "Lista negra</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////atualizar perfil
@@ -1028,7 +1027,7 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Seu perfil foi atualizado com sucess
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro, tente novamente mais tarde!<br/>";
 }
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////atualizar senha
@@ -1040,7 +1039,7 @@ $cpwd = $_POST["cpwd"];
 echo "<p align=\"center\">";
 if($npwd!=$cpwd)
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>As senhas não são identicas!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>As senhas nï¿½o sï¿½o identicas!<br/>";
 }
 else if((strlen($npwd)<8) || (strlen($npwd)>15))
 {
@@ -1058,15 +1057,15 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao atualizar a senha!<br/>";
 }
 }
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 else
 {
 echo "<p align=\"center\">";
-echo "Esta página que você tentou acessar não foi encontrada!<br/><br/>";
+echo "Esta pï¿½gina que vocï¿½ tentou acessar nï¿½o foi encontrada!<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "Pï¿½gina principal</a>";
 echo "</p>";
 }
 echo "</body>";

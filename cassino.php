@@ -1,7 +1,7 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
@@ -18,7 +18,6 @@ echo "</head>";
 
 echo "<body>";
 
-bd_connect();
 $a = $_GET["a"];
 $sid = $_GET["sid"];
 addvisitor();
@@ -35,11 +34,11 @@ if(getplusses(getuid_sid($sid))<21)
 {
 echo "<p align=\"center\">";
 echo "<b>Voce precisa ter no minimo 21 pontos para jogar no cassino!</b>";
-echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 exit();
 }
 adicionar_online(getuid_sid($sid),"Cassino","");
-$info = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE id='10'"));
+$info = $pdo->query("SELECT value FROM fun_settings WHERE id='10'")->fetch();
 $n1 = rand(1,10);
 $n2 = rand(1,10);
 $n3 = rand(1,10);
@@ -73,25 +72,25 @@ echo "<br/><br/><b>Jogo expirou!</b><br/><a href=\"cassino.php?a=jogar&ut=$t&sid
 }
 else if($n1=="$n2" and $n1=="$n3")
 {
-$pontos = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_users WHERE id='".$uid."'"));
+$pontos = $pdo->query("SELECT plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $ns = $pontos[0] + $info[0];
-mysql_query("UPDATE fun_users SET plusses='".$ns."' WHERE id='".$uid."'");
-mysql_query("UPDATE fun_settings SET value='10' WHERE id='10'");
-echo "<br/><br/><b>Parabens! Você ganhou todos os pontos acumulados!</b><br/><a href=\"cassino.php?a=jogar&ut=$t&sid=$sid\">JOGAR DE NOVO</a>";
+$pdo->query("UPDATE fun_users SET plusses='".$ns."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_settings SET value='10' WHERE id='10'");
+echo "<br/><br/><b>Parabens! Vocï¿½ ganhou todos os pontos acumulados!</b><br/><a href=\"cassino.php?a=jogar&ut=$t&sid=$sid\">JOGAR DE NOVO</a>";
 }
 else{
-$pontos = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_users WHERE id='".$uid."'"));
+$pontos = $pdo->query("SELECT plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $ns = $pontos[0] - 1;
-mysql_query("UPDATE fun_users SET plusses='".$ns."' WHERE id='".$uid."'");
-$pont = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE id='10'"));
+$pdo->query("UPDATE fun_users SET plusses='".$ns."' WHERE id='".$uid."'");
+$pont = $pdo->query("SELECT value FROM fun_settings WHERE id='10'")->fetch();
 $np = $pont[0] + 1;
-mysql_query("UPDATE fun_settings SET value='".$np."' WHERE id='10'");
-echo "<br/><br/><b>Que pena! Não foi dessa vez!</b><br/><a href=\"cassino.php?a=jogar&ut=$t&sid=$sid\">JOGAR DE NOVO</a>";
+$pdo->query("UPDATE fun_settings SET value='".$np."' WHERE id='10'");
+echo "<br/><br/><b>Que pena! Nï¿½o foi dessa vez!</b><br/><a href=\"cassino.php?a=jogar&ut=$t&sid=$sid\">JOGAR DE NOVO</a>";
 }
 }
 else{
 echo "<br/><br/><a href=\"cassino.php?a=jogar&ut=$t&sid=$sid\">INICIAR JOGO</a>";
 }
-echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 
 ?>

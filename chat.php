@@ -1,8 +1,7 @@
 <?php
 
-
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -14,7 +13,6 @@ echo "</head>";
 
 echo "<body>";
 
-bd_connect();
 
 $who = $_GET["who"];
 $action = $_GET["action"];
@@ -29,31 +27,31 @@ $uexist = isuser($uid);
 if((is_logado($sid)==false)||!$uexist)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
 }
 
-$isroom = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_rooms WHERE id='".$rid."'"));
+$isroom = $pdo->query("SELECT COUNT(*) FROM fun_rooms WHERE id='".$rid."'")->fetch();
 if($isroom[0]==0)
 {
 echo "<p align=\"center\">";
-echo "Esta sala não existe!<br/>";
+echo "Esta sala nÃ£o existe!<br/>";
 echo "<br/>";
 echo "<a href=\"index.php?action=chat&sid=$sid\">Bate-Papo</a>";
 echo "</p>";
 
 exit();
 }
-$passworded = mysql_fetch_array(mysql_query("SELECT pass FROM fun_rooms WHERE id='".$rid."'"));
+$passworded = $pdo->query("SELECT pass FROM fun_rooms WHERE id='".$rid."'")->fetch();
 if($passworded[0]!="")
 {
 if($rpw!=$passworded[0])
 {
 
 echo "<p align=\"center\">";
-echo "Você não pode entrar nesta sala<br/>";
+echo "VocÃª nÃ£o pode entrar nesta sala<br/>";
 echo "<br/>";
 echo "<a href=\"index.php?action=chat&sid=$sid\">Salas de Bate-Papo</a>";
 echo "</p>";
@@ -65,7 +63,7 @@ if(!canenter($rid,$sid))
 {
 
 echo "<p align=\"center\">";
-echo "Não pode entrar nesta sala!<br/>";
+echo "NÃ£o pode entrar nesta sala!<br/>";
 echo "<br/>";
 echo "<a href=\"index.php?action=chat&sid=$sid\">Salas de Bate-Papo</a>";
 echo "</p>";
@@ -76,7 +74,7 @@ addtochat($uid, $rid);
 $timeto = 300;
 $timenw = time();
 $timeout = $timenw-$timeto;
-$deleted = mysql_query("DELETE FROM fun_chat WHERE timesent<".$timeout."");
+$deleted = $pdo->query("DELETE FROM fun_chat WHERE timesent<".$timeout."");
 
 if ($action=="")
 {
@@ -87,8 +85,8 @@ echo "<timer value=\"200\"/><p align=\"center\">";
 adicionar_online($uid,"Batepapo","");
 echo "<a href=\"chat.php?time=".time()."&sid=$sid&rid=$rid&rpw=$rpw\">Atualizar</a></small> - ";
 echo "<a href=\"lists.php?action=smilies&sid=$sid\">Smilies</a><br/>";    
-$unreadinbox=mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE unread='1' AND touid='".$uid."'"));
-$pmtotl=mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."'"));
+$unreadinbox = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE unread='1' AND touid='".$uid."'")->fetch();
+$pmtotl = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE touid='".$uid."'")->fetch();
 $unrd="(".$unreadinbox[0]."/".$pmtotl[0].")";
 if ($unreadinbox[0]>0)
 {
@@ -99,9 +97,9 @@ echo "<form action=\"chat.php?sid=$sid&rid=$rid&rpw=$rpw\" method=\"post\">";
 
 echo "<p><img src=\"images/escrever.gif\" alt=\"x\"/>Mensagem:<input name=\"message\" type=\"text\" value=\"\" maxlength=\"255\"/><br/>";
 echo "Para: <select name=\"para\"><option value=\"0\">Todos</option>";
-$inside=mysql_query("SELECT DISTINCT * FROM fun_chonline WHERE rid='".$rid."' and uid IS NOT NULL");
+$inside = $pdo->query("SELECT DISTINCT * FROM fun_chonline WHERE rid='".$rid."' and uid IS NOT NULL");
 
-while($ins=mysql_fetch_array($inside))
+while($ins = $inside->fetch())
 {
 $unick = getnick_uid2($ins[1]);
 echo "<option value=\"$ins[1]\">$unick</option>";
@@ -114,29 +112,29 @@ echo "</small></p>";
 $message=$_POST["message"];
 $para=$_POST["para"];
 $who = $_POST["who"];
-$rinfo = mysql_fetch_array(mysql_query("SELECT censord, freaky FROM fun_rooms WHERE id='".$rid."'"));
+$rinfo = $pdo->query("SELECT censord, freaky FROM fun_rooms WHERE id='".$rid."'")->fetch();
 if (trim($message) != "")
 {
-$nosm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chat WHERE msgtext='".$message."'"));
+$nosm = $pdo->query("SELECT COUNT(*) FROM fun_chat WHERE msgtext='".$message."'")->fetch();
 if($nosm[0]==0){
 
-$chatok = mysql_query("INSERT INTO fun_chat SET  chatter='".$uid."', who='".$who."', para='".$para."', timesent='".time()."', msgtext='".$message."', rid='".$rid."';");
-$lstmsg = mysql_query("UPDATE fun_rooms SET lastmsg='".time()."' WHERE id='".$rid."'");
+$chatok = $pdo->query("INSERT INTO fun_chat SET  chatter='".$uid."', who='".$who."', para='".$para."', timesent='".time()."', msgtext='".$message."', rid='".$rid."';");
+$lstmsg = $pdo->query("UPDATE fun_rooms SET lastmsg='".time()."' WHERE id='".$rid."'");
 
-$hehe=mysql_fetch_array(mysql_query("SELECT chmsgs, plusses FROM fun_users WHERE id='".$uid."'"));
+$hehe = $pdo->query("SELECT chmsgs, plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $totl = $hehe[0]+1;
 $totlp = $hehe[1]+2;
-$msgst= mysql_query("UPDATE fun_users SET chmsgs='".$totl."' WHERE id='".$uid."'");
+$msgst= $pdo->query("UPDATE fun_users SET chmsgs='".$totl."' WHERE id='".$uid."'");
 }
 $message = "";
 }
 
 echo "<p>";
 echo "<small>";
-$chats = mysql_query("SELECT chatter, who, timesent, msgtext, exposed, para FROM fun_chat WHERE rid='".$rid."' ORDER BY timesent DESC, id DESC");
+$chats = $pdo->query("SELECT chatter, who, timesent, msgtext, exposed, para FROM fun_chat WHERE rid='".$rid."' ORDER BY timesent DESC, id DESC");
 $counter=0;
 
-while($chat = mysql_fetch_array($chats))
+while($chat = $chats->fetch())
 {
 $canc = true;
 
@@ -196,10 +194,10 @@ $text = scan_msg($chat[3], $sid);
 $nos = substr_count($text,"<img src=");
 if(isspam($text) || substr($chat[3],0,4)=="*mat")
 {
-$chatters=mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chonline where rid='".$rid."'"));
+$chatters = $pdo->query("SELECT COUNT(*) FROM fun_chonline where rid='".$rid."'")->fetch();
 $chnick = getnick_uid($chat[0]);
 if(isspam($text)){
-echo "<b>Sistema: $chnick, não faça spam!</b><br/>";
+echo "<b>Sistema: $chnick, nÃ£o faÃ§a spam!</b><br/>";
 }else
 {
 echo "<b>Sistema:<br/>$chnick entrou na sala com ".getbr_uid($chat[0])."</i></b><br/>";
@@ -207,7 +205,7 @@ echo "<b>Sistema:<br/>$chnick entrou na sala com ".getbr_uid($chat[0])."</i></b>
 }
 else if($nos>5){
 $chnick = getnick_uid($chat[0]);
-echo "<b>Sistema: </b> $chnick você pode postar até 5 smilies por mensagem!";
+echo "<b>Sistema: </b> $chnick vocÃª pode postar atÃ© 5 smilies por mensagem!";
 }else
 {
 
@@ -239,10 +237,10 @@ echo "</p>";
 echo "</table></div></div>";
 
 echo "<p align=\"center\">";
-$chatters=mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_chonline where rid='".$rid."'"));
-echo "<br/><a href=\"chatmulti.php?sid=$sid&rid=$rid&rpw=$rpw\">Enviar Multimídia</a> - <a href=\"chat.php?action=inside&sid=$sid&rid=$rid&rpw=$rpw\">Membros na Sala($chatters[0])</a> - ";
+$chatters = $pdo->query("SELECT COUNT(*) FROM fun_chonline where rid='".$rid."'")->fetch();
+echo "<br/><a href=\"chatmulti.php?sid=$sid&rid=$rid&rpw=$rpw\">Enviar MultimÃ­dia</a> - <a href=\"chat.php?action=inside&sid=$sid&rid=$rid&rpw=$rpw\">Membros na Sala($chatters[0])</a> - ";
 echo "<a href=\"index.php?action=chat&sid=$sid\">Salas de Chat</a> - <a href=\"?action=sair&sid=$sid&rid=$rid\">Sair</a><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a></p>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a></p>";
 }
 
 else if ($action=="say2")                  
@@ -265,10 +263,10 @@ else if ($action=="inside")
 {
 adicionar_online($uid,"Membros no Chat","");
 echo "<p align=\"center\">";
-echo "<b>Usuários na Sala</b><br><br>";
-$inside=mysql_query("SELECT DISTINCT * FROM fun_chonline WHERE rid='".$rid."' and uid IS NOT NULL");
+echo "<b>UsuÃ¡rios na Sala</b><br><br>";
+$inside= $pdo->query("SELECT DISTINCT * FROM fun_chonline WHERE rid='".$rid."' and uid IS NOT NULL");
 
-while($ins=mysql_fetch_array($inside))
+while($ins = $inside->fetch())
 {
 $unick = getnick_uid($ins[1]);
 $userl = "<a href=\"chat.php?action=say2&sid=$sid&who=$ins[1]&rid=$rid\">$unick</a>, ";
@@ -280,7 +278,7 @@ echo "<a href=\"chat.php?sid=$sid&rid=$rid\">&#171;Voltar para a sala</a></p>";
 }
 else if($action=="sair")
 {
-mysql_query("DELETE FROM fun_chonline WHERE uid='".$uid."'");
+$pdo->query("DELETE FROM fun_chonline WHERE uid='".$uid."'");
 echo "<script> window.location.href = \"index.php?action=chat&sid=$sid\"; </script>";//javascript
 }
 echo "</body>";

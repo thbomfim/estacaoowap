@@ -1,10 +1,10 @@
 <?php
 
-//SCRIPT CRIADO POR ÁLVARO
+//SCRIPT CRIADO POR ï¿½LVARO
 //CONTATO: suporte@alvarowap.com
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -17,39 +17,39 @@ echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 	echo "</head>";
 
 echo "<body>";
-bd_connect();
 $sid = $_GET["sid"];
 $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
 
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
     }
 function pbanco($uid)
 {
-$banco = mysql_fetch_array(mysql_query("SELECT banco FROM fun_users WHERE id='".$uid."'"));
+	global $pdo;
+$banco = $pdo->query("SELECT banco FROM fun_users WHERE id='".$uid."'")->fetch();
 return $banco[0];
 }
-$uab = mysql_fetch_array(mysql_query("SELECT value FROM fun_settings WHERE name='banco'"));
+$uab = $pdo->query("SELECT value FROM fun_settings WHERE name='banco'")->fetch();
 $dia = date("Y-m-d");
 if($dia!=$uab[0])
 {
-$usuarios = mysql_query("SELECT banco, id FROM fun_users WHERE banco>'99'");
-while($usuario=mysql_fetch_array($usuarios))
+$usuarios = $pdo->query("SELECT banco, id FROM fun_users WHERE banco>'99'");
+while($usuario = $usuarios->fetch())
 {
 $rda = (1/100) * $usuario[0];
 $renda = explode(".", $rda);
 $add = $renda[0] + $usuario[0];
-mysql_query("UPDATE fun_users SET banco='".$add."' WHERE id='".$usuario[1]."'");
+$pdo->query("UPDATE fun_users SET banco='".$add."' WHERE id='".$usuario[1]."'");
 }
-mysql_query("UPDATE fun_settings SET value='".$dia."' WHERE name='banco'");
+$pdo->query("UPDATE fun_settings SET value='".$dia."' WHERE name='banco'");
 }
 adicionar_online(getuid_sid($sid),"Banco $snome","");
-echo "<p align=\"center\"><b>Banco $snome</b><br/><br/>Bem vindo(a) ao banco $snome aqui você deposita suas moedas e tem um juro de 1% por dia!<br/><br/>Você tem ".getplusses($uid)." no perfil e ".pbanco($uid)." moedas no banco!<br/><br/>";
+echo "<p align=\"center\"><b>Banco $snome</b><br/><br/>Bem vindo(a) ao banco $snome aqui vocÃª deposita suas moedas e tem um juro de 1% por dia!<br/><br/>VocÃª tem ".getplusses($uid)." no perfil e ".pbanco($uid)." moedas no banco!<br/><br/>";
 $pontos = $_POST["pontos"];
 if(empty($pontos))
 {
@@ -60,29 +60,29 @@ if($acao=="add")
 {
 if(getplusses(getuid_sid($sid))<$pontos)
 {
-echo "Você não tem $pontos moedas no perfil!";
+echo "Vocáº½ nÃ£o tem $pontos moedas no perfil!";
 }
 else{
-echo "Você transferiu $pontos moedas para o banco com sucesso!";
+echo "VocÃª transferiu $pontos moedas para o banco com sucesso!";
 $pb = pbanco($uid) + $pontos;
 $pp = getplusses($uid) - $pontos;
-mysql_query("UPDATE fun_users SET banco='".$pb."', plusses='".$pp."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET banco='".$pb."', plusses='".$pp."' WHERE id='".$uid."'");
 }
 }
 else{
 if(pbanco(getuid_sid($sid))<$pontos)
 {
-echo "Você não tem $pontos moedas no banco!";
+echo "VocÃª nÃ£o tem $pontos moedas no banco!";
 }
 else{
-echo "Você transferiu $pontos moedas para o perfil com sucesso!";
+echo "VocÃª transferiu $pontos moedas para o perfil com sucesso!";
 $pb = pbanco($uid) - $pontos;
 $pp = getplusses($uid) + $pontos;
-mysql_query("UPDATE fun_users SET banco='".$pb."', plusses='".$pp."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET banco='".$pb."', plusses='".$pp."' WHERE id='".$uid."'");
 }
 }
 echo "<br/><br/>";
 }
-echo "<form action=\"banco.php?sid=$sid\" method=\"post\">Moedas: <input name=\"pontos\"/><br/>Ação: <select name=\"acao\"><option value=\"add\">Depositar</option><option value=\"tirar\">Retirar</option></select><br/><input type=\"submit\" value=\"Enviar\"/></form>";
-echo "<p align=\"center\"><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\"/>Página principal</a>";
+echo "<form action=\"banco.php?sid=$sid\" method=\"post\">Moedas: <input name=\"pontos\"/><br/>AÃ§Ã£o: <select name=\"acao\"><option value=\"add\">Depositar</option><option value=\"tirar\">Retirar</option></select><br/><input type=\"submit\" value=\"Enviar\"/></form>";
+echo "<p align=\"center\"><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\"/>PÃ¡gina principal</a>";
 ?>

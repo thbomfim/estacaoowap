@@ -1,7 +1,7 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -16,7 +16,6 @@ echo "<meta http-equiv=\"Cache-Control\" content=\"no-cache\"/>";
 echo "</head>";
 echo "<body>";
 
-bd_connect();
 $a = $_GET["a"];
 $t = $_GET["t"];
 $sid = $_GET["sid"];
@@ -35,15 +34,15 @@ if(getplusses(getuid_sid($sid))<45)
 {
 echo "<p align=\"center\">";
 echo "<b>Voce precisa ter no minimo 45 pontos para jogar no cores da sorte!</b>";
-echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 exit();
 }
 adicionar_online(getuid_sid($sid),"Jogando cores da sorte","");
 if($a==cf)
 {
 echo "<p align=\"center\"><b>Como funciona?</b><br/><br/>";
-echo "No cores da sorte você pode ganhar de 5 a 25 pontos, para jogar e só clicar no nome de uma cor e você poderá ganhar ou perder pontos, os pontos entram na hora!";
-echo "<br/><br/><a href=\"cds.php?sid=$sid\">Cores da sorte</a><br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "No cores da sorte vocÃª pode ganhar de 5 a 25 pontos, para jogar e sÃ³ clicar no nome de uma cor e vocÃª poderÃ¡ ganhar ou perder pontos, os pontos entram na hora!";
+echo "<br/><br/><a href=\"cds.php?sid=$sid\">Cores da sorte</a><br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if($a=="jogar")
 {
@@ -51,26 +50,26 @@ $erro = $t+30;
 if($erro<$tt OR empty($t))
 {
 echo "<p align=\"center\"><b>Jogo expirou!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else{
 $nj = rand(1,2);
 $pontos = rand(5,25);
 if($nj=="1")
 {
-$pont = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_users WHERE id='".$uid."'"));
+$pont = $pdo->query("SELECT plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $npts = $pont[0] + $pontos;
-mysql_query("UPDATE fun_users SET plusses='".$npts."' WHERE id='".$uid."'");
-echo "<p align=\"center\"><b>Parabéns, você ganhou $pontos pontos!</b>";
+$pdo->query("UPDATE fun_users SET plusses='".$npts."' WHERE id='".$uid."'");
+echo "<p align=\"center\"><b>ParabÃªns, vocÃª ganhou $pontos pontos!</b>";
 }
 else{
-$pont = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_users WHERE id='".$uid."'"));
+$pont = $pdo->query("SELECT plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $npts = $pont[0] - $pontos;
-mysql_query("UPDATE fun_users SET plusses='".$npts."' WHERE id='".$uid."'");
-echo "<p align=\"center\"><b>Que pena, você perdeu $pontos pontos!</b>";
+$pdo->query("UPDATE fun_users SET plusses='".$npts."' WHERE id='".$uid."'");
+echo "<p align=\"center\"><b>Que pena, vocÃª perdeu $pontos pontos!</b>";
 }
 echo "<br/><br/><a href=\"cds.php?sid=$sid\">NOVO JOGO</a>";
-echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 }
 else{
@@ -87,6 +86,6 @@ if($umsg>0)
 {
 echo "<a href=\"inbox.php?action=main&sid=$sid\">Torpedos($umsg/$tmsg)</a><br/>";
 }
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 ?>

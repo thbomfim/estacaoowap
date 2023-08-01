@@ -583,11 +583,11 @@ $na = $pdo->query("SELECT COUNT(*) FROM fun_albums WHERE uid='".$uid."'")->fetch
 if($na[0]<1)
 {
 echo "<a href=\"album.php?a=new&sid=$sid\"><img src=\"teks/arrow.gif\" alt=\"*\"/>";
-echo "Novo �lbum</a><br/>";
+echo "Novo álbum</a><br/>";
 }
 
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a><br/>";
+echo "Página principal</a><br/>";
 
 echo "</p>";
 }
