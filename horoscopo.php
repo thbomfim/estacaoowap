@@ -1,7 +1,7 @@
 ﻿<?php
 //includes core.php and config.php files
-include("core.php");
 include("config.php");
+include("core.php");
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
@@ -11,7 +11,6 @@ echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "<meta http-equiv=\"Cache-Control\" content=\"no-cache\"/>";
 echo "</head>";
 echo "<body>";
-bd_connect();//db
 $a = $_GET["a"];
 $signo = $_GET["signo"];
 $sid = $_GET["sid"];
@@ -32,7 +31,7 @@ echo "<p align=\"center\">";
 echo "<img src=\"images/notok.gif\" alt=\"\">Desculpe, mais você foi banido do site!";
 echo "<br />";
 echo "<br />";
-$infos_ban = mysql_fetch_array(mysql_query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')"));
+$infos_ban = $pdo->query("SELECT tempo, motivo FROM fun_ban WHERE uid='".$uid."' AND (tipoban='1' OR tipoban='2')")->fetch();
 echo "Tempo para acabar sua penalidade: " . tempo_msg($infos_ban[0]);
 echo "<br />";
 echo "Motivo da sua penalidade: <b>".htmlspecialchars($infos_ban[1])."</b>";

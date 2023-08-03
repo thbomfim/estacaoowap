@@ -260,8 +260,8 @@ $pnt = $_POST["pnt"];
 adicionar_online(getuid_sid($sid),"Moderando Comunidade","");
 echo "<p align=\"center\">";
 $whnick = getnick_uid($who);
-$exs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid.""));
-$cow = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid.""));
+$exs = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$who."' AND clid=".$clid."")->fetch();
+$cow = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner='".$uid."' AND id=".$clid."")->fetch();
 if($exs[0]>0 && $cow[0]>0)
 {
 if(getplusses_cl($clid)<$pnt AND $giv == 1)
@@ -270,7 +270,7 @@ echo "<img src=\"images/notok.gif\" alt=\"*\">A comunidade n�o tem um saldo de
 }
 else
 {
-$pontos_w = mysql_fetch_array(mysql_query("SELECT points FROM fun_clubmembers WHERE uid='".$who."' AND clid='".$clid."'"));
+$pontos_w = $pdo->query("SELECT points FROM fun_clubmembers WHERE uid='".$who."' AND clid='".$clid."'")->fetch();
 if($pontos_w[0] == 0 || $pontos_w[0] < $pnt)
 {
 echo "<img src=\"images/notok.gif\" alt=\"*\">O usu�rio n�o tem pontos suficientes para ser retirado!";
@@ -283,20 +283,20 @@ else
 {
 $pnt = $pontos_w[0] - $_POST["pnt"];
 }
-$info = mysql_fetch_array(mysql_query("SELECT plusses, name FROM fun_clubs WHERE id='".$clid."'"));
-mysql_query("UPDATE fun_clubmembers SET points='".$pnt."' WHERE uid='".$who."' AND clid='".$clid."'");
+$info = $pdo->query("SELECT plusses, name FROM fun_clubs WHERE id='".$clid."'")->fetch();
+$pdo->query("UPDATE fun_clubmembers SET points='".$pnt."' WHERE uid='".$who."' AND clid='".$clid."'");
 if($giv == 1)
 {
-$msg = "Ol� /reader, voc� acaba de receber ".$_POST["pnt"]." pontos da comunidade $info[1], para resgatar para seu perfil v� no menu comunidades([b]Resgatar Pontos[/b])![br/][br/]Torpedo Autom�tico!";
+$msg = "Olá /reader, você acaba de receber ".$_POST["pnt"]." pontos da comunidade $info[1], para resgatar para seu perfil vê no menu comunidades([b]Resgatar Pontos[/b])![br/][br/]Torpedo Automático!";
 autopm($msg, $who);
 $p = $info[0] - $_POST["pnt"];
-mysql_query("UPDATE fun_clubs SET plusses='".$p."' WHERE id='".$clid."'");
+$pdo->query("UPDATE fun_clubs SET plusses='".$p."' WHERE id='".$clid."'");
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Todos os pontos foram atualizados com sucesso!";
 }
 else
 {
 $p = $info[0] + $_POST["pnt"];
-mysql_query("UPDATE fun_clubs SET plusses='".$p."' WHERE id='".$clid."'");
+$pdo->query("UPDATE fun_clubs SET plusses='".$p."' WHERE id='".$clid."'");
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Pontos foram atualizados com sucesso!";
 }
 }
@@ -308,7 +308,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro, tente novamente!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="gpl")
@@ -318,16 +318,16 @@ $who = $_GET["who"];
 $pnt = $_POST["pnt"];
 adicionar_online(getuid_sid($sid),"Resgatando pontos","");
 echo "<p align=\"center\">";
-$pontos_cl = mysql_fetch_array(mysql_query("SELECT points FROM fun_clubmembers WHERE uid='".$who."' AND clid='".$clid."'"));
+$pontos_cl = $pdo->query("SELECT points FROM fun_clubmembers WHERE uid='".$who."' AND clid='".$clid."'")->fetch();
 if($pontos_cl[0]>=$pnt)
 {
 $dsoma = getplusses(getuid_sid($sid)) + floor($pnt / 2);
-$res = mysql_query("UPDATE fun_users SET plusses='".$dsoma."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET plusses='".$dsoma."' WHERE id='".$who."'");
 }
 if($res)
 {
 $p = $pontos_cl[0] - $pnt;
-mysql_query("UPDATE fun_clubmembers SET points='".$p."' WHERE uid='".$who."' AND clid='".$clid."'");
+$pdo->query("UPDATE fun_clubmembers SET points='".$p."' WHERE uid='".$who."' AND clid='".$clid."'");
 echo "<img src=\"images/ok.gif\">Pontos atualizados com sucesso!<br>";
 }
 else
@@ -337,12 +337,12 @@ echo "<img src=\"images/notok.gif\">Erro, tente novamente!<br>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="mkroom")
 {
-$rname = mysql_escape_string($_POST["rname"]);
+$rname = $pdo->quote($_POST["rname"]);
 $rpass = trim($_POST["rpass"]);
 adicionar_online(getuid_sid($sid),"Chat","");
 echo "<p align=\"center\">";
@@ -352,10 +352,10 @@ $cns = 1;
 }else{
 $cns = 0;
 }
-$prooms = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_rooms WHERE static='0'"));
+$prooms = $pdo->query("SELECT COUNT(*) FROM fun_rooms WHERE static='0'")->fetch();
 if($prooms[0]<10)
 {
-$res = mysql_query("INSERT INTO fun_rooms SET name='".$rname."', pass='".$rpass."', censord='".$cns."', static='0', lastmsg='".time()."'");
+$res = $pdo->query("INSERT INTO fun_rooms SET name='".$rname."', pass='".$rpass."', censord='".$cns."', static='0', lastmsg='".time()."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Sala criada com sucesso!<br/><br/>";
@@ -363,10 +363,10 @@ echo "<img src=\"images/ok.gif\" alt=\"O\"/>Sala criada com sucesso!<br/><br/>";
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro!<br/><br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc� s� pode criar no m�ximo 10 salas!<br/><br/>";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você só pode criar no máximo 10 salas!<br/><br/>";
 }
 echo "<a href=\"index.php?action=uchat&sid=$sid\"><img src=\"images/chat.gif\" alt=\"*\"/>salas de chat</a><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>P�gina principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
 echo "</p>";
 }
 else if($action=="signgb")
@@ -377,8 +377,8 @@ adicionar_online(getuid_sid($sid),"Enviando recado","");
 if(!cansigngb(getuid_sid($sid), $who))
 {
 echo "<p align=\"center\">";
-echo "Voc� n�o pode enviar recados para esse usu�rio!<br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P�gina principal</a>";
+echo "Você não pode enviar recados para esse usuário!<br/><br/>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a>";
 echo "</p>";
 exit();
 }
@@ -389,7 +389,7 @@ $cor = $_POST["cor"];
 echo "<p align=\"center\">";
 if(trim($msgtxt)!="")
 {
-$res = mysql_query("INSERT INTO fun_gbook SET gbowner='".$who."', gbsigner='".$uid."', dtime='".$crdate."', gbmsg='".$msgtxt."', cor='".$cor."'");
+$res = $pdo->query("INSERT INTO fun_gbook SET gbowner='".$who."', gbsigner='".$uid."', dtime='".$crdate."', gbmsg='".$msgtxt."', cor='".$cor."'");
 }
 if($res)
 {
@@ -400,7 +400,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro ao adicionar recado!";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="delan")
@@ -411,11 +411,11 @@ $clid = $_GET["clid"];
 $anid = $_GET["anid"];
 $uid = getuid_sid($sid);
 echo "<p align=\"center\">";
-$pid = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$clid."'"));
-$exs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_announcements WHERE id='".$anid."' AND clid='".$clid."'"));
+$pid = $pdo->query("SELECT owner FROM fun_clubs WHERE id='".$clid."'")->fetch();
+$exs = $pdo->query("SELECT COUNT(*) FROM fun_announcements WHERE id='".$anid."' AND clid='".$clid."'")->fetch();
 if(($uid==$pid[0])&&($exs[0]>0))
 {
-$res = mysql_query("DELETE FROM fun_announcements WHERE id='".$anid."'");
+$res = $pdo->query("DELETE FROM fun_announcements WHERE id='".$anid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Aviso apagado com sucesso da comunidade!";
@@ -423,10 +423,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Aviso apagado com sucesso da comunid
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode remover esse anuncio!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode remover esse anuncio!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="dlcl")
@@ -436,7 +436,7 @@ adicionar_online(getuid_sid($sid),"Apagando comunidade","");
 $clid = $_GET["clid"];
 $uid = getuid_sid($sid);
 echo "<p align=\"center\">";
-$pid = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$clid."'"));
+$pid = $pdo->query("SELECT owner FROM fun_clubs WHERE id='".$clid."'")->fetch();
 if(ismod($uid) || $uid==$pid[0])
 {
 $res = deleteClub($clid);
@@ -447,10 +447,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Comunidade apagada com sucesso!";
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode apagar esta comunidade!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode apagar esta comunidade!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="reqjc")
@@ -459,16 +459,16 @@ $clid = $_GET["clid"];
 adicionar_online(getuid_sid($sid),"Participando de uma Comunidade","");
 echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
-$isin = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'"));
+$isin = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'")->fetch();
 if($isin[0]==0)
 {
-$tipo = mysql_fetch_array(mysql_query("SELECT tipo FROM fun_clubs WHERE id = '".$clid."'"));
+$tipo = $pdo->query("SELECT tipo FROM fun_clubs WHERE id = '".$clid."'")->fetch();
 if($tipo[0]==0)
 {
-$res = mysql_query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid."', accepted='1', points='0', joined='".time()."'");
+$res = $pdo->query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid."', accepted='1', points='0', joined='".time()."'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"o\"/>Parab�ns voc� j� est� participando dessa comunidade!";
+echo "<img src=\"images/ok.gif\" alt=\"o\"/>Parabêns você já está participando dessa comunidade!";
 }
 else
 {
@@ -477,10 +477,10 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro MYSQL desconhecido, tente no
 }
 else if($tipo[0]==1)
 {
-$res = mysql_query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid."', accepted='0', points='0', joined='".time()."'");
+$res = $pdo->query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid."', accepted='0', points='0', joined='".time()."'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"o\"/>Foi enviado uma solicita��o para o dono da comunidade, aguarde o torpedo de confirma��o!";
+echo "<img src=\"images/ok.gif\" alt=\"o\"/>Foi enviado uma solicita��o para o dono da comunidade, aguarde o torpedo de confirmação!";
 }
 else
 {
@@ -494,10 +494,10 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro desconhecido, tente novament
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>A solicita��o para entrar nessa comunidade ainda est� pedente, por favor aguarde!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>A solicitação para entrar nessa comunidade ainda está pedente, por favor aguarde!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="unjc")
@@ -507,20 +507,20 @@ $clid = $_GET["clid"];
 adicionar_online(getuid_sid($sid),"Saindo de uma comunidade","");
 echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
-$isin = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'"));
+$isin = $pdo->query("SELECT COUNT(*) FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'")->fetch();
 if($isin[0]>0){
-$res = mysql_query("DELETE FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'");
+$res = $pdo->query("DELETE FROM fun_clubmembers WHERE uid='".$uid."' AND clid='".$clid."'");
 if($res)
 {
-echo "<img src=\"images/ok.gif\" alt=\"o\"/>Voc� saiu da comunidade com sucesso!";
+echo "<img src=\"images/ok.gif\" alt=\"o\"/>Você saiu da comunidade com sucesso!";
 }else{
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode sair dessa comunidade!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode sair dessa comunidade!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //explsar membro de comunidade
@@ -531,31 +531,31 @@ $who = $_GET["who"];
 adicionar_online(getuid_sid($sid),"Moderando comunidade","");
 echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
-$cowner = mysql_fetch_array(mysql_query("SELECT owner, name FROM fun_clubs WHERE id='".$clid."'"));
+$cowner = $pdo->query("SELECT owner, name FROM fun_clubs WHERE id='".$clid."'")->fetch();
 if($cowner[0]==$uid)
 {
 if($cowner[0]==$who)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\"/>O dono da comunidade n�o pode ser expulso!";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>O dono da comunidade não pode ser expulso!";
 }
 else
 {
-$res = mysql_query("DELETE FROM fun_clubmembers  WHERE clid='".$clid."' AND uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_clubmembers  WHERE clid='".$clid."' AND uid='".$who."'");
 if($res)
 {
-$pm = "Ol� /reader, voc� foi expulso da comunidade [b]$cowner[1][/b]![br/]Torpedo Altom�tico!";
+$pm = "Olá /reader, você foi expulso da comunidade [b]$cowner[1][/b]![br/]Torpedo Altomático!";
 autopm($pm, $who);
-echo "<img src=\"images/ok.gif\" alt=\"\"/>Usu�rio expulso da comunidade com sucesso!";
+echo "<img src=\"images/ok.gif\" alt=\"\"/>Usuário expulso da comunidade com sucesso!";
 }else
 {
 echo "<img src=\"images/notok.gif\" alt=\"\"/>Erro no banco de dados!";
 }
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"\"/>Voc� n�o pode fazer isso!!";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Você não pode fazer isso!!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //aceitar membro na comunidade
@@ -566,24 +566,24 @@ $who = $_GET["who"];
 adicionar_online(getuid_sid($sid),"Moderando Comunidade","");
 echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
-$cowner = mysql_fetch_array(mysql_query("SELECT owner, name FROM fun_clubs WHERE id='".$clid."'"));
+$cowner = $pdo->query("SELECT owner, name FROM fun_clubs WHERE id='".$clid."'")->fetch();
 if($cowner[0]==$uid){
-$res = mysql_query("UPDATE fun_clubmembers SET accepted='1' WHERE clid='".$clid."' AND uid='".$who."'");
+$res = $pdo->query("UPDATE fun_clubmembers SET accepted='1' WHERE clid='".$clid."' AND uid='".$who."'");
 if($res)
 {
-$pm = "Ol� /reader, agora voc� j� est� participando da comunidade [b]$cowner[1][/b]![br/]Torpedo Altom�tico!";
+$pm = "Ol� /reader, agora você já está participando da comunidade [b]$cowner[1][/b]![br/]Torpedo Automático!";
 autopm($pm, $who);
-echo "<img src=\"images/ok.gif\" alt=\"\"/>Usu�rio adicionado com sucesso na comunidade!";
+echo "<img src=\"images/ok.gif\" alt=\"\"/>Usuário adicionado com sucesso na comunidade!";
 }
 else
 {
 echo "<img src=\"images/notok.gif\" alt=\"\"/>Erro no banco de dados!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"\"/>Voc� n�o pode fazer isso!";
+echo "<img src=\"images/notok.gif\" alt=\"\"/>Você não pode fazer isso!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //aceitar todos os membros da comunidade
@@ -593,9 +593,9 @@ $clid = $_GET["clid"];
 adicionar_online(getuid_sid($sid),"Adicionando membros na comunidade","");
 echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
-$cowner = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$clid."'"));
+$cowner = $pdo->query("SELECT owner FROM fun_clubs WHERE id='".$clid."'")->fetch();
 if($cowner[0]==$uid){
-$res = mysql_query("UPDATE fun_clubmembers SET accepted='1' WHERE clid='".$clid."'");
+$res = $pdo->query("UPDATE fun_clubmembers SET accepted='1' WHERE clid='".$clid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Todos os membros foram adicionados!";
@@ -603,10 +603,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Todos os membros foram adicionados!"
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode fazer isso!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode fazer isso!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="denall")
@@ -616,9 +616,9 @@ $clid = $_GET["clid"];
 adicionar_online(getuid_sid($sid),"Adicionando membros","");
 echo "<p align=\"center\">";
 $uid = getuid_sid($sid);
-$cowner = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$clid."'"));
+$cowner = $pdo->query("SELECT owner FROM fun_clubs WHERE id='".$clid."'")->fetch();
 if($cowner[0]==$uid){
-$res = mysql_query("DELETE FROM fun_clubmembers WHERE accepted='0' AND clid='".$clid."'");
+$res = $pdo->query("DELETE FROM fun_clubmembers WHERE accepted='0' AND clid='".$clid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Todos membros rejeitados!";
@@ -626,10 +626,10 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Todos membros rejeitados!";
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Comunidade n�o � sua!";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Comunidade não é sua!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////shout
@@ -641,16 +641,16 @@ echo "<p align=\"center\">";
 $cor = $_POST["cor"];
 $text = scan_msg($shtxt, $sid);
 $nos = substr_count($text,"<img src=");
-$flood = mysql_fetch_array(mysql_query("SELECT MAX(shtime) FROM fun_shouts"));
+$flood = $pdo->query("SELECT MAX(shtime) FROM fun_shouts")->fetch();
 $pmfl = $flood[0]+180;
 $time8 = time();
 if(empty($text))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc� deve digitar o recado!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você deve digitar o recado!";
 }
 else if($nos>3)
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc� ultrapassou o limite de 3 smilies!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você ultrapassou o limite de 3 smilies!";
 }
 else  if($pmfl>$time8)
 {
@@ -661,14 +661,14 @@ else
 {
 $shtxt = $shtxt;
 $shtm = time();
-$res = mysql_query("INSERT INTO fun_shouts SET shout='".$shtxt."', shouter='".$uid."', shtime='".$shtm."', cor='".$cor."'");
+$res = $pdo->query("INSERT INTO fun_shouts SET shout='".$shtxt."', shouter='".$uid."', shtime='".$shtm."', cor='".$cor."'");
 if($res)
 {
-$shts = mysql_fetch_array(mysql_query("SELECT shouts from fun_users WHERE id='".$uid."'"));
+$shts = $pdo->query("SELECT shouts from fun_users WHERE id='".$uid."'")->fetch();
 $shts = $shts[0]+1;
-$total = mysql_fetch_array(mysql_query("SELECT recados FROM fun_users WHERE id='".$uid."'"));
+$total = $pdo->query("SELECT recados FROM fun_users WHERE id='".$uid."'")->fetch();
 $sm = $total[0] - 1;
-mysql_query("UPDATE fun_users SET shouts='".$shts."', recados='".$sm."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET shouts='".$shts."', recados='".$sm."' WHERE id='".$uid."'");
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Recado adicionado com sucesso!";
 }else
 {
@@ -676,7 +676,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="shout2")
@@ -689,7 +689,7 @@ echo "<p align=\"center\">";
 $cor = $_POST["cor"];
 $text = scan_msg($shtxt, $sid);
 $nos = substr_count($text,"<img src=");
-$flood = mysql_fetch_array(mysql_query("SELECT MAX(shtime) FROM fun_mequipe"));
+$flood = $pdo->query("SELECT MAX(shtime) FROM fun_mequipe")->fetch();
 $pmfl = $flood[0]+180;
 $time8 = time();
 if($nos>4)
@@ -702,7 +702,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Um recado acabou de ser adicionad
 $shtxt = $shtxt;
 //$uid = getuid_sid($sid);
 $shtm = time();
-$res = mysql_query("INSERT INTO fun_mequipe SET shout='".$shtxt."', shouter='".$uid."', shtime='".$shtm."', cor='".$cor."'");
+$res = $pdo->query("INSERT INTO fun_mequipe SET shout='".$shtxt."', shouter='".$uid."', shtime='".$shtm."', cor='".$cor."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>recado adicionado com sucesso";
@@ -711,7 +711,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 }         echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Announce
@@ -720,17 +720,17 @@ else if($action=="annc")
 $antx = $_POST["antx"];
 $clid = $_GET["clid"];
 adicionar_online(getuid_sid($sid),"Enviando Aviso","");
-$cow = mysql_fetch_array(mysql_query("SELECT owner FROM fun_clubs WHERE id='".$clid."'"));
+$cow = $pdo->query("SELECT owner FROM fun_clubs WHERE id='".$clid."'")->fetch();
 $uid = getuid_sid($sid);
 echo "<p align=\"center\">";
 if($cow[0]!=$uid)
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc� n�o pode fazer isso!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você não pode fazer isso!";
 }else{
 $shtxt = $shtxt;
 //$uid = getuid_sid($sid);
 $shtm = time();
-$res = mysql_query("INSERT INTO fun_announcements SET antext='".$antx."', clid='".$clid."', antime='".$shtm."'");
+$res = $pdo->query("INSERT INTO fun_announcements SET antext='".$antx."', clid='".$clid."', antime='".$shtm."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>O aviso foi enviado para a comunidade com sucesso!";
@@ -739,7 +739,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="delfgb")
@@ -749,7 +749,7 @@ adicionar_online(getuid_sid($sid),"Apagando recado","");
 echo "<p align=\"center\">";
 if(candelgb(getuid_sid($sid), $mid))
 {
-$res = mysql_query("DELETE FROM fun_gbook WHERE id='".$mid."'");
+$res = $pdo->query("DELETE FROM fun_gbook WHERE id='".$mid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Recado apagado!<br/>";
@@ -757,11 +757,11 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Recado apagado!<br/>";
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro no banco de dados!!<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc� n�o pode apagar esse recado!<br>";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Você não pode apagar esse recado!<br>";
 }
 echo "<br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="rpost")
@@ -769,10 +769,10 @@ else if($action=="rpost")
 $pid = $_GET["pid"];
 adicionar_online(getuid_sid($sid),"Reportando post","");
 echo "<p align=\"center\">";
-$pinfo = mysql_fetch_array(mysql_query("SELECT reported FROM fun_posts WHERE id='".$pid."'"));
+$pinfo = $pdo->query("SELECT reported FROM fun_posts WHERE id='".$pid."'")->fetch();
 if($pinfo[0]=="0")
 {
-$str = mysql_query("UPDATE fun_posts SET reported='1' WHERE id='".$pid."' ");
+$str = $pdo->query("UPDATE fun_posts SET reported='1' WHERE id='".$pid."' ");
 if($str)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Postagem reportada com sucesso!";
@@ -784,7 +784,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Postagem ja reportada!";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="rtpc")
@@ -792,10 +792,10 @@ else if($action=="rtpc")
 $tid = $_GET["tid"];
 adicionar_online(getuid_sid($sid),"Reportando topico","");
 echo "<p align=\"center\">";
-$pinfo = mysql_fetch_array(mysql_query("SELECT reported FROM fun_topics WHERE id='".$tid."'"));
+$pinfo = $pdo->query("SELECT reported FROM fun_topics WHERE id='".$tid."'")->fetch();
 if($pinfo[0]=="0")
 {
-$str = mysql_query("UPDATE fun_topics SET reported='1' WHERE id='".$tid."' ");
+$str = $pdo->query("UPDATE fun_topics SET reported='1' WHERE id='".$tid."' ");
 if($str)
 {
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico reportado com sucesso";
@@ -807,7 +807,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico ja encontra se reportado";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="bud")
@@ -827,43 +827,43 @@ if(arebuds($uid,$who))
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>$tnick ja e teu amigo<br/>";
 }else if(budres($uid, $who)==0)
 {
-$res = mysql_query("INSERT INTO fun_buddies SET uid='".$uid."', tid='".$who."', reqdt='".time()."'");
+$res = $pdo->query("INSERT INTO fun_buddies SET uid='".$uid."', tid='".$who."', reqdt='".time()."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Pedido de amizade feito com sucesso!<br/>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
 }
 }
 else if(budres($uid, $who)==1)
 {
-$res = mysql_query("UPDATE fun_buddies SET agreed='1' WHERE uid='".$who."' AND tid='".$uid."'");
+$res = $pdo->query("UPDATE fun_buddies SET agreed='1' WHERE uid='".$who."' AND tid='".$uid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Amigo adicionado com sucesso!<br/>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
 }
 }
 else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode adicionar $tnick a lista de amigos!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista de amigos!<br/>";
 }
 }else if($todo="del")
 {
-$res= mysql_query("DELETE FROM fun_buddies WHERE (uid='".$uid."' AND tid='".$who."') OR (uid='".$who."' AND tid='".$uid."')");
+$res= $pdo->query("DELETE FROM fun_buddies WHERE (uid='".$uid."' AND tid='".$who."') OR (uid='".$who."' AND tid='".$uid."')");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Amigo apagado com sucesso!<br/>";
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode apagar esse amigo!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode apagar esse amigo!<br/>";
 }
 }
 echo "<br>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////////Update buddy message
@@ -874,7 +874,7 @@ $bmsg = $_POST["bmsg"];
 $bmsg = trim(htmlspecialchars($bmsg));
 echo "<p align=\"center\">";
 //$uid = getuid_sid($sid);
-$res = mysql_query("UPDATE fun_users SET budmsg='".$bmsg."' WHERE id='".$uid."'");
+$res = $pdo->query("UPDATE fun_users SET budmsg='".$bmsg."' WHERE id='".$uid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Frase de amigo editada com sucesso!<br/>";
@@ -885,7 +885,7 @@ echo "<br/>";
 echo "<a href=\"lists.php?action=buds&sid=$sid\">";
 echo "Lista de amigos</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////// add club
@@ -901,8 +901,8 @@ $logo_ext = arquivo_ext($logo);
 $size = (round($_FILES["logo"]["size"]/1024));
 echo "<p align=\"center\">";
 //comandos mysql
-$outra = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE name LIKE '".$nome."'"));
-$minhas = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_clubs WHERE owner = '".getuid_sid($sid)."'"));
+$outra = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE name LIKE '".$nome."'")->fetch();
+$minhas = $pdo->query("SELECT COUNT(*) FROM fun_clubs WHERE owner = '".getuid_sid($sid)."'")->fetch();
 $pontos = getplusses(getuid_sid($sid));
 if($size < 1024)
 {
@@ -914,15 +914,15 @@ if($outra[0]==0)
 {
 if(trim($nome)==""||trim($descricao)==""||trim($regras)==""||trim($logo)=="")
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Todos os campos s�o obrigat�rios!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Todos os campos são obrigatórios!";
 }
 else if(is_numeric($nome))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">O nome da comunidade n�o pode conter apenas n�meros!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">O nome da comunidade não pode conter apenas números!";
 }
 else if(arquivo_extfoto($logo_ext)=="1")
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem que voc� enviou n�o � v�lida, por favor tente novamente!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem que você enviou não é válida, por favor tente novamente!";
 }
 else
 {
@@ -931,38 +931,38 @@ $pasta = "other/";
 $novo_nome = "COMU_".time().".".$logo_ext;
 move_uploaded_file($_FILES["logo"]["tmp_name"], $pasta.$novo_nome);
 //adiciona a comunidade
-mysql_query("INSERT INTO fun_clubs SET name='".$nome."', owner='".$uid."', description='".$descricao."', rules='".$regras."', logo='".$pasta.$novo_nome."', plusses='0', created='".time()."', subdono='0', tipo='".$tipo_cl."' ");
+$pdo->query("INSERT INTO fun_clubs SET name='".$nome."', owner='".$uid."', description='".$descricao."', rules='".$regras."', logo='".$pasta.$novo_nome."', plusses='0', created='".time()."', subdono='0', tipo='".$tipo_cl."' ");
 //add o usuario que criou ela como o dono dela
-$clid = mysql_fetch_array(mysql_query("SELECT id FROM fun_clubs WHERE name='".$nome."'"));
-mysql_query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid[0]."', accepted='1', points='50', joined='".time()."'");
+$clid = $pdo->query("SELECT id FROM fun_clubs WHERE name='".$nome."'")->fetch();
+$pdo->query("INSERT INTO fun_clubmembers SET uid='".$uid."', clid='".$clid[0]."', accepted='1', points='50', joined='".time()."'");
 //adiciona as salas de bate papo, e o forum
 $fnm = $nome;
 $cnm = $nome;
-mysql_query("INSERT INTO fun_forums SET name='".$fnm."', position='0', cid='0', clubid='".$clid[0]."'");
-mysql_query("INSERT INTO fun_rooms SET name='".$cnm."', pass='', static='1', mage='0', chposts='0', perms='0', censord='0', freaky='0', lastmsg='".time()."', clubid='".$clid[0]."'");
+$pdo->query("INSERT INTO fun_forums SET name='".$fnm."', position='0', cid='0', clubid='".$clid[0]."'");
+$pdo->query("INSERT INTO fun_rooms SET name='".$cnm."', pass='', static='1', mage='0', chposts='0', perms='0', censord='0', freaky='0', lastmsg='".time()."', clubid='".$clid[0]."'");
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">N�o � permitido criar uma comunidade clone(igual), por favor verifique o nome!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Não é permitido criar uma comunidade clone(igual), por favor verifique o nome!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Voc� deve ter mais de 350 $smoeda para criar uma comunidade!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Você deve ter mais de 350 $smoeda para criar uma comunidade!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">Voc� atingiu o limite m�ximo de comunidades por usu�rio!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">Você atingiu o limite máximo de comunidades por usuário!";
 }
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem enviada � maior que 1024KBs(<b>1MB</b>), tente outra!";
+echo "<img src=\"images/notok.gif\" alt=\"X\">A imagem enviada é maior que 1024KBs(<b>1MB</b>), tente outra!";
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 /////////////////////////////Add remove from ignoire list
@@ -978,7 +978,7 @@ if($todo=="add")
 {
 if(ignoreres($uid, $who)==1)
 {
-$res= mysql_query("INSERT INTO fun_ignore SET name='".$uid."', target='".$who."'");
+$res= $pdo->query("INSERT INTO fun_ignore SET name='".$uid."', target='".$who."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>$tnick adicionado na lista negra!<br/>";
@@ -986,13 +986,13 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>$tnick adicionado na lista negra!<br
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Error!<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>Voc� n�o pode adicionar $tnick a lista negra!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>Você não pode adicionar $tnick a lista negra!<br/>";
 }
 }else if($todo="del")
 {
 if(ignoreres($uid, $who)==2)
 {
-$res= mysql_query("DELETE FROM fun_ignore WHERE name='".$uid."' AND target='".$who."'");
+$res= $pdo->query("DELETE FROM fun_ignore WHERE name='".$uid."' AND target='".$who."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>$tnick removido com sucesso da lista negra!<br/>";
@@ -1000,13 +1000,13 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>$tnick removido com sucesso da lista
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Error Updating Database<br/>";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>$tnick n�o est� na lista negra!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>$tnick não está na lista negra!<br/>";
 }
 }
 echo "<br/><a href=\"lists.php?action=ignl&sid=$sid\">";
 echo "Lista negra</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 //////////////////////////////atualizar perfil
@@ -1018,8 +1018,8 @@ $ubday = $_POST["ubday"];
 $uloc = $_POST["uloc"];
 $usex = $_POST["usex"];
 echo "<p align=\"center\">";
-$res = mysql_query("UPDATE fun_users SET  WHERE id='".$uid."'");
-$res = mysql_query("UPDATE fun_users SET email='".$semail."',  birthday='".$ubday."', location='".$uloc."', sex='".$usex."' WHERE id='".$uid."'");
+$res = $pdo->query("UPDATE fun_users SET  WHERE id='".$uid."'");
+$res = $pdo->query("UPDATE fun_users SET email='".$semail."',  birthday='".$ubday."', location='".$uloc."', sex='".$usex."' WHERE id='".$uid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Seu perfil foi atualizado com sucesso!<br/>";
@@ -1027,7 +1027,7 @@ echo "<img src=\"images/ok.gif\" alt=\"o\"/>Seu perfil foi atualizado com sucess
 echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro, tente novamente mais tarde!<br/>";
 }
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 /////////////////////////////////atualizar senha
@@ -1039,7 +1039,7 @@ $cpwd = $_POST["cpwd"];
 echo "<p align=\"center\">";
 if($npwd!=$cpwd)
 {
-echo "<img src=\"images/notok.gif\" alt=\"x\"/>As senhas n�o s�o identicas!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"x\"/>As senhas não são identicas!<br/>";
 }
 else if((strlen($npwd)<8) || (strlen($npwd)>15))
 {
@@ -1048,7 +1048,7 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Senha deve deve ter de 8 a 15 car
 else
 {
 $pwd = md5($npwd);
-$res = mysql_query("UPDATE fun_users SET pass='".$pwd."' WHERE id='".$uid."'");
+$res = $pdo->query("UPDATE fun_users SET pass='".$pwd."' WHERE id='".$uid."'");
 if($res)
 {
 echo "<img src=\"images/ok.gif\" alt=\"o\"/>Senha atualizada com sucesso!<br/>";
@@ -1057,15 +1057,15 @@ echo "<img src=\"images/notok.gif\" alt=\"x\"/>Erro ao atualizar a senha!<br/>";
 }
 }
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else
 {
 echo "<p align=\"center\">";
-echo "Esta p�gina que voc� tentou acessar n�o foi encontrada!<br/><br/>";
+echo "Esta página que vocẽ tentou acessar não foi encontrada!<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 echo "</body>";

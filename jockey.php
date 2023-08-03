@@ -1,10 +1,10 @@
 <?php
 //	SCRIPT POR BEBETO
 //	Contato: bebeto_apx@hotmail.com
-//	Por favor não modificar
+//	Por favor nÃ£o modificar
 //include core.php and config.php files
-include("core.php");
 include("config.php");
+include("core.php");
 //code html
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -16,7 +16,6 @@ echo "<meta http-equiv=\"Cache-Control\" content=\"no-cache\"/>";
 echo "</head>";
 echo "<body>";
 //connect db
-bd_connect();
 //get defines
 $a = $_GET["a"];
 $sid = $_GET["sid"];
@@ -25,7 +24,7 @@ $uid = getuid_sid($sid);
 if(!is_logado($sid))
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!";
+echo "VocÃª nÃ£o estÃ¡ logado!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?\">Login</a>";
@@ -43,7 +42,7 @@ $pontos = getplusses($uid);
 echo "<p align=\"center\">";
 if($pontos < $aposta)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você deve ter mais que $aposta $smoeda para apostar!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª deve ter mais que $aposta $smoeda para apostar!";
 echo "<br />";
 }
 else
@@ -53,22 +52,22 @@ if($rand == $cavalo)
 {
 $aposta++;
 $ns = $pontos + $aposta;
-mysql_query("UPDATE fun_users SET plusses='".$ns."', lastplreas='Ganhou $aposta pontos no jockey club!' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET plusses='".$ns."', lastplreas='Ganhou $aposta pontos no jockey club!' WHERE id='".$uid."'");
 echo "<img src=\"images/cavalo.gif\" alt=\"\">";
 echo "<b>________$rand</b>";
 echo "<br />";
-echo "Parabéns seu cavalo ganhou a corrida, você ganhou $aposta pontos!";
+echo "ParabÃªns seu cavalo ganhou a corrida, vocÃª ganhou $aposta pontos!";
 echo "<br />";
 }
 else
 {
 $aposta++;
 $ns = $pontos - $aposta;
-mysql_query("UPDATE fun_users SET plusses='".$ns."', lastplreas='Perdeu $aposta pontos no jockey club!' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET plusses='".$ns."', lastplreas='Perdeu $aposta pontos no jockey club!' WHERE id='".$uid."'");
 echo "<img src=\"images/cavalo.gif\" alt=\"\">";
 echo "<b>________$rand</b>";
 echo "<br />";
-echo "Seu cavalo não ganhou a corrida, você perdeu $aposta pontos!";
+echo "Seu cavalo nÃ£o ganhou a corrida, vocÃª perdeu $aposta pontos!";
 echo "<br />";
 }
 }
@@ -79,7 +78,7 @@ echo "<p align=\"center\">";
 echo "<b>Como funciona?</b>";
 echo "<br />";
 echo "<br />";
-echo "No <b>jockey club</b> você aposta em um determinado valor de pontos em um cavalo da lista, caso o seu cavalo seja o campeão você ganha os pontos apostados na hora!";
+echo "No <b>jockey club</b> vocÃª aposta em um determinado valor de pontos em um cavalo da lista, caso o seu cavalo seja o campeÃ£o vocÃª ganha os pontos apostados na hora!";
 echo "</p>";
 }
 else
@@ -118,6 +117,6 @@ echo "<br />";
 echo "<br />";
 }
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 ?>

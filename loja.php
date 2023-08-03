@@ -1,11 +1,11 @@
 <?php
 
-//SCRIPT CRIADO POR ÁLVARO
+//SCRIPT CRIADO POR ï¿½LVARO
 //CONTATO: suporte@alvarowap.com
 //CORRIGIDO POR Bebeto
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -18,7 +18,6 @@ echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 
 echo "<body>";
-bd_connect();
 $sid = $_GET["sid"];
 $a = $_GET["a"];
 $cat = $_GET["c"];
@@ -26,7 +25,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -34,7 +33,8 @@ exit();
 adicionar_online(getuid_sid($sid),"Loja $snome","");
 function produto($id)
 {
-$produto = mysql_fetch_array(mysql_query("SELECT url FROM loja WHERE id='".$id."'"));
+	global $pdo;
+$produto = $pdo->query("SELECT url FROM loja WHERE id='".$id."'")->fetch();
 $produto = "<img src=\"loja/".$produto[0]."\" alt=\"\" height=\"100x100\"/>";
 return $produto;
 }
@@ -60,11 +60,11 @@ echo "<b>Nada pode ficar em branco!</b><br>";
 }
 else if(!is_numeric($valor))
 {
-echo "<b>Digite um valor válido!</b><br>";
+echo "<b>Digite um valor vÃ¡lido!</b><br>";
 }
 else if(arquivo_extfoto($extencao)=="1")
 {
-echo "<b>Arquivo não é uma foto!</b><br>";
+echo "<b>Arquivo nÃ£o Ã¡ uma foto!</b><br>";
 }
 else if($tamanho > 1024)
 {
@@ -78,7 +78,7 @@ $nome_real = time().time().".".$extencao;
 $upload = move_uploaded_file($_FILES["file"]["tmp_name"], $pasta.$nome_real);
 if($upload)
 {
-	mysql_query("INSERT INTO loja SET url='$nome_real', valor='".$valor."', cat='".$cat."'");
+	$pdo->query("INSERT INTO loja SET url='$nome_real', valor='".$valor."', cat='".$cat."'");
 	echo "<b>Presente enviado com sucesso!</b><br/>";
 }else
 {
@@ -87,7 +87,7 @@ if($upload)
 
 }
 echo "<p align=\"center\">";
-echo "<a href=\"?a=main&sid=$sid\">Loja $snome</a><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"?a=main&sid=$sid\">Loja $snome</a><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if($a==admin)
 {
@@ -112,7 +112,7 @@ echo "</select><br/>";
 echo "<input type=\"hidden\" name=\"upload\" value=\"upload\"/>";
 echo "<input type=\"submit\" value=\"Adicionar\"/>";
 echo "</form>";
-echo "<p align=\"center\"><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<p align=\"center\"><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Pï¿½gina principal</a>";
 }
 }
 //////////////comprar wapgrana
@@ -129,7 +129,7 @@ $q = 10;
 $t = $q / 2 * 5;
 if($soma > $pontos)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você não tem pontos suficientes para comprar <b>WAPGRANAS</b>!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª nÃ£o tem pontos suficientes para comprar <b>WAPGRANAS</b>!";
 echo "<br />";
 }
 else
@@ -139,23 +139,23 @@ if(isset($c))
 {
 $wapgrana = $wapgrana + $q;
 $pontos = $pontos - $t;
-mysql_query("UPDATE fun_users SET wapgrana='".$wapgrana."', plusses='".$pontos."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET wapgrana='".$wapgrana."', plusses='".$pontos."' WHERE id='".$uid."'");
 echo "<img src=\"images/ok.gif\" alt=\"\">Compra realizada com sucesso!";
 echo "<br />";
 }
 else
 {
-echo "Você deseja comprar $q <b>WAPGRANAS</b> por $t $smoeda?";
+echo "VocÃª deseja comprar $q <b>WAPGRANAS</b> por $t $smoeda?";
 echo "<br />";
 echo "<br />";
-echo "<a href=\"?a=wcomprar&c=1&sid=$sid\"><b>SIM</b></a> - <a href=\"index.php?action=main&sid=$sid\"><b>NÃO</b></a>";
+echo "<a href=\"?a=wcomprar&c=1&sid=$sid\"><b>SIM</b></a> - <a href=\"index.php?action=main&sid=$sid\"><b>NÃƒO</b></a>";
 echo "<br />";
 exit();
 }
 }
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 /////////////ver saldo de wapgrana
@@ -166,9 +166,9 @@ echo "<b>WAPGranas</b>";
 echo "<br />";
 echo "<br />";
 $nick = getnick_uid($uid);
-echo "Olá $nick, você tem no momento um saldo de ".wapgrana_uid($uid)." <b>WAPGRANAS</b>!";
+echo "OlÃ¡ $nick, vocÃª tem no momento um saldo de ".wapgrana_uid($uid)." <b>WAPGRANAS</b>!";
 echo "<br />";
-echo "Aqui você pode comprar <b>WAPGRANAS</b> com seus $smoeda normalmente... Digite abaixo a quatidade de <b>WAPGRANAS</b> que você deseja comprar!";
+echo "Aqui vocÃª pode comprar <b>WAPGRANAS</b> com seus $smoeda normalmente... Digite abaixo a quatidade de <b>WAPGRANAS</b> que vocÃª deseja comprar!";
 echo "<br />";
 echo "<form action=\"?a=wcomprar&sid=$sid\" method=\"post\">";
 echo "Quantidade: <input name=\"quantidade\" type=\"text\">";
@@ -176,22 +176,22 @@ echo "<br /><input name=\"\" type=\"submit\" value=\"OK\">";
 echo "</form>";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($a==apagarpresente)
 {
 $id = $_GET["id"];
-$ids = mysql_fetch_array(mysql_query("SELECT uid, eid, url FROM presentes WHERE id='".$id."'"));
+$ids = $pdo->query("SELECT uid, eid, url FROM presentes WHERE id='".$id."'")->fetch();
 if($ids[0]==$uid OR $ids[1]==$uid OR isadmin($uid))
 {
-mysql_query("DELETE FROM presentes WHERE id='".$id."'");
+$pdo->query("DELETE FROM presentes WHERE id='".$id."'");
 echo "<p align=\"center\"><b>Presente apagado com sucesso!</b>";
 }
 else{
 echo "<p align=\"center\"><b>Erro!</b>";
 }
-echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if($a==presentes)
 {
@@ -199,7 +199,7 @@ $who = $_GET["who"];
 $page = $_GET["p"];
 echo "<p align=\"center\"><b>Presentes de ".getnick_uid($who)."</b><br/></p>";
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM presentes WHERE uid='".$who."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM presentes WHERE uid='".$who."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
@@ -207,11 +207,10 @@ if(($page>$num_pages)&&$page!=1)$page= $num_pages;
 $limit_start = ($page-1)*$items_per_page;
 $sql = "SELECT id, pid, eid, msg, data FROM presentes WHERE uid='".$who."' ORDER BY id DESC LIMIT $limit_start, $items_per_page ";
 echo "<p><small>";
-$items = mysql_query($sql);
-echo mysql_error();
-if(mysql_num_rows($items)>0)
+$items = $pdo->query($sql);
+if($items->rowCount()>0)
 {
-while ($item = mysql_fetch_array($items))
+while ($item = $items->fetch())
 {
 if(isadmin($uid) OR $who==$uid OR $item[2]==$uid)
 {
@@ -247,18 +246,18 @@ $rets .= "</form>";
 echo $rets;
 }
 echo "<p align=\"center\">";
-echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if($a==apagar)
 {
 if(isadmin($uid))
 {
 $id = $_GET["id"];
-mysql_query("DELETE FROM loja WHERE id='".$id."'");
-mysql_query("DELETE FROM presentes WHERE pid='".$id."'");
+$pdo->query("DELETE FROM loja WHERE id='".$id."'");
+$pdo->query("DELETE FROM presentes WHERE pid='".$id."'");
 echo "<p align=\"center\">";
 echo "<b>Produto apagado!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 }
 else if($a==comprar2)
@@ -266,83 +265,83 @@ else if($a==comprar2)
 $id = $_GET["id"];
 $idu = $_POST["idu"];
 $msg = $_POST["msg"];
-$valor = mysql_fetch_array(mysql_query("SELECT valor FROM loja WHERE id='".$id."'"));
+$valor = $pdo->query("SELECT valor FROM loja WHERE id='".$id."'")->fetch();
 if(getplusses(getuid_sid($sid))<$valor[0])
 {
 echo "<p align=\"center\">";
 echo "<b>Voce precisa ter no minimo $valor[0] para comprar este item!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if(empty($msg))
 {
 echo "<p align=\"center\">";
 echo "<b>Erro na mensagem!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if($idu=="$uid")
 {
 echo "<p align=\"center\">";
 echo "<b>Voce nao pode comprar um presente para voce mesmo!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if(empty($idu) OR $idu=="0" OR !isuser($idu))
 {
 echo "<p align=\"center\">";
-echo "<b>Usuario não existe!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<b>Usuario nÃ£o existe!</b><br/><br/>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else{
-$meu = mysql_fetch_array(mysql_query("SELECT plusses FROM fun_users WHERE id='".$uid."'"));
+$meu = $pdo->query("SELECT plusses FROM fun_users WHERE id='".$uid."'")->fetch();
 $ns = $meu[0] - $valor[0];
-mysql_query("UPDATE fun_users SET plusses='".$ns."' WHERE id='".$uid."'");
-mysql_query("INSERT INTO presentes SET data='".time()."', pid='".$id."', uid='".$idu."', eid='".$uid."', msg='".$msg."'");
+$pdo->query("UPDATE fun_users SET plusses='".$ns."' WHERE id='".$uid."'");
+$pdo->query("INSERT INTO presentes SET data='".time()."', pid='".$id."', uid='".$idu."', eid='".$uid."', msg='".$msg."'");
 echo "<p align=\"center\">";
 echo "<b>Compra realizada com sucesso!</b><br/><br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 }
 else if($a==comprar)
 {
 $id = $_GET["id"];
-$valor = mysql_fetch_array(mysql_query("SELECT valor FROM loja WHERE id='".$id."'"));
+$valor = $pdo->query("SELECT valor FROM loja WHERE id='".$id."'")->fetch();
 echo "<p align=\"center\"><b>Comprar</b><br/><br/>".produto($id)."<br/>Valor: <b>".$valor[0]." pontos</b><br/></p>";
 echo "<form action=\"loja.php?a=comprar2&id=$id&sid=$sid\" method=\"post\">ID do usuario: <input name=\"idu\"/><br/>Mensagem: <input name=\"msg\"/><br/><input type=\"submit\" value=\"Comprar\"/></form>";
 echo "<p align=\"center\">";
-echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else if($a==main)
 {
 echo "<p align=\"center\">";
 echo "<b>Loja $snome</b></p>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='1'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='1'")->fetch();
 echo "<a href=\"loja.php?c=1&sid=$sid\">&#187;Animadas($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='2'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='2'")->fetch();
 echo "<a href=\"loja.php?c=2&sid=$sid\">&#187;Amizade($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='3'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='3'")->fetch();
 echo "<a href=\"loja.php?c=3&sid=$sid\">&#187;Amor($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='4'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='4'")->fetch();
 echo "<a href=\"loja.php?c=4&sid=$sid\">&#187;Datas Especiais($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='5'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='5'")->fetch();
 echo "<a href=\"loja.php?c=5&sid=$sid\">&#187;Personalizadas($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='6'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='6'")->fetch();
 echo "<a href=\"loja.php?c=6&sid=$sid\">&#187;Diversas($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='7'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='7'")->fetch();
 echo "<a href=\"loja.php?c=7&sid=$sid\">&#187;Eroticas($sm[0])</a><br/>";
-$sm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='8'"));
+$sm = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='8'")->fetch();
 echo "<a href=\"loja.php?c=8&sid=$sid\">&#187;Religiao($sm[0])</a><br/>";
 echo "<p align=\"center\">";
 if(isadmin($uid))
 {
 echo "<br/><a href=\"loja.php?a=admin&sid=$sid\">Add Presente</a>";
 }
-echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 else
 {
 $page = $_GET["p"];
 echo "<p align=\"center\"><b>Lista de Presentes</b><br/></p>";
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM loja WHERE cat='".$cat."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM loja WHERE cat='".$cat."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
@@ -350,11 +349,10 @@ if(($page>$num_pages)&&$page!=1)$page= $num_pages;
 $limit_start = ($page-1)*$items_per_page;
 $sql = "SELECT id, url, valor FROM loja WHERE cat='".$cat."' ORDER BY id DESC LIMIT $limit_start, $items_per_page";
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-if(mysql_num_rows($items)>0)
+$items = $pdo->query($sql);
+if($items->rowCount()>0)
 {
-while ($item = @mysql_fetch_array($items))
+while ($item = $items->fetch())
 {
 if(isadmin($uid))
 {
@@ -389,6 +387,6 @@ $rets .= "</form>";
 echo $rets;
 }
 echo "<p align=\"center\">";
-echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 }
 ?>
