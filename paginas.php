@@ -1,10 +1,9 @@
 <?php
 
 
-include("core.php");
 include("config.php");
+include("core.php");
 
-bd_connect();
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -41,7 +40,7 @@ echo "<b>Pedir Ajuda</b><br>";
 if($_POST["a"]==Enviar)
 {
 $txt = $_POST["prob"];
-$ea = mysql_query("INSERT INTO fun_suporte SET texto='".$txt."', por='".$uid."', data='".time()."'");
+$ea = $pdo->query("INSERT INTO fun_suporte SET texto='".$txt."', por='".$uid."', data='".time()."'");
 if($ea)
 {
 echo "<br><b>Pedido de ajuda enviado com sucesso!</b><br>";
@@ -55,7 +54,7 @@ echo "Digite seu problema: <br/><textarea name=\"prob\"></textarea><br>";
 echo "<input name=\"a\" value=\"Enviar\" type=\"submit\"></form><br>";
 echo "</p>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a></p>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Pï¿½gina principal</a></p>";
 }
 //mudar humor
 else if($p=="humor")
@@ -64,7 +63,7 @@ adicionar_online($uid, "Alterando humor", "");
 echo "<p align=\"center\">";
 echo "<b>Alterar humor</b>";
 echo "</p>";
-$humor = mysql_fetch_array(mysql_query("SELECT humor FROM fun_users WHERE id='".$uid."'"));
+$humor = $pdo->query("SELECT humor FROM fun_users WHERE id='".$uid."'")->fetch();
 echo "<form action=\"genproc.php?action=humor&sid=$sid\" method=\"POST\">";
 echo "Humor: <select name=\"humor\" value=\"$humor[0]\">";
 echo "<option value=\"\">Sem humor</option>";
@@ -87,45 +86,45 @@ echo "<input name=\"\" value=\"Atualizar\" type=\"submit\" />";
 echo "</form>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 }
 else if($p=="servicos")
 {
 echo "<p align=\"center\">";
-echo "<b>Serviços</b><br/></p>";
-echo "<a href=\"noticias.php?sid=$sid\">&#187;Notícias</a><br>";
+echo "<b>ServiÃ§os</b><br/></p>";
+echo "<a href=\"noticias.php?sid=$sid\">&#187;Notï¿½cias</a><br>";
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a></p>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a></p>";
 }
 else if($p=="sml")
 {
 echo "<p align=\"center\">";
 echo "<b>Categorias de Smilies</b><br></p>";
 
-$c1 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='1'"));
+$c1 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='1'")->fetch();
 echo "<a href=\"lists.php?action=smilies&c=1&sid=$sid\">&#187;Diversas($c1[0])</a><br>";
 
-$c2 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='2'"));
+$c2 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='2'")->fetch();
 echo "<a href=\"lists.php?action=smilies&c=2&sid=$sid\">&#187;Datas especiais($c2[0])</a><br>";
 
-$c3 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='3'"));
+$c3 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='3'")->fetch();
 echo "<a href=\"lists.php?action=smilies&c=3&sid=$sid\">&#187;Personalizadas($c3[0])</a><br>";
 
-$c4 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='4'"));
+$c4 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='4'")->fetch();
 echo "<a href=\"lists.php?action=smilies&c=4&sid=$sid\">&#187;Terror/Halloween($c4[0])</a><br>";
 
-$c5 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='5'"));
-echo "<a href=\"lists.php?action=smilies&c=5&sid=$sid\">&#187;Amor/Emoções($c5[0])</a><br>";
+$c5 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='5'")->fetch();
+echo "<a href=\"lists.php?action=smilies&c=5&sid=$sid\">&#187;Amor/EmoÃ§Ãµes($c5[0])</a><br>";
 
-$c6 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='6'"));
+$c6 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='6'")->fetch();
 echo "<a href=\"lists.php?action=smilies&c=6&sid=$sid\">&#187;Times/Clubes($c6[0])</a><br>";
 
-$c7 = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_smilies WHERE cat='7'"));
+$c7 = $pdo->query("SELECT COUNT(*) FROM fun_smilies WHERE cat='7'")->fetch();
 echo "<a href=\"lists.php?action=smilies&c=7&sid=$sid\">&#187;Plaquinhas/Assinaturas($c7[0])</a><br><br>";
 
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">Página principal</a></p>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">PÃ¡gina principal</a></p>";
 }
 else if($p=="amigos")
 {
@@ -159,18 +158,17 @@ $sql = "SELECT a.lastact, a.id, a.id, b.uid, b.tid, b.reqdt FROM fun_users a INN
 
 
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
-if(mysql_num_rows($items)>0)
+$items = $pdo->query($sql);
+if($items->rowCount()>0)
 {
-while ($item = mysql_fetch_array($items))
+while ($item = $items->fetch())
 {
 
 if(isonline($item[2]))
 {
 $iml = "<img src=\"images/onl.gif\" alt=\"+\"/>";
 $uact = "Esta em: ";
-$plc = mysql_fetch_array(mysql_query("SELECT place FROM fun_online WHERE userid='".$item[2]."'"));
+$plc = $pdo->query("SELECT place FROM fun_online WHERE userid='".$item[2]."'")->fetch();
 $uact .= $plc[0];
 }else{
 $iml = "<img src=\"images/ofl.gif\" alt=\"-\"/>";
@@ -220,7 +218,7 @@ echo "</p>";
 ////// UNTILL HERE >>
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 
 }

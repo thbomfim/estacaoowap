@@ -1,9 +1,8 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
-bd_connect();
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -23,7 +22,7 @@ $who = $_GET["who"];
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -39,24 +38,24 @@ $who = $_POST["who"];
 $name = ltrim($_POST["name"]);
 $nick = getnick_uid($uid);
 
-$uinf = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_users WHERE name='".$name."'"));
+$uinf = $pdo->query("SELECT COUNT(*) FROM fun_users WHERE name='".$name."'")->fetch();
 if(empty($name))
 {
 echo "<b>Digite um nick!</b><br/>";
 }
 else if($uinf[0]==0)
 {
-mysql_query("UPDATE fun_users SET name='".$name."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET name='".$name."' WHERE id='".$uid."'");
 echo "<b>Nick mudado com sucesso para $name!</b><br/>";
 }
 else
 {
-mysql_query("UPDATE fun_users SET name='".$nick."' WHERE id='".$uid."'");
-echo "<b>Este nick já esta em uso!</b><br/>";
+$pdo->query("UPDATE fun_users SET name='".$nick."' WHERE id='".$uid."'");
+echo "<b>Este nick jï¿½ esta em uso!</b><br/>";
 }
 echo "<br>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 
 echo "</p>";
 }
@@ -65,14 +64,14 @@ else
 
 adicionar_online(getuid_sid($sid),"Escrevendo novo nick","");
 echo "<p>";
-echo "<b>Atenção!</b> muito cuidado ao trocar seu nick caso venha ser mau interpretado pela a equipe você será banido!...<br/>apenas seu nick será mudado seus status, pms, posts, etc...permanecem os mesmos!<br/>";
+echo "<b>AtenÃ§Ã£o!</b> muito cuidado ao trocar seu nick caso venha ser mau interpretado pela a equipe vocÃª serÃ¡ banido!...<br/>apenas seu nick serÃ¡ mudado seus status, pms, posts, etc...permanecem os mesmos!<br/>";
 echo "<form action=\"rename.php?action=editar&sid=$sid\" method=\"post\">";
 $nick = getnick_uid2($uid);
 echo "Novo nick: <input name=\"name\" value=\"$nick\" size=\"15\" maxlength=\"20\"/><br/>";
 echo "<input type=\"submit\" value=\"Atualizar\"/>";
 echo "</form><br>"; 
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a><br/>";
+echo "PÃ¡gina principal</a><br/>";
 echo "</p>";
 }
 echo "</body>";

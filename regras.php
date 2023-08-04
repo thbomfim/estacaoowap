@@ -11,22 +11,22 @@ echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
 	echo "</head>";
 echo "<body>";
 echo "<p align=\"center\"><b>Regras do Site</b><br/></p>";
-echo "- … proibido toda ou qualquer forma de divulgaÁ„o (spam), de outras comunidades com as mesmas caracterÌsticas da comunidade $snome.<br/>";
-echo "- Postagens no fÛrum fora do contexto que o tÛpico abordar, ou postagens nocivas ao site, ser„o apagadas pelos moderadores sem aviso prÈvio.<br/>";
-echo "- N„o s„o permitidos postagens ou arquivos com apologias, racismo ou pornografia infantil.<br/>";
-echo "- Cadastros duplicados acarreta-r· no cancelamento de um dos cadastros.<br/>";
-echo "- Nao sao permitidos nicks vulgares ou com ofensas a outros usu·rios.<br/>";
+echo "- √© proibido toda ou qualquer forma de divulga√ß√£o (spam), de outras comunidades com as mesmas caracter√≠sticas da comunidade $snome.<br/>";
+echo "- Postagens no f√≥rum fora do contexto que o t√≥pico abordar, ou postagens nocivas ao site, ser√£o apagadas pelos moderadores sem aviso pr√©vio.<br/>";
+echo "- N√£o s√£o permitidos postagens ou arquivos com apologias, racismo ou pornografia infantil.<br/>";
+echo "- Cadastros duplicados acarreta-r√° no cancelamento de um dos cadastros.<br/>";
+echo "- Nao sao permitidos nicks vulgares ou com ofensas a outros usu√°rios.<br/>";
 echo "- Obrigado, divirta-se!";
 echo "<p align=\"center\">";
 $sid = $_GET["sid"];
 if(empty($sid))
 {
 echo "<a href=\"index.php\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina de entrada</a></p>";
+echo "P√°gina de entrada</a></p>";
 }
 else
 {
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a></p>";
+echo "P√°gina principal</a></p>";
 }
 ?>

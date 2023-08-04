@@ -1,8 +1,8 @@
 <?php
 
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -15,7 +15,6 @@ echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 
 echo "<body>";
-bd_connect();
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $page = $_GET["page"];
@@ -25,7 +24,7 @@ if(is_logado($sid)==false)
 {
 
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -38,7 +37,7 @@ exit();
 
 if($action=="main")
 {
-adicionar_online(getuid_sid($sid),"Notificações","");
+adicionar_online(getuid_sid($sid),"NotificaÃ§Ã£es","");
 
 echo "<p align=\"center\"><a href=\"notificacoes.php?action=main&sid=$sid&t=".time()."\"><img src=\"images/atualizar.gif\" alt=\"\"/>Atualizar</a><br/>";
 echo "<form action=\"notificacoes.php\" method=\"get\">";
@@ -111,9 +110,8 @@ LIMIT $limit_start, $items_per_page
 }
 
 echo "<p><small>";
-$items = mysql_query($sql);
-echo mysql_error();
-while ($item = mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 if($item[3]=="1")
 {
@@ -143,14 +141,14 @@ echo "<a href=\"notificacoes.php?action=main&page=$ppage&sid=$sid&view=$view$exp
 if($page<$num_pages)
 {
 $npage = $page+1;
-echo "<a href=\"notificacoes.php?action=main&page=$npage&sid=$sid&view=$view$exp\">Próxima&#187;</a>";
+echo "<a href=\"notificacoes.php?action=main&page=$npage&sid=$sid&view=$view$exp\">PrÃ³xima&#187;</a>";
 }
 
 echo "<br/>$page/$num_pages<br/>";
 if($num_pages>2)
 {
 $rets = "<form action=\"notificacoes.php\" method=\"get\">";
-$rets .= "Pular Página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular PÃ¡gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= " <input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"sid\" value=\"$sid\"/>";
@@ -166,7 +164,7 @@ echo "<br/>";
 echo "</p>";
 }else{
 echo "<p align=\"center\">";
-echo "Nenhuma notificação!";
+echo "Nenhuma notificaÃ§Ã£o!";
 echo "</p>";
 }
 ////// UNTILL HERE >>
@@ -176,19 +174,19 @@ echo "</p>";
 echo "<p align=\"center\">";
 
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página Principal</a>";
+echo "PÃ¡gina Principal</a>";
 echo "</p>";
 }
 else if($action=="ler")
 {
-adicionar_online(getuid_sid($sid),"Lendo notificação","");
+adicionar_online(getuid_sid($sid),"Lendo notificaÃ§Ã£o","");
 
 echo "<p>";
 $pmid = $_GET["notid"];
-$pminfo = mysql_fetch_array(mysql_query("SELECT text, byuid, timesent,touid, reported, cor, id FROM fun_notificacoes WHERE id='".$pmid."'"));
+$pminfo = $pdo->query("SELECT text, byuid, timesent,touid, reported, cor, id FROM fun_notificacoes WHERE id='".$pmid."'")->fetch();
 if(getuid_sid($sid)==$pminfo[3])
 {
-$chread = mysql_query("UPDATE fun_notificacoes SET unread='0' WHERE id='".$pmid."'");
+$chread = $pdo->query("UPDATE fun_notificacoes SET unread='0' WHERE id='".$pmid."'");
 }
 
 if(($pminfo[3]==getuid_sid($sid))||($pminfo[1]==getuid_sid($sid)))
@@ -235,11 +233,11 @@ echo "</form>";
 
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Notificação não encontrada!<br/>";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>NotificaÃ§Ã£o nÃ£o encontrada!<br/>";
 }
-echo "<br/><a href=\"?action=apagar&sid=$sid&notid=$pmid\">Apagar Notificação</a><br><a href=\"fun_notificacoes.php?action=main&sid=$sid\">Voltar as notificações</a><br/>";
+echo "<br/><a href=\"?action=apagar&sid=$sid&notid=$pmid\">Apagar NotificaÃ§Ã£o</a><br><a href=\"fun_notificacoes.php?action=main&sid=$sid\">Voltar as notificaÃ§Ãµes</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página Principal</a>";
+echo "PÃ¡gina Principal</a>";
 echo "</p>";
 }
 else if($action=="apagar")
@@ -248,16 +246,16 @@ $notid = $_GET["notid"];
 echo "<p align=\"center\">";
 if(is_numeric($notid))
 {
-mysql_query("DELETE FROM fun_notificacoes WHERE id='".$notid."' AND touid='".$uid."'");
-echo "<img src=\"images/ok.gif\">Notificação apagada com sucesso!<br/>";
+$pdo->query("DELETE FROM fun_notificacoes WHERE id='".$notid."' AND touid='".$uid."'");
+echo "<img src=\"images/ok.gif\">NotificaÃ§Ã£o apagada com sucesso!<br/>";
 }
 else
 {
-echo "<img src=\"images/notok.gif\">Notificação não foi apagada!<br>";
+echo "<img src=\"images/notok.gif\">NotificaÃ§Ã£o nÃ£o foi apagada!<br>";
 }
-echo "<br/><a href=\"notificacoes.php?action=main&sid=$sid\">Voltar as notificações</a><br/>";
+echo "<br/><a href=\"notificacoes.php?action=main&sid=$sid\">Voltar as notificaÃ§Ãµes</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página Principal</a>";
+echo "PÃ¡gina Principal</a>";
 echo "</p>";
 }
 echo "</body>";

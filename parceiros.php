@@ -1,9 +1,8 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
-bd_connect();
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -25,7 +24,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br>";
 echo "<br><a href=\"index.php\">Login</a><br>";
 echo "</p>";
 exit();
@@ -36,7 +35,7 @@ if($a=="apagar")
 if(isadmin($uid))
 {
 echo "<p align=\"center\">";
-$r = mysql_query("DELETE FROM fun_parceiros WHERE id='".$id."'");
+$r = $pdo->query("DELETE FROM fun_parceiros WHERE id='".$id."'");
 if($r)
 {
 echo "<b>Parceiro apagado com sucesso!</b><br>";
@@ -52,7 +51,7 @@ else if($a=="admin2")
 if(isadmin($uid))
 {
 echo "<p align=\"center\">";
-$nome = mysql_real_escape_string($_POST["nome"]);
+$nome = $pdo->quote($_POST["nome"]);
 $url = addslashes($_POST["url"]);
 if(empty($url)||empty($nome))
 {
@@ -60,7 +59,7 @@ echo "<b>Nada pode ficar em branco!</b><br>";
 }
 else
 {
-mysql_query("INSERT INTO fun_parceiros SET nome='".$nome."', url='".$url."', date='".time()."'");
+$pdo->query("INSERT INTO fun_parceiros SET nome='".$nome."', url='".$url."', date='".time()."'");
 echo "<b>Parceiro adicionado com sucesso!</b><br>";
 }
 }
@@ -78,8 +77,8 @@ else
 {
 echo "<p align=\"center\">";
 echo "<b>Parceiros</b><br></p>";
-$sql = mysql_query("SELECT id, nome, url FROM fun_parceiros ORDER BY date");
-while($p=mysql_fetch_array($sql))
+$sql = $pdo->query("SELECT id, nome, url FROM fun_parceiros ORDER BY date");
+while($p = $sql->fetch())
 {
 if(isadmin($uid))
 {
@@ -94,6 +93,6 @@ echo "$p[1]<br>URL: <a href=\"$p[2]\">$p[2]</a> $del<br><br>";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 ?>

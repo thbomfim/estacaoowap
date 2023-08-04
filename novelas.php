@@ -1,7 +1,7 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -16,11 +16,10 @@ echo "</head>";
 echo "<body>";
 $sid = $_GET["sid"];
 $a = $_GET["a"];
-bd_connect();
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br/><br/>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -50,5 +49,5 @@ $exibir = explode('</tr>', $exibir[1]);
 echo "$exibir[0]";
 }
 echo "<p align=\"center\">";
-echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>Página principal</a>";
+echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>PÃ¡gina principal</a>";
 ?>

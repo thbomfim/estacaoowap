@@ -1,7 +1,7 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -15,8 +15,6 @@ echo "</head>";
 
 echo "<body>";
 
-bd_connect();
-
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $uid = getuid_sid($sid);
@@ -24,9 +22,9 @@ $uid = getuid_sid($sid);
 if(!ismod(getuid_sid($sid)))
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o È moderador<br/>";
+echo "Voc√™ n√£o √© moderador<br/>";
 echo "<br/>";
-echo "<a href=\"index.php\">P·gina principal</a>";
+echo "<a href=\"index.php\">P√°gina principal</a>";
 echo "</p>";
 exit();
 }
@@ -34,7 +32,7 @@ exit();
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o est· logado!<br/><br/>";
+echo "Voc√™ n√£o est√° logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -46,12 +44,12 @@ $pid = $_GET["pid"];//id
 $tid = gettid_pid($pid);
 $fid = getfid_tid($tid);
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_posts WHERE id='".$pid."'");
+$res = $pdo->query("DELETE FROM fun_posts WHERE id='".$pid."'");
 if($res)
 {
-$tname = mysql_fetch_array(mysql_query("SELECT name FROM fun_topics WHERE id='".$tid."'"));
+$tname = $pdo->query("SELECT name FROM fun_topics WHERE id='".$tid."'")->fetch();
 //log 
-$msg = "%$uid% apagou a postagem de ID $pid no tÛpico $tname[0]/".getfname($fid)."!";
+$msg = "%$uid% apagou a postagem de ID $pid no t√≥pico $tname[0]/".getfname($fid)."!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Postagem deletada com sucesso!";
 }
@@ -63,12 +61,12 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Error no banco de dados!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid&page=1000\">";
-echo "Ver tÛpico</a><br/>";
+echo "Ver t√≥pico</a><br/>";
 $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////editar postagem
@@ -80,12 +78,12 @@ $tid = gettid_pid($pid);
 $fid = getfid_tid($tid);
 
 echo "<p align=\"center\">";
-$res = mysql_query("UPDATE fun_posts SET text='".$ptext."' WHERE id='".$pid."'");
+$res = $pdo->query("UPDATE fun_posts SET text='".$ptext."' WHERE id='".$pid."'");
 if($res)
 {
-$tname = mysql_fetch_array(mysql_query("SELECT name FROM fun_topics WHERE id='".$tid."'"));
+$tname = $pdo->query("SELECT name FROM fun_topics WHERE id='".$tid."'")->fetch();
 //log 
-$msg = "%$uid% editou postagem ID($pid) do tÛpico $tname[0]!";
+$msg = "%$uid% editou postagem ID($pid) do t√≥pico $tname[0]!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Postagem editada com sucesso!";
 }else
@@ -95,12 +93,12 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid\">";
-echo "Ver TÛpico</a><br/>";
+echo "Ver T√≥pico</a><br/>";
 $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -112,11 +110,11 @@ $ttext = $_POST["ttext"];
 $fid = getfid_tid($tid);
 
 echo "<p align=\"center\">";
-$res = mysql_query("UPDATE fun_topics SET text='".$ttext."' WHERE id='".$tid."'");
+$res = $pdo->query("UPDATE fun_topics SET text='".$ttext."' WHERE id='".$tid."'");
 if($res)
 {
 //log 
-$msg = "%$uid% editou o tÛpico ".gettname($tid)."/".getfname($fid)."!";
+$msg = "%$uid% editou o t√≥pico ".gettname($tid)."/".getfname($fid)."!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico editado com sucesso!";
 }
@@ -131,7 +129,7 @@ $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -142,7 +140,7 @@ $tid = $_GET["tid"];
 $tdo = $_GET["tdo"];
 $fid = getfid_tid($tid);
 echo "<p align=\"center\">";
-$res = mysql_query("UPDATE fun_topics SET closed='"
+$res = $pdo->query("UPDATE fun_topics SET closed='"
 .$tdo."' WHERE id='".$tid."'");
 if($res)
 {
@@ -155,12 +153,12 @@ else
 $msg = "aberto";
 }
 //log 
-$m = "%$uid% deixou $msg o tÛpico ".gettname($tid)."/".getfname($fid)."!";
+$m = "%$uid% deixou $msg o t√≥pico ".gettname($tid)."/".getfname($fid)."!";
 addlog($m);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico $msg!";
-$tpci = mysql_fetch_array(mysql_query("SELECT name, authorid FROM fun_topics WHERE id='".$tid."'"));
+$tpci = $pdo->query("SELECT name, authorid FROM fun_topics WHERE id='".$tid."'")->fetch();
 $tname = htmlspecialchars($tpci[0]);
-$msg = "Ol· /reader, seu tÛpico [topic=$tid]$tname"."[/topic] foi $msg"."[br/][br/]Torpedo Autom·tico!";
+$msg = "Ol√° /reader, seu t√≥pico [topic=$tid]$tname"."[/topic] foi $msg"."[br/][br/]Torpedo Autom√°tico!";
 autopm($msg, $tpci[1]);
 }
 else
@@ -173,7 +171,7 @@ $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //desbanir membro
@@ -181,23 +179,23 @@ else if($action=="unbn")
 {
 $who = $_GET["who"];
 echo "<p align=\"center\">";
-$res = mysql_query("DELETE FROM fun_ban WHERE (tipoban='1' OR tipoban='2') AND uid='".$who."'");
+$res = $pdo->query("DELETE FROM fun_ban WHERE (tipoban='1' OR tipoban='2') AND uid='".$who."'");
 if($res)
 {
 $unick = getnick_uid($who);
-$msg = "%$uid% desbaniu o usu·rio ".getnick_uid2($who);
+$msg = "%$uid% desbaniu o usu√°rio ".getnick_uid2($who);
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"*\">Penalidade de $unick removida com sucesso!";
 echo "<br />";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">N„o foi possivel remover a penalidade!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">N√£o foi possivel remover a penalidade!";
 echo "<br />";
 }
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\">";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////deletar recado do mural
@@ -205,14 +203,14 @@ else if($action=="delsh")
 {
 $shid = $_GET["shid"];
 echo "<p align=\"center\">";
-$e = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_shouts WHERE id='".$shid."'"));
+$e = $pdo->query("SELECT COUNT(*) FROM fun_shouts WHERE id='".$shid."'")->fetch();
 if($e[0]==0 || $shid==0 || empty($shid))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Esse recado n„o existe!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Esse recado n√£o existe!";
 }
 else
 {
-$res = mysql_query("DELETE FROM fun_shouts WHERE id ='".$shid."'");
+$res = $pdo->query("DELETE FROM fun_shouts WHERE id ='".$shid."'");
 if($res)
 {
 $msg = "%$uid% apagou recado ID($shid)!";
@@ -225,7 +223,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro ao apagar o recado!";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -239,7 +237,7 @@ echo "<p align=\"center\">";
 $pnd = getpinned($fid);
 if($pnd<=5)//verifica se a cat tem mais de 5 topicos destacados
 {
-$res = mysql_query("UPDATE fun_topics SET pinned='".$tdo."' WHERE id='".$tid."'");
+$res = $pdo->query("UPDATE fun_topics SET pinned='".$tdo."' WHERE id='".$tid."'");
 if($res)
 {
 if($tdo==1)
@@ -248,9 +246,9 @@ $msg = "destacado";
 }
 else
 {
-$msg = "n„o destacado";
+$msg = "n√£o destacado";
 }
-$m = "%$uid% deixou o tÛpico ".gettname($tid)." $msg!";
+$m = "%$uid% deixou o t√≥pico ".gettname($tid)." $msg!";
 addlog($m);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico $msg!";
 }
@@ -261,7 +259,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>VocÍ sÛ pode usar essa opÁ„o em 5 tÛpicos por categoria!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc√™ s√≥ pode usar essa op√ß√£o em 5 t√≥picos por categoria!";
 }
 echo "<br/><br/>";
 
@@ -269,7 +267,7 @@ $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -281,13 +279,13 @@ $fid = getfid_tid($tid);
 
 echo "<p align=\"center\">";
 $nome_topico = gettname($tid);
-$res = mysql_query("DELETE FROM fun_topics WHERE id='".$tid."'");
+$res = $pdo->query("DELETE FROM fun_topics WHERE id='".$tid."'");
 if($res)
 {
 //log
-$msg = "%$uid% apagou o tÛpico $nome_topico/".getfname($fid)."!";
+$msg = "%$uid% apagou o t√≥pico $nome_topico/".getfname($fid)."!";
 addlog($msg);
-mysql_query("DELETE FROM fun_posts WHERE tid='".$tid."'");
+$pdo->query("DELETE FROM fun_posts WHERE tid='".$tid."'");
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico apagado com sucesso!";
 }else
 {
@@ -298,7 +296,7 @@ $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -313,14 +311,14 @@ echo "<p align=\"center\">";
 $otname = gettname($tid);
 if(trim($tname!=""))
 {
-$not = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE name LIKE '".$tname."' AND fid='".$fid."'"));
+$not = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE name LIKE '".$tname."' AND fid='".$fid."'")->fetch();
 if($not[0]==0)
 {
-$res = mysql_query("UPDATE fun_topics SET name='"
+$res = $pdo->query("UPDATE fun_topics SET name='"
 .$tname."' WHERE id='".$tid."'");
 if($res)
 {
-$msg = "%$uid% renomeou o tÛpico $otname para $tname/".getfname($fid)."!";
+$msg = "%$uid% renomeou o t√≥pico $otname para $tname/".getfname($fid)."!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico renomeado com sucesso!";
 }else
@@ -329,11 +327,11 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico j· existe!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico j√° existe!";
 }
 }else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Digite o nome do tÛpico!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Digite o nome do t√≥pico!";
 }
 echo "<br/><br/>";
 echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$tid\">";
@@ -342,7 +340,7 @@ $fname = getfname($fid);
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$fid\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -355,24 +353,24 @@ $fname = htmlspecialchars(getfname($mtf));
 
 echo "<p align=\"center\">";
 
-$not = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE name LIKE '".$tname."' AND fid='".$mtf."'"));
+$not = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE name LIKE '".$tname."' AND fid='".$mtf."'")->fetch();
 if($not[0]==0)
 {
-$res = mysql_query("UPDATE fun_topics SET fid='".$mtf."', moved='1' WHERE id='".$tid."'");
+$res = $pdo->query("UPDATE fun_topics SET fid='".$mtf."', moved='1' WHERE id='".$tid."'");
 if($res)
 {
-$msg = "%$uid% moveu o tÛpico de $tid para o $fname!";
+$msg = "%$uid% moveu o t√≥pico de $tid para o $fname!";
 addlog($msg);
-$tpci = mysql_fetch_array(mysql_query("SELECT name, authorid FROM fun_topics WHERE id='".$tid."'"));
+$tpci = $pdo->query("SELECT name, authorid FROM fun_topics WHERE id='".$tid."'")->fetch();
 $tname = htmlspecialchars($tpci[0]);
-$msg = "Ol· /reader, seu tÛpico [topic=$tid]$tname"."[/topic] foi movido para $fname![br/][br/]Torpedo Autom·tico!";
+$msg = "Ol√° /reader, seu t√≥pico [topic=$tid]$tname"."[/topic] foi movido para $fname![br/][br/]Torpedo Autom√°tico!";
 autopm($msg, $tpci[1]);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico movido com sucesso!";
 }else{
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }else{
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico com esse nome j· existe";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Topico com esse nome j√° existe";
 }
 
 echo "<br />";
@@ -380,7 +378,7 @@ echo "<br />";
 echo "<a href=\"index.php?action=viewfrm&sid=$sid&fid=$mtf\">";
 echo "$fname</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -389,8 +387,8 @@ else if($action=="hps")
 {
 $pid = $_GET["pid"];
 echo "<p align=\"center\">";
-$info = mysql_fetch_array(mysql_query("SELECT uid, tid FROM fun_posts WHERE id='".$pid."'"));
-$res = mysql_query("UPDATE fun_posts SET reported='2' WHERE id='".$pid."'");
+$info = $pdo->query("SELECT uid, tid FROM fun_posts WHERE id='".$pid."'")->fetch();
+$res = $pdo->query("UPDATE fun_posts SET reported='2' WHERE id='".$pid."'");
 if($res)
 {
 $msg = "%$uid% apagou a postagem ID($pid)!";
@@ -408,7 +406,7 @@ echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$info[1]\">Ver perfil</a><
 echo "<a href=\"modcp.php?action=main&sid=$sid\">";
 echo "Mod R/L</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -417,11 +415,11 @@ else if($action=="htp")
 {
 $pid = $_GET["tid"];
 echo "<p align=\"center\">";
-$info = mysql_fetch_array(mysql_query("SELECT authorid FROM fun_topics WHERE id='".$pid."'"));
-$res = mysql_query("UPDATE fun_topics SET reported='2' WHERE id='".$pid."'");
+$info = $pdo->query("SELECT authorid FROM fun_topics WHERE id='".$pid."'")->fetch();
+$res = $pdo->query("UPDATE fun_topics SET reported='2' WHERE id='".$pid."'");
 if($res)
 {
-$msg = "%$uid% apagou o tÛpico ".gettname($pid)."!";
+$msg = "%$uid% apagou o t√≥pico ".gettname($pid)."!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>Topico apagado com sucesso!";
 }else
@@ -436,7 +434,7 @@ echo "<a href=\"index.php?action=viewtpc&sid=$sid&tid=$pid\">Ver Topico</a><br/>
 echo "<a href=\"modcp.php?action=main&sid=$sid\">";
 echo "Mod R/L</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 
@@ -482,13 +480,13 @@ $timeto += $pmn*60;
 $timeto += $psc;
 $ptime = $timeto + time();
 $unick = getnick_uid($who);
-$res = mysql_query("INSERT INTO fun_ban SET uid='".$who."', tipoban='".$pid."', browser='".$ubr."', ip='".$uip."', tempo='".$ptime."', motivo='".$pres."'");
+$res = $pdo->query("INSERT INTO fun_ban SET uid='".$who."', tipoban='".$pid."', browser='".$ubr."', ip='".$uip."', tempo='".$ptime."', motivo='".$pres."'");
 if($res)
 {
 $msg = "%$uid% baniu ".getnick_uid2($who)." por $timeto segundos, motivo: $pres";
 addlog($msg);
 //deleta as sessoes ativas
-mysql_query("DELETE FROM fun_ses WHERE uid='".$who."'");
+$pdo->query("DELETE FROM fun_ses WHERE uid='".$who."'");
 echo "<img src=\"images/ok.gif\" alt=\"O\"/>$unick foi $pmsg[$pin] por $timeto segundos com sucesso!";
 }else
 {
@@ -496,7 +494,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 }
 }
 echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 else if($action=="plusses")
@@ -512,11 +510,11 @@ if(isuser($who))
 {
 if(empty($motivo))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>VocÍ prescisa falar o motivo dos $smoeda!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Voc√™ prescisa falar o motivo dos $smoeda!";
 }
 else if(!is_numeric($pontos) OR empty($pontos))
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Digite quantos $smoeda vocÍ deseja enviar!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Digite quantos $smoeda voc√™ deseja enviar!";
 }
 else
 {
@@ -528,7 +526,7 @@ else if($acao=="1")
 {
 $n = $mypontos + $pontos;
 }
-$res = mysql_query("UPDATE fun_users SET plusses='".$n."', lastplreas='".$motivo."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET plusses='".$n."', lastplreas='".$motivo."' WHERE id='".$who."'");
 if($res)
 {
 $msg = "%$uid% atualizou os $smoeda de ".getnick_uid2($who)." de $mypontos para $n!";
@@ -543,14 +541,14 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro MYSQL!";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"X\"/>Usu·rio n„o existe!";
+echo "<img src=\"images/notok.gif\" alt=\"X\"/>Usu√°rio n√£o existe!";
 }
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"modcp.php?action=main&sid=$sid\">Mod R/L</a>";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////hpm
@@ -558,8 +556,8 @@ else if($action=="hpm")
 {
 $pid = $_GET["pid"];
 echo "<p align=\"center\">";
-$info = mysql_fetch_array(mysql_query("SELECT byuid, touid FROM fun_private WHERE id='".$pid."'"));
-$res = mysql_query("UPDATE fun_private SET reported='2' WHERE id='".$pid."'");
+$info = $pdo->query("SELECT byuid, touid FROM fun_private WHERE id='".$pid."'")->fetch();
+$res = $pdo->query("UPDATE fun_private SET reported='2' WHERE id='".$pid."'");
 if($res)
 {
 $msg = "%$uid% apagou um torpedo que estava reportado ID($pid)!";addlog($msg);
@@ -575,7 +573,7 @@ echo "<a href=\"index.php?action=viewuser&amp;sid=$sid&amp;who=$info[1]\">ver pe
 echo "<a href=\"modcp.php?action=main&amp;sid=$sid\">";
 echo "Mod R/L</a><br/>";
 echo "<a href=\"index.php?action=main&amp;sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////////////Punish
@@ -607,7 +605,7 @@ if(trim($pres)=="")
 echo "<img src=\"images/notok.gif\" alt=\"X\"/>Digite o motivo dos pontos!";
 }else
 {
-$res = mysql_query("UPDATE fun_users SET lastplreas='".mysql_escape_string($pres)."', plusses='".$npl."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET lastplreas='".$pdo->quote($pres)."', plusses='".$npl."' WHERE id='".$who."'");
 if($res)
 {
 $msg = "%$uid% atualizou os pontos de ".getnick_uid2($who)." de $opl para $npl!";
@@ -620,7 +618,7 @@ echo "<img src=\"images/notok.gif\" alt=\"X\"/>Erro no banco de dados!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 else

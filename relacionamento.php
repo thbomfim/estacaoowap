@@ -1,9 +1,8 @@
 <?php
 //include core.php and config.php files
-include("core.php");
 include("config.php");
+include("core.php");
 //connect database
-bd_connect();
 //html code
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
@@ -22,7 +21,7 @@ $uid = getuid_sid($sid);
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "Você não está logado!<br>";
+echo "VocÃª nÃ£o estÃ¡ logado!<br>";
 echo "<br><a href=\"index.php\">Login</a><br>";
 echo "</p>";
 exit();
@@ -32,7 +31,7 @@ if($a=="pedido")
 {
 adicionar_online($uid, "Fazendo pedido de namoro");
 echo "<p align=\"center\">";
-echo "Digite o <b>ID</b> da pessoa que você quer enviar o pedido de namoro!";
+echo "Digite o <b>ID</b> da pessoa que vocï¿½ quer enviar o pedido de namoro!";
 echo "<br />";
 echo "<form action=\"?a=pedir&sid=$sid\" method=\"POST\">";
 echo "ID: <input name=\"who\" value=\"\" type=\"\" size=\"5\"><input name=\"\" value=\"OK\" type=\"submit\">";
@@ -44,23 +43,23 @@ else if($a=="pedir")
 adicionar_online($uid, "Fazendo pedido de namoro");
 echo "<p align=\"center\">";
 $who = $_POST["who"];
-$rperm = mysql_fetch_array(mysql_query("SELECT rperm FROM fun_users WHERE id='".$uid."'"));
+$rperm = $pdo->query("SELECT rperm FROM fun_users WHERE id='".$uid."'")->fetch();
 if(!isuser($who))
 {
 echo "<img src=\"images/notok.gif\" alt=\"\">Error!";
 }
 else if($rperm[0]==1)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você já está namorando alguém!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª jÃ¡ estÃ¡ namorando alguÃ©m!";
 }
 else if($rperm==2)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você já está casado(a) alguém!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª jÃ¡ estÃ¡ casado(a) alguÃ©m!";
 }
 else
 {
 $nick = getnick_uid2($uid);
-$txt = "Olá /reader, você acaba de receber uma solicitação de namoro feito por $nick! [br/]Para aceitar a solicitação por favor clique [relacionamento=$uid]aqui[/relacionamento]";
+$txt = "OlÃ¡ /reader, vocÃª acaba de receber uma solicitaÃ§Ã£o de namoro feito por $nick! [br/]Para aceitar a solicitaÃ§Ã£o por favor clique [relacionamento=$uid]aqui[/relacionamento]";
 autopm($txt, $who);
 echo "<img src=\"images/ok.gif\" alt=\"\">Pedido de namoro enviado com sucesso!";
 }
@@ -71,30 +70,30 @@ else if($a=="aceitar")
 adicionar_online($uid, "Aceitando pedido de namoro");
 $cid = $_GET["cid"];
 echo "<p align=\"center\">";
-$rperm = mysql_fetch_array(mysql_query("SELECT rperm FROM fun_users WHERE id='".$uid."'"));
+$rperm = $pdo->query("SELECT rperm FROM fun_users WHERE id='".$uid."'")->fetch();
 if(!isuser($cid))
 {
 echo "<img src=\"images/notok.gif\" alt=\"\">Error!";
 }
 else if($rperm[0]==1)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você já está namorando alguém!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª jÃ¡ estÃ¡ namorando alguÃ©m!";
 }
 else if($rperm==2)
 {
-echo "<img src=\"images/notok.gif\" alt=\"\">Você já está casado(a) alguém!";
+echo "<img src=\"images/notok.gif\" alt=\"\">VocÃª jÃ¡ estÃ¡ casado(a) alguÃ©m!";
 }
 else
 {
 $nick = getnick_uid2($uid);
-$txt = "Olá /reader, $nick aceitou seu pedido de namoro!";
+$txt = "OlÃ¡ /reader, $nick aceitou seu pedido de namoro!";
 autopm($txt, $cid);
 //atualiza a rpem dos 2 users
-mysql_query("UPDATE fun_users SET rperm='1' WHERE id='".$cid."'");
-mysql_query("UPDATE fun_users SET rperm='1' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET rperm='1' WHERE id='".$cid."'");
+$pdo->query("UPDATE fun_users SET rperm='1' WHERE id='".$uid."'");
 ///add o id do usuario na coluna correta
-mysql_query("UPDATE fun_users SET ruser='".$uid."' WHERE id='".$cid."'");
-mysql_query("UPDATE fun_users SET ruser='".$cid."' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET ruser='".$uid."' WHERE id='".$cid."'");
+$pdo->query("UPDATE fun_users SET ruser='".$cid."' WHERE id='".$uid."'");
 echo "<img src=\"images/ok.gif\" alt=\"\">Pedido de namoro aceito com sucesso!";
 }
 }
@@ -103,11 +102,11 @@ else if($a=="separar")
 {
 adicionar_online($uid, "Relacionamento");
 echo "<p align=\"center\">";
-$info = mysql_fetch_array(mysql_query("SELECT ruser FROM fun_users WHERE id='".$uid."'"));
+$info = $pdo->query("SELECT ruser FROM fun_users WHERE id='".$uid."'")->fetch();
 //tira todos os status e ruser dos 2 users
-mysql_query("UPDATE fun_users SET rperm='', ruser='' WHERE id='".$uid."'");
-mysql_query("UPDATE fun_users SET rperm='', ruser='' WHERE id='".$info[0]."'");
-echo "<img src=\"images/ok.gif\" alt=\"\">Separação realizada com sucesso!";
+$pdo->query("UPDATE fun_users SET rperm='', ruser='' WHERE id='".$uid."'");
+$pdo->query("UPDATE fun_users SET rperm='', ruser='' WHERE id='".$info[0]."'");
+echo "<img src=\"images/ok.gif\" alt=\"\">SeparaÃ§Ã£o realizada com sucesso!";
 }
 else
 {
@@ -122,6 +121,6 @@ echo "<a href=\"?a=separar&sid=$sid\"><img src=\"images/coracao.gif\" alt=\"\">S
 echo "<br />";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 echo "</p>";
 ?>

@@ -1,6 +1,6 @@
 <?php
-include("core.php");
 include("config.php");
+include("core.php");
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
 echo "<!DOCTYPE html PUBLIC \"-//WAPFORUM//DTD XHTML Mobile 1.0//EN\"\"http://www.wapforum.org/DTD/xhtml-mobile10.dtd\">";
 echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
@@ -9,7 +9,6 @@ echo "<title>$stitle</title>";
 echo "<link rel=\"StyleSheet\" type=\"text/css\" href=\"style.css\" />";
 echo "</head>";
 echo "<body>";
-bd_connect();
 $action = $_GET["action"];
 $sid = $_GET["sid"];
 $uid = getuid_sid($sid);
@@ -18,16 +17,16 @@ $who = $_GET["who"];
 if(!ismod(getuid_sid($sid)))
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o È moderador!<br/>";
+echo "Voc√™ n√£o √© moderador!<br/>";
 echo "<br/>";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P·gina principal</a>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P√°gina principal</a>";
 echo "</p>";
 exit();
 }
 if(is_logado($sid)==false)
 {
 echo "<p align=\"center\">";
-echo "VocÍ n„o est· logado!<br/><br/>";
+echo "Voc√™ n√£o est√° logado!<br/><br/>";
 echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
@@ -47,30 +46,30 @@ exit;
 }
 if($para=="todos")
 {
-$pms = mysql_query("SELECT id, name FROM fun_users WHERE lastact>'".$tm24."'");
-$t = ".coletiva.[br/]$pmtou [br/][br/]Coletiva EstaÁ„oWAP, Responda em caso de d˙vida!";
+$pms = $pdo->query("SELECT id, name FROM fun_users WHERE lastact>'".$tm24."'");
+$t = ".coletiva.[br/]$pmtou [br/][br/]Coletiva $snome, Responda em caso de d√∫vida!";
 }
 else if($para=="equipe")
 {
-$pms = mysql_query("SELECT id, name FROM fun_users WHERE perm>'0'");
-$t = ".coletiva.[br/]$pmtou [br/][br/]Coletiva EstaÁ„oWAP, Responda em caso de d˙vida!";
+$pms = $pdo->query("SELECT id, name FROM fun_users WHERE perm>'0'");
+$t = ".coletiva.[br/]$pmtou [br/][br/]Coletiva $snome, Responda em caso de d√∫vida!";
 }
 else if($para=="vips")
 {
-$pms = mysql_query("SELECT id, name FROM fun_users WHERE vip>'0'");
-$t = ".coletiva.[br/] $pmtou [br/][br/]Coletiva EstaÁ„oWAP, Responda em caso de d˙vida!";
+$pms = $pdo->query("SELECT id, name FROM fun_users WHERE vip>'0'");
+$t = ".coletiva.[br/] $pmtou [br/][br/]Coletiva $snome, Responda em caso de d√∫vida!";
 }
 $tm = time();
-while($pm=mysql_fetch_array($pms))
+while($pm= $pms->fetch())
 {
-mysql_query("INSERT INTO fun_private SET text='".$t."', byuid='".$byuid."', touid='".$pm[0]."', timesent='".$tm."'");
+$pdo->query("INSERT INTO fun_private SET text='".$t."', byuid='".$byuid."', touid='".$pm[0]."', timesent='".$tm."'");
 }
 //log
-$msg = "%$uid% enviou um Coletiva EstaÁ„oWAP para ".strtoupper($para)."!";
+$msg = "%$uid% enviou um Coletiva $snome para ".strtoupper($para)."!";
 addlog($msg);
 echo "<img src=\"images/ok.gif\" alt=\"\">Torpedo coletivo enviado com sucesso!<br>";
 echo "<br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////rules da equipe
@@ -80,23 +79,23 @@ echo "<p align=\"center\">";
 echo "<b>Regras da Equipe</b>";
 echo "</p>";
 echo "<p>";
-echo " - A equipe deve sempre falar com os usu·rios do site, alÈm de dar sempre boas vindas a um novo usu·rio!";
+echo " - A equipe deve sempre falar com os usu√°rios do site, al√©m de dar sempre boas vindas a um novo usu√°rio!";
 echo "<br />";
-echo " - N„o tenha preconceito com nenhum usu·rio do site, dependente de cor, raÁa, sexo, religi„o, etc...";
+echo " - N√£o tenha preconceito com nenhum usu√°rio do site, dependente de cor, ra√ßa, sexo, religi√£o, etc...";
 echo "<br />";
-echo " - Nunca adicione smilies de enormes(largura, altura) no site, alÈm deixa-lo bagunÁado, desorganizado, demora no carregamento das p·ginas!";
+echo " - Nunca adicione smilies de enormes(largura, altura) no site, al√©m deixa-lo bagun√ßado, desorganizado, demora no carregamento das p√°ginas!";
 echo "<br />";
-echo " - A equipe n„o est· autorizada de fazer fofoca de outros sites, em respectivos na WAP!";
+echo " - A equipe n√£o est√° autorizada de fazer fofoca de outros sites, em respectivos na WAP!";
 echo "<br />";
-echo " - Nunca dÍ status para ninguÈm sem consultar a equipe em geral, verifique sempre se o usu·rio se destaca no site!";
+echo " - Nunca d√° status para ningu√©m sem consultar a equipe em geral, verifique sempre se o usu√°rio se destaca no site!";
 echo "<br />";
-echo " - Ao enviar ".strtolower($smoeda)." para algum usu·rio do site, por favor especifique o motivo do benefÌcio!";
+echo " - Ao enviar ".strtolower($smoeda)." para algum usu√°rio do site, por favor especifique o motivo do benef√≠cio!";
 echo "<br />";
-echo " - Lembre-se disso, a EQUIPE È a forma do site, ela que vai fazer o site ter sucesso, por isso cumpra sempre as regras propostas aqui!";
+echo " - Lembre-se disso, a EQUIPE √© a forma do site, ela que vai fazer o site ter sucesso, por isso cumpra sempre as regras propostas aqui!";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////add vip no site
@@ -119,10 +118,10 @@ else
 $tipo = 0;
 $log = "removeu";
 }
-$perm = mysql_fetch_array(mysql_query("SELECT perm FROM fun_users WHERE id='".$who."'"));
+$perm = $pdo->query("SELECT perm FROM fun_users WHERE id='".$who."'")->fetch();
 if($perm[0]==0)
 {
-$res = mysql_query("UPDATE fun_users SET vip='".$tipo."' WHERE id='".$who."'");
+$res = $pdo->query("UPDATE fun_users SET vip='".$tipo."' WHERE id='".$who."'");
 if($res)
 {
 //log
@@ -141,12 +140,12 @@ echo "</p>";
 }
 else
 {
-echo "<img src=\"images/notok.gif\" alt=\"*\">Esse usu·rio È da equipe do site, e n„o pode ser VIP!";
+echo "<img src=\"images/notok.gif\" alt=\"*\">Esse usu√°rio √© da equipe do site, e n√£o pode ser VIP!";
 echo "<br />";
 echo "</p>";
 }
 echo "<p align=\"center\">";
-echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P·gina principal</a><br></p>";
+echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\">P√°gina principal</a><br></p>";
 }
 else if($action=="main")
 {
@@ -158,17 +157,17 @@ echo "<p align=\"center\">";
 echo "<b>Reportados</b>";
 echo "</p>";
 echo "<p>";
-$nrpm = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE reported='tk'"));
+$nrpm = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE reported='tk'")->fetch();
 echo "<a href=\"modcp.php?action=rpm&sid=$sid\">&#187;Torpedos($nrpm[0])</a><br/>";
-$nrps = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts WHERE reported='1'"));
+$nrps = $pdo->query("SELECT COUNT(*) FROM fun_posts WHERE reported='1'")->fetch();
 echo "<a href=\"modcp.php?action=rps&sid=$sid\">&#187;Portagens($nrps[0])</a><br/>";
-$nrtp = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE reported='1'"));
-echo "<a href=\"modcp.php?action=rtp&sid=$sid\">&#187;TÛpicos($nrtp[0])</a><br>";
-$logs = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_log"));
+$nrtp = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE reported='1'")->fetch();
+echo "<a href=\"modcp.php?action=rtp&sid=$sid\">&#187;TÔøΩpicos($nrtp[0])</a><br>";
+$logs = $pdo->query("SELECT COUNT(*) FROM fun_log")->fetch();
 echo "<a href=\"modcp.php?action=log&sid=$sid\">&#187;Logs($logs[0])</a><br/>";
 echo "<a href=\"modcp.php?action=rules&sid=$sid\">&#187;Regras da equipe</a><br>";
 echo "<p align=\"center\">";
-echo "<b>Coletiva EstaÁ„oWAP</b>";
+echo "<b>Coletiva Esta√ß√£oWAP</b>";
 echo "</p>";
 echo "<form action=\"modcp.php?action=enviarpm&sid=$sid\" method=\"post\">";
 echo "Texto: <input type=\"text\" name=\"pmtou\" size=\"15\" maxlength=\"500\" /><br/>Para: <select name=\"para\"><option value=\"equipe\">Equipe</option><option value=\"vips\">VIPs</option><option value=\"todos\">Todos</option></select><br/>";
@@ -178,7 +177,7 @@ echo "</form>";
 echo "</p>";
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ////////////////////////////////logs
@@ -189,17 +188,17 @@ echo "<b>Logs da Equipe</b>";
 echo "</p>";
 $page = $_GET["page"];
 if($page=="" || $page<=0)$page=1;
-$list = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_log "));
+$list = $pdo->query("SELECT COUNT(*) FROM fun_log ")->fetch();
 $num_items = $list[0];
 $items_per_page= 15;
 $num_pages = ceil($num_items/$items_per_page);
 if(($page>$num_pages)&&$page!=1)$page= $num_pages;
 $limit_start = ($page-1)*$items_per_page;
-$comando = mysql_query("SELECT id, msg, data FROM fun_log ORDER BY data DESC LIMIT $limit_start, $items_per_page");
-if(mysql_num_rows($comando) > 1)
+$comando = $pdo->query("SELECT id, msg, data FROM fun_log ORDER BY data DESC LIMIT $limit_start, $items_per_page");
+if($comando->rowCount() > 1)
 {
 echo "<p>";
-while($a = mysql_fetch_array($comando))
+while($a = $comando->fetch())
 {
 	$e = explode("%", $a[1]);
 	$e = explode("%", $e[1]);
@@ -221,7 +220,7 @@ echo "<a href=\"?action=log&page=$voltar&sid=$sid\">&#171;Anterior</a> ";
 if($page < $num_pages)
 {
 $mais = $page + 1;
-echo "<a href=\"?action=log&page=$mais&sid=$sid\">PrÛximo&#187;</a>";
+echo "<a href=\"?action=log&page=$mais&sid=$sid\">Pr√≥ximo&#187;</a>";
 }
 echo "<br />";
 echo "$page/$num_pages";
@@ -234,7 +233,7 @@ echo "Nenhum log encontrado!";
 }
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////Reported PMs
@@ -247,15 +246,15 @@ echo "</p>";
 echo "<p>";
 echo "<small>";
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_private WHERE reported ='tk'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_private WHERE reported ='tk'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
 if($page>$num_pages)$page= $num_pages;
 $limit_start = ($page-1)*$items_per_page;
 $sql = "SELECT id, text, byuid, touid, timesent FROM fun_private WHERE reported='tk' ORDER BY timesent DESC LIMIT $limit_start, $items_per_page";
-$items = mysql_query($sql);
-while ($item=mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item= $items->fetch())
 {
 $fromnk = getnick_uid($item[2]);
 $tonick = getnick_uid($item[3]);
@@ -299,7 +298,7 @@ echo "<br/><br/>";
 echo "<a href=\"modcp.php?action=main&sid=$sid\">";
 echo "Mod R/L</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////Reported Posts
@@ -312,15 +311,15 @@ echo "</p>";
 echo "<p>";
 echo "<small>";
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_posts WHERE reported ='1'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_posts WHERE reported ='1'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
 if($page>$num_pages)$page= $num_pages;
 $limit_start = ($page-1)*$items_per_page;
 $sql = "SELECT id, text, tid, uid, dtpost FROM fun_posts WHERE reported='1' ORDER BY dtpost DESC LIMIT $limit_start, $items_per_page";
-$items = mysql_query($sql);
-while ($item=mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $poster = getnick_uid($item[3]);
 $tname = htmlspecialchars(gettname($item[3]));
@@ -344,7 +343,7 @@ echo "<a href=\"modcp.php?action=$action&page=$ppage&sid=$sid\">&#171;anterior</
 if($page<$num_pages)
 {
 $npage = $page+1;
-echo "<a href=\"modcp.php?action=$action&page=$npage&sid=$sid\">prÛxima&#187;</a>";
+echo "<a href=\"modcp.php?action=$action&page=$npage&sid=$sid\">pr√≥xima&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/>";
 if($num_pages>2)
@@ -361,7 +360,7 @@ echo "<br/><br/>";
 echo "<a href=\"modcp.php?action=main&sid=$sid\">";
 echo "Mod R/L</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 /////////////////////////////////Reported Topics
@@ -369,20 +368,20 @@ else if($action=="rtp")
 {
 $page = $_GET["page"];
 echo "<p align=\"center\">";
-echo "<b>TÛpicos reportados</b>";
+echo "<b>T√≥picos reportados</b>";
 echo "</p>";
 echo "<p>";
 echo "<small>";
 if($page=="" || $page<=0)$page=1;
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM fun_topics WHERE reported ='1'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM fun_topics WHERE reported ='1'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 5;
 $num_pages = ceil($num_items/$items_per_page);
 if($page>$num_pages)$page= $num_pages;
 $limit_start = ($page-1)*$items_per_page;
 $sql = "SELECT id, name, text, authorid, crdate FROM fun_topics WHERE reported='1' ORDER BY crdate DESC LIMIT $limit_start, $items_per_page";
-$items = mysql_query($sql);
-while ($item=mysql_fetch_array($items))
+$items = $pdo->query($sql);
+while ($item = $items->fetch())
 {
 $poster = getnick_uid($item[3]);
 $tname = htmlspecialchars($item[1]);
@@ -423,7 +422,7 @@ echo "<br/><br/>";
 echo "<a href=\"modcp.php?action=main&sid=$sid\">";
 echo "Mod R/L</a><br/>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 ///////////////////////////////////////////////Mod a user
@@ -436,7 +435,7 @@ echo "<b>Moderar $unick</b>";
 echo "</p>";
 echo "<p>";
 //log
-$msg = "%$uid% est· moderando ".getnick_uid2($who)."!";
+$msg = "%$uid% est√° moderando ".getnick_uid2($who)."!";
 addlog($msg);
 echo "<a href=\"modcp.php?action=penopt&sid=$sid&who=$who\">&#187;Penalidades</a><br/>";
 echo "<a href=\"modcp.php?action=plusses&sid=$sid&who=$who\">&#187;$smoeda</a><br/><br/>";
@@ -446,11 +445,11 @@ echo "<a href=\"modproc.php?action=unbn&sid=$sid&who=$who\">&#187;Desbanir membr
 }
 echo "</p>";
 echo "<p align=\"center\">";
-echo getnick_uid($uid)." a partir de agora todas as suas aÁıes ao moderar $unick ser„o gravadas!";
+echo getnick_uid($uid)." a partir de agora todas as suas a√ß√µes ao moderar $unick ser√£o gravadas!";
 echo "<br />";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 //////////////////////////////////////Penalties Options
@@ -462,7 +461,7 @@ $unick = getnick_uid($who);
 echo "</p>";
 echo "<p>";
 //log
-$msg = "%$uid% est· verificando uma penalidade para ".getnick_uid2($uid);
+$msg = "%$uid% est√° verificando uma penalidade para ".getnick_uid2($uid);
 addlog($msg);
 $pen = array();
 $pen[0]="Banir";
@@ -486,7 +485,7 @@ echo "</p>";
 echo "<p align=\"center\">";
 echo "*Dados extremamente importantes!<br><br>";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 else if($action=="plusses")
@@ -496,10 +495,10 @@ $wnick = getnick_uid($who);
 echo "<p align=\"center\">";
 echo "<b>Pontos de $wnick!</b>";
 echo "</p>";
-$msg = "%$uid% est· verificando se vai add ou remover pontos de ".getnick_uid2($who)."!";
+$msg = "%$uid% est√° verificando se vai add ou remover pontos de ".getnick_uid2($who)."!";
 addlog($msg);
 echo "<form action=\"modproc.php?action=plusses&who=$who&sid=$sid\" method=\"post\">";
-echo "AÁ„o: <select name=\"acao\">";
+echo "A√ß√£o: <select name=\"acao\">";
 
 echo "<option value=\"0\">Remover</option>";
 
@@ -513,7 +512,7 @@ echo "<p align=\"center\">";
 echo "<a href=\"modcp.php?action=main&sid=$sid\">Mod R/L</a>";
 echo "<br />";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"\">";
-echo "P·gina principal</a>";
+echo "P√°gina principal</a>";
 echo "</p>";
 }
 else

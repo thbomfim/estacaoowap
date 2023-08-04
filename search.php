@@ -1,8 +1,8 @@
 <?php
 
 
-include("core.php");
 include("config.php");
+include("core.php");
 
 
 header("Content-type: text/html; charset=ISO-8859-1");
@@ -17,7 +17,6 @@ echo "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
 	echo "</head>";
 
 	echo "<body>";
-bd_connect();
 
 $action = $_GET["action"];
 $sid = $_GET["sid"];
@@ -27,7 +26,7 @@ $page = $_GET["page"];
     {
       
       echo "<p align=\"center\">";
-      echo "Vocк nгo estб logado!<br/><br/>";
+      echo "Você não está logado!<br/><br/>";
       echo "<a href=\"index.php\">Login</a>";
       echo "</p>";
       exit();
@@ -38,12 +37,12 @@ if(is_banido($uid))
 
       echo "<p align=\"center\">";
       echo "<img src=\"images/notok.gif\" alt=\"x\"/><br/>";
-      echo "Vocк estб <b>Banido</b><br/>";
-      $banto = mysql_fetch_array(mysql_query("SELECT timeto FROM fun_penalties WHERE uid='".$uid."' AND penalty='1'"));
+      echo "Você está <b>Banido</b><br/>";
+      $banto = $pdo->query("SELECT timeto FROM fun_penalties WHERE uid='".$uid."' AND penalty='1'")->fetch();
       $remain = $banto[0]- time();
       $rmsg = tempo_msg($remain);
-      echo "Tempo para acabar sua puniзгo: $rmsg<br/><br/>";
-      //echo "<a href=\"index.php\">Login</a>";
+      echo "Tempo para acabar sua punição: $rmsg<br/><br/>";
+      echo "<a href=\"index.php\">Página inicial</a>";
       echo "</p>";
       exit();
     }
@@ -232,7 +231,7 @@ else if($action=="stpc")
                 $ord_fields = "crdate";
             }
           }
-          $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'"));
+          $noi = $pdo->query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'")->fetch();
           $num_items = $noi[0];
           $items_per_page = 10;
           $num_pages = ceil($num_items/$items_per_page);
@@ -240,8 +239,8 @@ else if($action=="stpc")
     $limit_start = ($page-1)*$items_per_page;
     
     $sql = "SELECT ".$select_fields." FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%' ORDER BY ".$ord_fields." LIMIT $limit_start, $items_per_page";
-          $items = mysql_query($sql);
-          while($item=mysql_fetch_array($items))
+          $items = $pdo->query($sql);
+          while($item = $items->fetch())
           {
             if($sin=="1")
             {
@@ -360,7 +359,7 @@ else if($action=="sblg")
                 $ord_fields = "bgdate DESC";
             }
           }
-          $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'"));
+          $noi = $pdo->query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'")->fetch();
           $num_items = $noi[0];
           $items_per_page = 10;
           $num_pages = ceil($num_items/$items_per_page);
@@ -368,8 +367,8 @@ else if($action=="sblg")
     $limit_start = ($page-1)*$items_per_page;
 
     $sql = "SELECT ".$select_fields." FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%' ORDER BY ".$ord_fields." LIMIT $limit_start, $items_per_page";
-          $items = mysql_query($sql);
-          while($item=mysql_fetch_array($items))
+          $items = $pdo->query($sql);
+          while($item = $items->fetch())
           {
               $tlink = "<a href=\"index.php?action=viewblog&sid=$sid&bid=$item[0]&go=$item[0]\">".htmlspecialchars($item[1])."</a><br/>";
 
@@ -472,7 +471,7 @@ else if($action=="sclb")
                 $ord_fields = "created DESC";
             }
           }
-          $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'"));
+          $noi = $pdo->query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'")->fetch();
           $num_items = $noi[0];
           $items_per_page = 10;
           $num_pages = ceil($num_items/$items_per_page);
@@ -480,8 +479,8 @@ else if($action=="sclb")
     $limit_start = ($page-1)*$items_per_page;
 
     $sql = "SELECT ".$select_fields." FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%' ORDER BY ".$ord_fields." LIMIT $limit_start, $items_per_page";
-          $items = mysql_query($sql);
-          while($item=mysql_fetch_array($items))
+          $items = $pdo->query($sql);
+          while($item = $items->fetch())
           {
               $tlink = "<a href=\"index.php?action=gocl&sid=$sid&clid=$item[0]&go=$item[0]\">".htmlspecialchars($item[1])."</a><br/>";
 
@@ -559,13 +558,13 @@ else if($action=="snbx")
           if($page=="" || $page<1)$page=1;
           if($sin==1)
           {
-          $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*)  FROM fun_private  WHERE text LIKE '%".$stext."%' AND touid='".$myid."'"));
+          $noi = $pdo->query("SELECT COUNT(*)  FROM fun_private  WHERE text LIKE '%".$stext."%' AND touid='".$myid."'")->fetch();
 		  }else if($sin==2)
 		  {
-			$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*)  FROM fun_private  WHERE text LIKE '%".$stext."%' AND byuid='".$myid."'"));
+			$noi = $pdo->query("SELECT COUNT(*)  FROM fun_private  WHERE text LIKE '%".$stext."%' AND byuid='".$myid."'")->fetch();
           }else{
                 $stext = getuid_nick($stext);
-            $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*)  FROM fun_private  WHERE byuid ='".$stext."' AND touid='".$myid."'"));
+            $noi = $pdo->query("SELECT COUNT(*)  FROM fun_private  WHERE byuid ='".$stext."' AND touid='".$myid."'")->fetch();
           }
           $num_items = $noi[0];
           $items_per_page = 10;
@@ -664,9 +663,8 @@ else if($action=="snbx")
           }
           
 
-          $items = mysql_query($sql);
-          echo mysql_error();
-          while($item=mysql_fetch_array($items))
+          $items = $pdo->query($sql);
+          while($item = $items->fetch())
           {
               if($item[3]=="1")
       {
@@ -766,7 +764,7 @@ else if($action=="smbr")
                 $ord_fields = "regdate";
             }
           
-          $noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'"));
+          $noi = $pdo->query("SELECT COUNT(*) FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%'")->fetch();
           $num_items = $noi[0];
           $items_per_page = 10;
           $num_pages = ceil($num_items/$items_per_page);
@@ -774,8 +772,8 @@ else if($action=="smbr")
     $limit_start = ($page-1)*$items_per_page;
 
     $sql = "SELECT ".$select_fields." FROM ".$where_table." WHERE ".$cond." LIKE '%".$stext."%' ORDER BY ".$ord_fields." LIMIT $limit_start, $items_per_page";
-          $items = mysql_query($sql);
-          while($item=mysql_fetch_array($items))
+          $items = $pdo->query($sql);
+          while($item = $items->fetch())
           {
               $tlink = "<a href=\"index.php?action=perfil&sid=$sid&who=$item[0]\">".htmlspecialchars($item[1])."</a><br/>";
 
