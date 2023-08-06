@@ -1,9 +1,8 @@
 <?php
 
-include("core.php");
 include("config.php");
+include("core.php");
 
-bd_connect();
 
 header("Content-type: text/html; charset=ISO-8859-1");
 echo "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>";
@@ -31,7 +30,7 @@ exit();
 adicionar_online(getuid_sid($sid),"Vendo visitantes","");
 if($page=="" || $page<=0)$page=1;
 echo "<p align=\"center\"/><b>Visitas</b><br/></p>";
-$noi = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM visitantes WHERE uid='".$who."'"));
+$noi = $pdo->query("SELECT COUNT(*) FROM visitantes WHERE uid='".$who."'")->fetch();
 $num_items = $noi[0]; //changable
 $items_per_page= 10;
 $num_pages = ceil($num_items/$items_per_page);
@@ -40,10 +39,9 @@ $limit_start = ($page-1)*$items_per_page;
 $sql = "SELECT vid, hora FROM visitantes WHERE uid='".$who."' ORDER BY hora DESC LIMIT $limit_start, $items_per_page";
 
 echo "<p>";
-$items = mysql_query($sql);
-echo mysql_error();
+$items = $pdo->query($sql);
 
-while ($item = mysql_fetch_array($items))
+while ($item = $items->fetch())
 {
 
 $nick = getnick_uid($item[0]);
@@ -58,9 +56,9 @@ echo "<a href=\"visitas.php?page=$ppage&sid=$sid&who=$who\">&#171;Anterior</a> "
 if($page<$num_pages)
 {
 $npage = $page+1;
-echo "<a href=\"visitas.php?page=$npage&sid=$sid&who=$who\">Próxima&#187;</a>";
+echo "<a href=\"visitas.php?page=$npage&sid=$sid&who=$who\">Prï¿½xima&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/>";
 echo "<p align=\"center\"><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "Página principal</a>";
+echo "PÃ¡gina principal</a>";
 ?>
