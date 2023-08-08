@@ -33,7 +33,7 @@ echo "</p>";
 exit();
 }
 
-if($a==add)
+if($a=="add")
 {
 echo "<p align=\"center\">";
 $file = $_FILES["sml"]["name"];

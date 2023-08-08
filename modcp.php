@@ -103,12 +103,12 @@ else if($action=="addvip")
 {
 echo "<p align=\"center\">";
 $a = addslashes($_GET["a"]);
-if($a==a)
+if($a=="a")
 {
 $tipo = 1;
 $log = "adicionou";
 }
-else if($a==r)
+else if($a=="r")
 {
 $tipo = 0;
 $log = "removeu";

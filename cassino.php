@@ -55,14 +55,14 @@ $img[9] = "<img src=\"images/cassino/9.gif\" alt=\"\"/>";
 $img[10] = "<img src=\"images/cassino/10.gif\" alt=\"\"/>";
 echo "<p align=\"center\"><b>Cassino</b><br/>";
 echo "<br/>Ache 3 imagens iguais e ganhe os <b>$info[0]</b> pontos acumulados!<br/><br/>";
-if($a==jogar)
+if($a=="jogar")
 {
 echo "$img[$n1] $img[$n2] $img[$n3]";
 }
 else{
 echo "$img[$n1] $img[$n1] $img[$n1]";
 }
-if($a==jogar)
+if($a=="jogar")
 {
 $ut = $_GET["ut"];
 $erro = $ut+30;

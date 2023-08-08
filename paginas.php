@@ -37,7 +37,7 @@ if($p=="suporte")
 adicionar_online($uid, "Pedindo ajuda","");
 echo "<p align=\"center\">";
 echo "<b>Pedir Ajuda</b><br>";
-if($_POST["a"]==Enviar)
+if($_POST["a"]=="Enviar")
 {
 $txt = $_POST["prob"];
 $ea = $pdo->query("INSERT INTO fun_suporte SET texto='".$txt."', por='".$uid."', data='".time()."'");

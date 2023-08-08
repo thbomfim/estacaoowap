@@ -24,7 +24,7 @@ echo "<a href=\"index.php\">Login</a>";
 echo "</p>";
 exit();
 }
-if($a==ver)
+if($a=="ver")
 {
 adicionar_online(getuid_sid($sid),"Vendo resumo da novela","");
 $id = $_GET["id"];

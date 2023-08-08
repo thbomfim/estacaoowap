@@ -38,7 +38,7 @@ echo "<br/><br/><a href=\"index.php?action=main&sid=$sid\"><img src=\"images/hom
 exit();
 }
 adicionar_online(getuid_sid($sid),"Jogando cores da sorte","");
-if($a==cf)
+if($a=="cf")
 {
 echo "<p align=\"center\"><b>Como funciona?</b><br/><br/>";
 echo "No cores da sorte você pode ganhar de 5 a 25 pontos, para jogar e só clicar no nome de uma cor e você poderá ganhar ou perder pontos, os pontos entram na hora!";

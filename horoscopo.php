@@ -38,7 +38,7 @@ echo "Motivo da sua penalidade: <b>".htmlspecialchars($infos_ban[1])."</b>";
 exit();
 }
 adicionar_online(getuid_sid($sid),"Horoscopo","");
-if($a==ver)
+if($a=="ver")
 {
 $url = file_get_contents("http://mobile.br.msn.com/device/astro/$signo.aspx");
 echo "<p>";
