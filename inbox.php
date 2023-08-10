@@ -105,7 +105,7 @@ echo "<br><input type=\"submit\" value=\"OK\"/>";
 echo "</form>";
 echo "</p>";
 //////view get code and addslashes protector
-$view = addslashes($_GET["view"]);
+$view = addslashes($_GET["view"] ?? '');
 //////ALL LISTS SCRIPT <<
 if($view==""||empty($view)||is_numeric($view))
 {
@@ -196,7 +196,7 @@ echo "$lnk<br/>";
 echo "</small></p>";
 echo "<p align=\"center\">";
 $npage = $page+1;
-echo "<a href=\"m.php?sid=$sid\">Torpedo Multim�dia</a><br/><br/>";
+echo "<a href=\"m.php?sid=$sid\">Torpedo Multimúdia</a><br/><br/>";
 if($page>1)
 {
 $ppage = $page-1;
@@ -205,13 +205,13 @@ echo "<a href=\"inbox.php?action=main&page=$ppage&sid=$sid&view=$view$exp\">&#17
 if($page<$num_pages)
 {
 $npage = $page+1;
-echo "<a href=\"inbox.php?action=main&page=$npage&sid=$sid&view=$view$exp\">Pr�xima&#187;</a>";
+echo "<a href=\"inbox.php?action=main&page=$npage&sid=$sid&view=$view$exp\">Próxima&#187;</a>";
 }
 echo "<br/>$page/$num_pages<br/>";
 if($num_pages>2)
 {
 $rets = "<form action=\"inbox.php\" method=\"get\">";
-$rets .= "Pular para p�gina: <input name=\"page\" format=\"*N\" size=\"3\"/>";
+$rets .= "Pular para página: <input name=\"page\" format=\"*N\" size=\"3\"/>";
 $rets .= "	<input type=\"submit\" value=\"IR\"/>";
 $rets .= "<input type=\"hidden\" name=\"action\" value=\"$action\"/>";
 $rets .= "<input type=\"hidden\" name=\"sid\" value=\"$sid\"/>";
@@ -234,13 +234,13 @@ else
 {
 /////error case pm = 0
 echo "<p align=\"center\">";
-echo "<img src=\"images/notok.gif\" alt=\"\">No momento voc� n�o tem novos torpedos!";
+echo "<img src=\"images/notok.gif\" alt=\"\">No momento você não tem novos torpedos!";
 echo "</p>";
 }
 /////final links
 echo "<p align=\"center\">";
 echo "<a href=\"index.php?action=main&sid=$sid\"><img src=\"images/home.gif\" alt=\"*\"/>";
-echo "P�gina principal</a>";
+echo "Página principal</a>";
 echo "</p>";
 }
 else if($action=="readpm")

@@ -705,7 +705,7 @@ return $fid[0];
 function scan_msg($text, $sid="")
 {
     global $pdo;
-$text = htmlspecialchars($text);
+$text = htmlspecialchars($text ?? '');
 $sml = $pdo->query("SELECT hvia FROM fun_users WHERE id='".getuid_sid($sid)."'")->fetch();
 if ($sml[0]=="1")
 {
@@ -776,7 +776,8 @@ function getuid_sid($sid)
 {
     global $pdo;
 $uid = $pdo->query("SELECT uid FROM fun_ses WHERE id='".$sid."'")->fetch();
-$uid = $uid[0];
+//coloquei ?? so para retirar o erro no meu server local
+$uid = $uid[0] ?? '';
 return $uid;
 }
 function getnotcount($uid)
@@ -875,7 +876,8 @@ $res = $pdo->query("UPDATE fun_users SET lastact='".$ttime."' WHERE id='".$uid."
 
 ////consultar se tem resgistro do usuario online
 $on = $pdo->query("SELECT userid FROM fun_online WHERE userid='".$uid."'")->fetch();
-if($on[0] == $uid) {
+//coloquei ?? somente para tirar o erro do meu server local
+if($on[0] == $uid ?? '') {
     //se encontrar somente atualizar para nao inserir outro resgisto
     $pdo->query("UPDATE fun_online SET actvtime='".$ttime."', place='".$place."', placedet='".$plclink."' WHERE userid='".$uid."'");
 }

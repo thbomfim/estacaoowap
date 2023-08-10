@@ -12,12 +12,11 @@ echo "</head>";
 echo "<body>";
 
 cleardata();//erases all old data
-
-$action = $_GET["action"];
-$sid = $_GET["sid"];
-$page = $_GET["page"];
-$who = $_GET["who"];
-$uid = getuid_sid($sid);
+$action = $_GET["action"] ?? '';
+$sid = $_GET["sid"] ?? '';
+$page = $_GET["page"] ?? '';
+$who = $_GET["who"] ?? '';
+$uid = getuid_sid($sid) ?? '';
 //ip banned
 if(ip_ban(ver_ip(), navegador()))
 {
@@ -160,7 +159,7 @@ echo "<a href=\"index.php?action=stats&sid=$sid\"><img src=\"images/top.gif\" al
 $sml = $pdo->query("SELECT COUNT(*) FROM fun_smilies")->fetch();
 echo "<a href=\"paginas.php?p=sml&sid=$sid\"><img src=\"images/bug.gif\" alt=\"*\"/>Smilies($sml[0])</a><br />";
 echo "<a href=\"index.php?action=search&sid=$sid\"><img src=\"images/buscar.gif\" alt=\"*\"/>Buscar</a><br />";
-$paceiros = $pdp->query("SELECT COUNT(*) FROM fun_parceiros")->fetch();
+$paceiros = $pdo->query("SELECT COUNT(*) FROM fun_parceiros")->fetch();
 echo "<a href=\"parceiros.php?sid=$sid\"><img src=\"images/parceiros.gif\" alt=\"*\">Paceiros(".$paceiros[0].")</a><br />";
 echo "<a href=\"regras.php?sid=$sid\"><img src=\"images/mextra.gif\" alt=\"*\"/>Regras do site</a>";
 echo "</p>";
